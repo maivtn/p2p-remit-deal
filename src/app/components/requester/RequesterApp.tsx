@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Home, Bell, User, ArrowRight, BadgeCheck, Clock,
@@ -17,6 +17,7 @@ import {
 import { ProofModal, ProofCard, EscrowBanner, StepProgress } from '../shared/ProofModal';
 
 type Tab = 'home' | 'requests' | 'profile';
+type RequestsViewMode = 'list' | 'detail';
 const PRIMARY_REQ = '#059669';
 
 function safeCopy(text: string) {
@@ -1376,13 +1377,18 @@ function RequestCard({
   );
 }
 
-function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active' }: {
+function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active', onOpenDetail, onFilterChange }: {
   requests: DealRequest[];
   onUpdate: (id: string, partial: Partial<DealRequest>) => void;
   onCancel: (id: string) => void;
   initialFilter?: ReqFilter;
+  onOpenDetail: (requestId: string) => void;
+  onFilterChange: (filter: ReqFilter) => void;
 }) {
   const [filter, setFilter] = useState<ReqFilter>(initialFilter);
+  useEffect(() => {
+    onFilterChange(filter);
+  }, [filter, onFilterChange]);
 
   const ACTIVE_STATUSES = ['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'];
   const filterMap: Record<ReqFilter, (r: DealRequest) => boolean> = {
@@ -1419,12 +1425,21 @@ function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active' 
 
       <div className="px-4 py-4 space-y-3">
         {filtered.map(req => (
-          <RequestCard
-            key={req.id}
-            req={req}
-            onUpdate={partial => onUpdate(req.id, partial)}
-            onCancel={() => onCancel(req.id)}
-          />
+          <div key={req.id}>
+            <RequestCard
+              req={req}
+              onUpdate={partial => onUpdate(req.id, partial)}
+              onCancel={() => onCancel(req.id)}
+            />
+            <button
+              onClick={() => onOpenDetail(req.id)}
+              className="w-full py-2 rounded-xl flex items-center justify-center gap-1 mt-2"
+              style={{ background: '#ECFDF5', border: '1px solid #6EE7B7', cursor: 'pointer' }}
+            >
+              <ChevronRight size={14} color={PRIMARY_REQ} />
+              <span style={{ color: PRIMARY_REQ, fontSize: 12, fontWeight: 700 }}>Xem chi tiết giao dịch</span>
+            </button>
+          </div>
         ))}
         {filtered.length === 0 && (
           <div className="flex flex-col items-center py-12 text-center">
@@ -1432,6 +1447,55 @@ function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active' 
             <p style={{ color: '#9CA3AF', marginTop: 10, fontSize: 15 }}>Chưa có yêu cầu nào</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function RequesterTransactionDetailScreen({
+  request,
+  onUpdateRequest,
+  onCancelRequest,
+  onBack,
+}: {
+  request: DealRequest | null;
+  onUpdateRequest: (id: string, partial: Partial<DealRequest>) => void;
+  onCancelRequest: (id: string) => void;
+  onBack: () => void;
+}) {
+  if (!request) {
+    return (
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-5 pt-12 pb-4" style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }}>
+          <button onClick={onBack} className="flex items-center gap-1 mb-3" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
+            <ChevronLeft size={18} />
+            <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
+          </button>
+          <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Chi tiết giao dịch</h1>
+        </div>
+        <div className="px-4 py-8 text-center" style={{ color: '#9CA3AF' }}>
+          Giao dịch không tồn tại hoặc đã thay đổi trạng thái.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="px-5 pt-12 pb-4" style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }}>
+        <button onClick={onBack} className="flex items-center gap-1 mb-3" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
+          <ChevronLeft size={18} />
+          <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
+        </button>
+        <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Chi tiết giao dịch</h1>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>Theo dõi trạng thái và thao tác giao dịch đã chọn</p>
+      </div>
+      <div className="px-4 py-4">
+        <RequestCard
+          req={request}
+          onUpdate={partial => onUpdateRequest(request.id, partial)}
+          onCancel={() => onCancelRequest(request.id)}
+        />
       </div>
     </div>
   );
@@ -1533,20 +1597,62 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
   onUpdateRequest: (id: string, partial: Partial<DealRequest>) => void;
 }) {
   const [tab, setTab] = useState<Tab>('home');
+  const [requestsViewMode, setRequestsViewMode] = useState<RequestsViewMode>('list');
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [reqTabKey, setReqTabKey] = useState(0);
   const [reqInitFilter, setReqInitFilter] = useState<ReqFilter>('active');
   const pendingCount = myRequests.filter(r => r.status === 'pending').length;
+  const selectedRequest = selectedRequestId
+    ? myRequests.find(r => r.id === selectedRequestId) ?? null
+    : null;
+  const handleTabChange = (nextTab: Tab) => {
+    setTab(nextTab);
+    if (nextTab !== 'requests') {
+      setRequestsViewMode('list');
+      setSelectedRequestId(null);
+    }
+  };
+  const openRequestDetail = (requestId: string) => {
+    setSelectedRequestId(requestId);
+    setRequestsViewMode('detail');
+    setTab('requests');
+  };
+  useEffect(() => {
+    if (requestsViewMode === 'detail' && selectedRequestId && !selectedRequest) {
+      setRequestsViewMode('list');
+      setSelectedRequestId(null);
+    }
+  }, [requestsViewMode, selectedRequestId, selectedRequest]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="flex-1 overflow-hidden flex flex-col">
-          {tab === 'home' && <HomeTab onRequestSent={req => { onSubmitRequest(req); setReqInitFilter('pending'); setReqTabKey(k => k + 1); setTab('requests'); }} availableDeals={availableDeals} />}
-          {tab === 'requests' && <MyRequestsTab key={reqTabKey} requests={myRequests} onUpdate={onUpdateRequest} onCancel={onCancelRequest} initialFilter={reqInitFilter} />}
+          {tab === 'home' && <HomeTab onRequestSent={req => { onSubmitRequest(req); setReqInitFilter('pending'); setReqTabKey(k => k + 1); setRequestsViewMode('list'); setTab('requests'); }} availableDeals={availableDeals} />}
+          {tab === 'requests' && (
+            requestsViewMode === 'list' ? (
+              <MyRequestsTab
+                key={reqTabKey}
+                requests={myRequests}
+                onUpdate={onUpdateRequest}
+                onCancel={onCancelRequest}
+                initialFilter={reqInitFilter}
+                onOpenDetail={openRequestDetail}
+                onFilterChange={setReqInitFilter}
+              />
+            ) : (
+              <RequesterTransactionDetailScreen
+                request={selectedRequest}
+                onUpdateRequest={onUpdateRequest}
+                onCancelRequest={onCancelRequest}
+                onBack={() => setRequestsViewMode('list')}
+              />
+            )
+          )}
           {tab === 'profile' && <ProfileTabReq onRoleChange={onRoleChange} />}
         </motion.div>
       </AnimatePresence>
-      <BottomNavReq tab={tab} onTab={setTab} pendingCount={pendingCount} />
+      <BottomNavReq tab={tab} onTab={handleTabChange} pendingCount={pendingCount} />
     </div>
   );
 }

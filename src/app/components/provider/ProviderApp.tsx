@@ -68,6 +68,7 @@ function fmtRate(rate: number, fromCode: string, toCode: string) {
 }
 
 type Tab = "home" | "deals" | "requests" | "profile";
+type RequestsViewMode = "list" | "detail";
 type DealFilter = "all" | "active" | "paused" | "expired";
 const PRIMARY = "#2563EB";
 
@@ -2155,11 +2156,13 @@ function RequestsTab({
   onRequestsChange,
   newRequestIds,
   selectedRequestId,
+  onOpenDetail,
 }: {
   requests: DealRequest[];
   onRequestsChange: (r: DealRequest[]) => void;
   newRequestIds: string[];
   selectedRequestId: string | null;
+  onOpenDetail: (requestId: string) => void;
 }) {
   const [filter, setFilter] = useState<ProvReqFilter>("pending");
   const ACTIVE_STATUSES = [
@@ -2274,6 +2277,20 @@ function RequestsTab({
                 onUpdate={(p) => handleUpdate(req.id, p)}
                 newRequestIds={newRequestIds}
               />
+              <button
+                onClick={() => onOpenDetail(req.id)}
+                className="w-full mt-2 py-2 rounded-xl flex items-center justify-center gap-1"
+                style={{
+                  background: "#EFF6FF",
+                  border: "1px solid #BFDBFE",
+                  cursor: "pointer",
+                }}
+              >
+                <ChevronRight size={14} color="#1E40AF" />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>
+                  Xem chi tiết giao dịch
+                </span>
+              </button>
             </div>
           );
         })}
@@ -2285,6 +2302,80 @@ function RequestsTab({
             </p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ProviderTransactionDetailScreen({
+  request,
+  requests,
+  onRequestsChange,
+  newRequestIds,
+  onBack,
+}: {
+  request: DealRequest | null;
+  requests: DealRequest[];
+  onRequestsChange: (r: DealRequest[]) => void;
+  newRequestIds: string[];
+  onBack: () => void;
+}) {
+  if (!request) {
+    return (
+      <div className="flex-1 overflow-y-auto">
+        <div
+          className="px-5 pt-12 pb-4"
+          style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` }}
+        >
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1 mb-3"
+            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.8)" }}
+          >
+            <ChevronLeft size={18} />
+            <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
+          </button>
+          <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
+            Chi tiết giao dịch
+          </h1>
+        </div>
+        <div className="px-4 py-8 text-center" style={{ color: "#9CA3AF" }}>
+          Giao dịch không tồn tại hoặc đã thay đổi trạng thái.
+        </div>
+      </div>
+    );
+  }
+
+  const handleUpdate = (partial: Partial<DealRequest>) =>
+    onRequestsChange(requests.map((r) => (r.id === request.id ? { ...r, ...partial } : r)));
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div
+        className="px-5 pt-12 pb-4"
+        style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` }}
+      >
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1 mb-3"
+          style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.8)" }}
+        >
+          <ChevronLeft size={18} />
+          <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
+        </button>
+        <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
+          Chi tiết giao dịch
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 2 }}>
+          Theo dõi và xử lý giao dịch đã chọn
+        </p>
+      </div>
+      <div className="px-4 py-4">
+        <ProviderRequestCard
+          req={request}
+          onUpdate={handleUpdate}
+          newRequestIds={newRequestIds}
+        />
       </div>
     </div>
   );
@@ -3101,18 +3192,32 @@ export function ProviderApp({
   newRequestIds: string[];
 }) {
   const [tab, setTab] = useState<Tab>("home");
+  const [requestsViewMode, setRequestsViewMode] = useState<RequestsViewMode>("list");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null,
   );
   const pendingCount = requests.filter((r) => r.status === "pending").length;
+  const selectedRequest = selectedRequestId
+    ? requests.find((r) => r.id === selectedRequestId) ?? null
+    : null;
   const handleTabChange = (nextTab: Tab) => {
     setTab(nextTab);
-    if (nextTab !== "requests") setSelectedRequestId(null);
+    if (nextTab !== "requests") {
+      setSelectedRequestId(null);
+      setRequestsViewMode("list");
+    }
   };
   const openRequestDetail = (requestId: string) => {
     setSelectedRequestId(requestId);
     setTab("requests");
+    setRequestsViewMode("detail");
   };
+  useEffect(() => {
+    if (requestsViewMode === "detail" && selectedRequestId && !selectedRequest) {
+      setRequestsViewMode("list");
+      setSelectedRequestId(null);
+    }
+  }, [requestsViewMode, selectedRequestId, selectedRequest]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
@@ -3137,12 +3242,23 @@ export function ProviderApp({
             <DealsTab deals={deals} onDealsChange={onDealsChange} />
           )}
           {tab === "requests" && (
-            <RequestsTab
-              requests={requests}
-              onRequestsChange={onRequestsChange}
-              newRequestIds={newRequestIds}
-              selectedRequestId={selectedRequestId}
-            />
+            requestsViewMode === "list" ? (
+              <RequestsTab
+                requests={requests}
+                onRequestsChange={onRequestsChange}
+                newRequestIds={newRequestIds}
+                selectedRequestId={selectedRequestId}
+                onOpenDetail={openRequestDetail}
+              />
+            ) : (
+              <ProviderTransactionDetailScreen
+                request={selectedRequest}
+                requests={requests}
+                onRequestsChange={onRequestsChange}
+                newRequestIds={newRequestIds}
+                onBack={() => setRequestsViewMode("list")}
+              />
+            )
           )}
           {tab === "profile" && <ProfileTab onRoleChange={onRoleChange} />}
         </motion.div>
