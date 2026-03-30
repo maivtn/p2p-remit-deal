@@ -72,6 +72,11 @@ type RequestsViewMode = "list" | "detail";
 type DealFilter = "all" | "active" | "paused" | "expired";
 const PRIMARY = "#2563EB";
 
+/** Chỉ áp dụng cho thẻ ở danh sách (`variant="list"`). Màn chi tiết luôn hiện đủ. */
+const SHOW_PENDING_FEE_ESCROW_INFO = false;
+const SHOW_REQUESTER_MESSAGE_ON_CARD = false;
+const SHOW_PENDING_PAYMENT_METHOD_BLOCK = false;
+
 const Avatar = ({ name, size = 40 }: { name: string; size?: number }) => (
   <div
     style={{
@@ -1266,11 +1271,20 @@ function ProviderRequestCard({
   req,
   onUpdate,
   newRequestIds,
+  variant = "list",
 }: {
   req: DealRequest;
   onUpdate: (partial: Partial<DealRequest>) => void;
   newRequestIds: string[];
+  /** `list`: có thể gọn theo cờ phía trên; `detail`: luôn đầy đủ thông tin. */
+  variant?: "list" | "detail";
 }) {
+  const isDetail = variant === "detail";
+  const showFeeEscrowBlock = isDetail || SHOW_PENDING_FEE_ESCROW_INFO;
+  const showRequesterMessage = isDetail || SHOW_REQUESTER_MESSAGE_ON_CARD;
+  const showPaymentMethodBlock = isDetail || SHOW_PENDING_PAYMENT_METHOD_BLOCK;
+  const showAcceptModalFeeEscrow = isDetail || SHOW_PENDING_FEE_ESCROW_INFO;
+
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showTransferUpload, setShowTransferUpload] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
@@ -1336,18 +1350,19 @@ function ProviderRequestCard({
           </div>
         </div>
 
-        {/* Step progress */}
+        {/* Step progress — danh sách tạm ẩn; chi tiết hiện đủ */}
         {[
           "accepted",
           "payment_sent",
           "payment_confirmed",
           "transfer_sent",
           "completed",
-        ].includes(req.status) && (
-          <div className="mb-3">
-            <StepProgress status={req.status} />
-          </div>
-        )}
+        ].includes(req.status) &&
+          isDetail && (
+            <div className="mb-3">
+              <StepProgress status={req.status} />
+            </div>
+          )}
 
         {/* Escrow info */}
         {req.escrowLocked &&
@@ -1429,7 +1444,8 @@ function ProviderRequestCard({
           </p>
         </div>
 
-        {/* Recipient */}
+        {/* Recipient — danh sách tạm ẩn; chi tiết hiện đủ */}
+        {isDetail && (
         <div
           className="rounded-xl mb-3"
           style={{
@@ -1518,8 +1534,9 @@ function ProviderRequestCard({
             </div>
           )}
         </div>
+        )}
 
-        {req.message && (
+        {showRequesterMessage && req.message && (
           <details
             open={req.status !== "completed"}
             className="bg-blue-50 rounded-xl mb-3"
@@ -1560,105 +1577,107 @@ function ProviderRequestCard({
         {req.status === "pending" && (
           <div className="space-y-2">
             {/* Payment method summary */}
-            {(() => {
-              const fromC = getCurrency(req.fromCurrency);
-              const toC = getCurrency(req.toCurrency);
-              return (
-                <div
-                  className="rounded-xl p-3"
-                  style={{ background: "#F9FAFB", border: "1px solid #E5E7EB" }}
-                >
-                  <p
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: "#6B7280",
-                      letterSpacing: 0.4,
-                      marginBottom: 10,
-                    }}
+            {showPaymentMethodBlock &&
+              (() => {
+                const fromC = getCurrency(req.fromCurrency);
+                const toC = getCurrency(req.toCurrency);
+                return (
+                  <div
+                    className="rounded-xl p-3"
+                    style={{ background: "#F9FAFB", border: "1px solid #E5E7EB" }}
                   >
-                    💳 HÌNH THỨC CHUYỂN TIỀN
-                  </p>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-1">
-                        <span style={{ fontSize: 13 }}>{fromC?.flag}</span>
-                        <span
+                    <p
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: "#6B7280",
+                        letterSpacing: 0.4,
+                        marginBottom: 10,
+                      }}
+                    >
+                      💳 HÌNH THỨC CHUYỂN TIỀN
+                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1 mb-1">
+                          <span style={{ fontSize: 13 }}>{fromC?.flag}</span>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 600,
+                              color: "#6B7280",
+                            }}
+                          >
+                            {fromC?.name}
+                          </span>
+                        </div>
+                        <p
                           style={{
                             fontSize: 10,
-                            fontWeight: 600,
-                            color: "#6B7280",
+                            color: "#9CA3AF",
+                            marginBottom: 3,
                           }}
                         >
-                          {fromC?.name}
-                        </span>
+                          Người gửi thanh toán
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <span style={{ fontSize: 15 }}>
+                            {senderMethod?.icon}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              color: "#111827",
+                            }}
+                          >
+                            {senderMethod?.name ?? "—"}
+                          </span>
+                        </div>
                       </div>
-                      <p
-                        style={{
-                          fontSize: 10,
-                          color: "#9CA3AF",
-                          marginBottom: 3,
-                        }}
-                      >
-                        Người gửi thanh toán
-                      </p>
-                      <div className="flex items-center gap-1">
-                        <span style={{ fontSize: 15 }}>
-                          {senderMethod?.icon}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 700,
-                            color: "#111827",
-                          }}
-                        >
-                          {senderMethod?.name ?? "—"}
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight size={15} color="#D1D5DB" />
-                    <div className="flex-1 text-right">
-                      <div className="flex items-center justify-end gap-1 mb-1">
-                        <span style={{ fontSize: 13 }}>{toC?.flag}</span>
-                        <span
+                      <ArrowRight size={15} color="#D1D5DB" />
+                      <div className="flex-1 text-right">
+                        <div className="flex items-center justify-end gap-1 mb-1">
+                          <span style={{ fontSize: 13 }}>{toC?.flag}</span>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 600,
+                              color: "#6B7280",
+                            }}
+                          >
+                            {toC?.name}
+                          </span>
+                        </div>
+                        <p
                           style={{
                             fontSize: 10,
-                            fontWeight: 600,
-                            color: "#6B7280",
+                            color: "#9CA3AF",
+                            marginBottom: 3,
                           }}
                         >
-                          {toC?.name}
-                        </span>
-                      </div>
-                      <p
-                        style={{
-                          fontSize: 10,
-                          color: "#9CA3AF",
-                          marginBottom: 3,
-                        }}
-                      >
-                        Bạn chuyển đến người thụ hưởng
-                      </p>
-                      <div className="flex items-center justify-end gap-1">
-                        <span style={{ fontSize: 15 }}>
-                          {recipientMethod?.icon}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 700,
-                            color: "#111827",
-                          }}
-                        >
-                          {recipientMethod?.name ?? "—"}
-                        </span>
+                          Bạn chuyển đến người thụ hưởng
+                        </p>
+                        <div className="flex items-center justify-end gap-1">
+                          <span style={{ fontSize: 15 }}>
+                            {recipientMethod?.icon}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              color: "#111827",
+                            }}
+                          >
+                            {recipientMethod?.name ?? "—"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })()}
+                );
+              })()}
+            {showFeeEscrowBlock && (
             <div
               className="rounded-xl p-3"
               style={{ background: "#FFFBEB", border: "1px solid #FCD34D" }}
@@ -1758,6 +1777,7 @@ function ProviderRequestCard({
                 </p>
               </div>
             </div>
+            )}
             <div className="flex gap-2">
               <button
                 onClick={() => onUpdate({ status: "rejected" })}
@@ -1806,7 +1826,7 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {req.status === "payment_sent" && req.paymentProof && (
+        {req.status === "payment_sent" && req.paymentProof && isDetail && (
           <div className="space-y-3">
             <ProofCard
               proof={req.paymentProof}
@@ -1834,7 +1854,10 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {req.status === "payment_confirmed" && (
+        {req.status === "payment_confirmed" && (() => {
+          const isRecipientBankTransfer =
+            req.recipientPaymentMethod === "bank_transfer";
+          return (
           <div className="space-y-3">
             <div
               className="rounded-xl p-3"
@@ -1845,18 +1868,125 @@ function ProviderRequestCard({
                   fontSize: 12,
                   fontWeight: 700,
                   color: "#92400E",
-                  marginBottom: 6,
+                  marginBottom: 10,
+                  letterSpacing: 0.2,
                 }}
               >
                 🔄 Chuyển tiền cho người nhận ngay
               </p>
-              <p style={{ fontSize: 13, color: "#92400E" }}>
-                Chuyển <strong>{fmt(req.receiveAmount, req.toCurrency)}</strong>{" "}
-                → <strong>{req.recipientName}</strong>
-                {req.recipientPhone &&
-                  ` qua ${recipientMethod?.name}: ${req.recipientPhone}`}
-                {req.recipientAccount && ` STK: ${req.recipientAccount}`}
-              </p>
+              <div
+                className="space-y-2.5"
+                style={{ fontSize: 13, color: "#78350F", lineHeight: 1.45 }}
+              >
+                <div className="flex flex-col gap-0.5">
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                    Số tiền chuyển
+                  </span>
+                  <span style={{ fontWeight: 700, fontSize: 15, color: "#92400E" }}>
+                    {fmt(req.receiveAmount, req.toCurrency)}
+                  </span>
+                </div>
+                <div
+                  className="border-t border-dashed pt-2.5"
+                  style={{ borderColor: "rgba(217, 119, 6, 0.35)" }}
+                />
+                <div className="flex flex-col gap-0.5">
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                    Người nhận
+                  </span>
+                  <span style={{ fontWeight: 700 }}>{req.recipientName}</span>
+                </div>
+                {!isRecipientBankTransfer ? (
+                  <>
+                    {req.recipientPhone && (
+                      <div className="flex flex-col gap-0.5">
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                          Số điện thoại
+                        </span>
+                        <span style={{ fontWeight: 700, letterSpacing: 0.3 }}>{req.recipientPhone}</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-0.5">
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                        Hình thức
+                      </span>
+                      <span>
+                        {recipientMethod && (
+                          <>
+                            <span style={{ fontSize: 15, marginRight: 4 }}>{recipientMethod.icon}</span>
+                            <strong>{recipientMethod.name}</strong>
+                          </>
+                        )}
+                        {!recipientMethod && (
+                          <strong>Chuyển khoản ngân hàng</strong>
+                        )}
+                      </span>
+                    </div>
+                    {req.recipientBank && (
+                      <div className="flex flex-col gap-0.5">
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                          Ngân hàng
+                        </span>
+                        <span>{req.recipientBank}</span>
+                      </div>
+                    )}
+                    {req.recipientAccount && (
+                      <div className="flex flex-col gap-0.5">
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                          Số tài khoản
+                        </span>
+                        <span style={{ fontWeight: 700, letterSpacing: 0.5 }}>{req.recipientAccount}</span>
+                      </div>
+                    )}
+                    {req.recipientPhone && (
+                      <div className="flex flex-col gap-0.5">
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                          Số điện thoại
+                        </span>
+                        <span style={{ fontWeight: 700, letterSpacing: 0.3 }}>{req.recipientPhone}</span>
+                      </div>
+                    )}
+                    {req.recipientAddress && (
+                      <div className="flex flex-col gap-0.5">
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                          Địa chỉ
+                        </span>
+                        <span>{req.recipientAddress}</span>
+                      </div>
+                    )}
+                  </>
+                )}
+                {(req.memo || req.id) && (
+                  <>
+                    <div
+                      className="border-t border-dashed pt-2.5 mt-0.5"
+                      style={{ borderColor: "rgba(217, 119, 6, 0.35)" }}
+                    />
+                    <div className="flex flex-col gap-1">
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                        Ghi chú / nội dung chuyển khoản
+                      </span>
+                      <div
+                        className="rounded-lg px-2.5 py-2"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.65)",
+                          border: "1px solid rgba(252, 211, 77, 0.9)",
+                        }}
+                      >
+                        <span style={{ fontWeight: 700, letterSpacing: 0.35, fontFamily: "ui-monospace, monospace", fontSize: 13 }}>
+                          {req.memo || req.id}
+                        </span>
+                        <p style={{ fontSize: 10, color: "#92400E", marginTop: 6, marginBottom: 0, lineHeight: 1.4 }}>
+                          Điền chính xác nội dung này khi chuyển để đối soát.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             <button
               onClick={() => setShowTransferUpload(true)}
@@ -1873,14 +2003,17 @@ function ProviderRequestCard({
               </span>
             </button>
           </div>
-        )}
+          );
+        })()}
 
         {req.status === "transfer_sent" && req.transferProof && (
           <div className="space-y-2">
+            {isDetail && (
             <ProofCard
               proof={req.transferProof}
               label="📋 Đã gửi bằng chứng chuyển tiền"
             />
+            )}
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-xl"
               style={{ background: "#ECFDF5" }}
@@ -1935,7 +2068,7 @@ function ProviderRequestCard({
                 </p>
               )}
             </div>
-            {req.disputeProof && (
+            {isDetail && req.disputeProof && (
               <ProofCard
                 proof={req.disputeProof}
                 label="📎 Bằng chứng khiếu nại"
@@ -1944,7 +2077,7 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {canDispute && (
+        {canDispute && isDetail && (
           <div className="mt-3">
             <button
               onClick={() => setShowDisputeModal(true)}
@@ -1973,7 +2106,10 @@ function ProviderRequestCard({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center px-6"
             style={{ background: "rgba(0,0,0,0.5)" }}
-            onClick={() => setShowAcceptModal(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAcceptModal(false);
+            }}
           >
             <motion.div
               initial={{ scale: 0.9 }}
@@ -1986,8 +2122,16 @@ function ProviderRequestCard({
                 Xác nhận chấp nhận
               </h3>
               <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 16 }}>
-                Escrow tạm giữ số tiền giao dịch của mỗi bên, platform fee thu
-                ngay:
+                {showAcceptModalFeeEscrow ? (
+                  <>
+                    Escrow tạm giữ số tiền giao dịch của mỗi bên, platform fee
+                    thu ngay:
+                  </>
+                ) : (
+                  <>
+                    Xác nhận bạn đồng ý nhận và chuyển theo các số tiền sau.
+                  </>
+                )}
               </p>
               <div className="space-y-2 mb-5">
                 <div className="flex justify-between py-2 border-b border-gray-100">
@@ -2032,36 +2176,52 @@ function ProviderRequestCard({
                     )[req.toCurrency] ?? req.toCurrency}
                   </span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span style={{ fontSize: 13, color: "#1E40AF" }}>
-                    🔒 Escrow của bạn (tạm giữ)
-                  </span>
-                  <span
-                    style={{ fontSize: 14, fontWeight: 700, color: "#1E40AF" }}
-                  >
-                    {fmt(req.amount, req.fromCurrency)}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span style={{ fontSize: 13, color: "#1E40AF" }}>
-                    🔒 Escrow người gửi (tạm giữ)
-                  </span>
-                  <span
-                    style={{ fontSize: 14, fontWeight: 700, color: "#1E40AF" }}
-                  >
-                    {fmt(req.amount, req.fromCurrency)}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span style={{ fontSize: 13, color: "#D97706" }}>
-                    💸 Platform fee của bạn (thu ngay)
-                  </span>
-                  <span
-                    style={{ fontSize: 14, fontWeight: 700, color: "#D97706" }}
-                  >
-                    −{fmt(req.amount * req.systemFeeRate, req.fromCurrency)}
-                  </span>
-                </div>
+                {showAcceptModalFeeEscrow && (
+                  <>
+                    <div className="flex justify-between py-2 border-b border-gray-100">
+                      <span style={{ fontSize: 13, color: "#1E40AF" }}>
+                        🔒 Escrow của bạn (tạm giữ)
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: "#1E40AF",
+                        }}
+                      >
+                        {fmt(req.amount, req.fromCurrency)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gray-100">
+                      <span style={{ fontSize: 13, color: "#1E40AF" }}>
+                        🔒 Escrow người gửi (tạm giữ)
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: "#1E40AF",
+                        }}
+                      >
+                        {fmt(req.amount, req.fromCurrency)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-2">
+                      <span style={{ fontSize: 13, color: "#D97706" }}>
+                        💸 Platform fee của bạn (thu ngay)
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: "#D97706",
+                        }}
+                      >
+                        −{fmt(req.amount * req.systemFeeRate, req.fromCurrency)}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="flex gap-3">
                 <button
@@ -2287,7 +2447,9 @@ function RequestsTab({
                 }}
               >
                 <ChevronRight size={14} color="#1E40AF" />
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>
+                <span
+                  style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}
+                >
                   Xem chi tiết giao dịch
                 </span>
               </button>
@@ -2330,7 +2492,12 @@ function ProviderTransactionDetailScreen({
           <button
             onClick={onBack}
             className="flex items-center gap-1 mb-3"
-            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.8)" }}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "rgba(255,255,255,0.8)",
+            }}
           >
             <ChevronLeft size={18} />
             <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
@@ -2347,7 +2514,9 @@ function ProviderTransactionDetailScreen({
   }
 
   const handleUpdate = (partial: Partial<DealRequest>) =>
-    onRequestsChange(requests.map((r) => (r.id === request.id ? { ...r, ...partial } : r)));
+    onRequestsChange(
+      requests.map((r) => (r.id === request.id ? { ...r, ...partial } : r)),
+    );
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -2358,7 +2527,12 @@ function ProviderTransactionDetailScreen({
         <button
           onClick={onBack}
           className="flex items-center gap-1 mb-3"
-          style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.8)" }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "rgba(255,255,255,0.8)",
+          }}
         >
           <ChevronLeft size={18} />
           <span style={{ fontSize: 14 }}>Quay lại danh sách</span>
@@ -2366,7 +2540,13 @@ function ProviderTransactionDetailScreen({
         <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
           Chi tiết giao dịch
         </h1>
-        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 2 }}>
+        <p
+          style={{
+            color: "rgba(255,255,255,0.75)",
+            fontSize: 13,
+            marginTop: 2,
+          }}
+        >
           Theo dõi và xử lý giao dịch đã chọn
         </p>
       </div>
@@ -2375,6 +2555,7 @@ function ProviderTransactionDetailScreen({
           req={request}
           onUpdate={handleUpdate}
           newRequestIds={newRequestIds}
+          variant="detail"
         />
       </div>
     </div>
@@ -3192,13 +3373,14 @@ export function ProviderApp({
   newRequestIds: string[];
 }) {
   const [tab, setTab] = useState<Tab>("home");
-  const [requestsViewMode, setRequestsViewMode] = useState<RequestsViewMode>("list");
+  const [requestsViewMode, setRequestsViewMode] =
+    useState<RequestsViewMode>("list");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null,
   );
   const pendingCount = requests.filter((r) => r.status === "pending").length;
   const selectedRequest = selectedRequestId
-    ? requests.find((r) => r.id === selectedRequestId) ?? null
+    ? (requests.find((r) => r.id === selectedRequestId) ?? null)
     : null;
   const handleTabChange = (nextTab: Tab) => {
     setTab(nextTab);
@@ -3213,7 +3395,11 @@ export function ProviderApp({
     setRequestsViewMode("detail");
   };
   useEffect(() => {
-    if (requestsViewMode === "detail" && selectedRequestId && !selectedRequest) {
+    if (
+      requestsViewMode === "detail" &&
+      selectedRequestId &&
+      !selectedRequest
+    ) {
       setRequestsViewMode("list");
       setSelectedRequestId(null);
     }
@@ -3241,8 +3427,8 @@ export function ProviderApp({
           {tab === "deals" && (
             <DealsTab deals={deals} onDealsChange={onDealsChange} />
           )}
-          {tab === "requests" && (
-            requestsViewMode === "list" ? (
+          {tab === "requests" &&
+            (requestsViewMode === "list" ? (
               <RequestsTab
                 requests={requests}
                 onRequestsChange={onRequestsChange}
@@ -3258,8 +3444,7 @@ export function ProviderApp({
                 newRequestIds={newRequestIds}
                 onBack={() => setRequestsViewMode("list")}
               />
-            )
-          )}
+            ))}
           {tab === "profile" && <ProfileTab onRoleChange={onRoleChange} />}
         </motion.div>
       </AnimatePresence>

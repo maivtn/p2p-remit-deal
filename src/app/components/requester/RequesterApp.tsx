@@ -964,15 +964,20 @@ function RequestCard({
   req,
   onUpdate,
   onCancel,
+  variant = 'list',
 }: {
   req: DealRequest;
   onUpdate: (updated: Partial<DealRequest>) => void;
   onCancel: () => void;
+  /** `detail`: mở sẵn phần người thụ hưởng để xem đủ thông tin. */
+  variant?: 'list' | 'detail';
 }) {
   const [showPaymentUpload, setShowPaymentUpload] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [showTransferProof, setShowTransferProof] = useState(false);
-  const [showRecipient, setShowRecipient] = useState(req.status === 'pending');
+  const [showRecipient, setShowRecipient] = useState(
+    variant === 'detail' || req.status === 'pending',
+  );
   const senderMethod = getPaymentMethod(req.fromCurrency, req.senderPaymentMethod);
   const recipientMethod = getPaymentMethod(req.toCurrency, req.recipientPaymentMethod);
   const senderCurr = getCurrency(req.fromCurrency);
@@ -981,6 +986,7 @@ function RequestCard({
   const providerFeeAmt = req.receiveAmount * req.systemFeeRate;
 
   const canDispute = ['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status);
+  const isDetail = variant === 'detail';
 
   return (
     <motion.div
@@ -1000,8 +1006,9 @@ function RequestCard({
           <TxStatusBadge status={req.status} />
         </div>
 
-        {/* Step progress (for active transactions) */}
-        {['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent', 'completed'].includes(req.status) && (
+        {/* Step progress — danh sách tạm ẩn; chi tiết hiện đủ */}
+        {['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent', 'completed'].includes(req.status) &&
+          isDetail && (
           <div className="mb-3">
             <StepProgress status={req.status} />
           </div>
@@ -1168,7 +1175,8 @@ function RequestCard({
           </div>
         )}
 
-        {/* Recipient */}
+        {/* Recipient — danh sách tạm ẩn; chi tiết hiện đủ */}
+        {isDetail && (
         <div className="rounded-xl mb-3" style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE' }}>
           <button
             onClick={() => setShowRecipient(v => !v)}
@@ -1211,6 +1219,7 @@ function RequestCard({
             </div>
           )}
         </div>
+        )}
 
         {/* Escrow info */}
         {req.escrowLocked && !['completed', 'rejected', 'cancelled'].includes(req.status) && (
@@ -1239,7 +1248,7 @@ function RequestCard({
         {/* PAYMENT_SENT: waiting for provider */}
         {req.status === 'payment_sent' && req.paymentProof && (
           <div className="space-y-2">
-            <ProofCard proof={req.paymentProof} label="✅ Bạn đã gửi bằng chứng thanh toán" />
+            {isDetail && <ProofCard proof={req.paymentProof} label="✅ Bạn đã gửi bằng chứng thanh toán" />}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#EDE9FE' }}>
               <span style={{ fontSize: 16 }}>⏳</span>
               <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ nhà cung cấp xác nhận đã nhận tiền...</p>
@@ -1250,7 +1259,7 @@ function RequestCard({
         {/* PAYMENT_CONFIRMED: provider transferring */}
         {req.status === 'payment_confirmed' && (
           <div className="space-y-2">
-            {req.paymentProof && <ProofCard proof={req.paymentProof} label="✅ Thanh toán đã được xác nhận" />}
+            {isDetail && req.paymentProof && <ProofCard proof={req.paymentProof} label="✅ Thanh toán đã được xác nhận" />}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#FEF3C7', border: '1px solid #FCD34D' }}>
               <span style={{ fontSize: 16 }}>🔄</span>
               <p style={{ fontSize: 13, color: '#92400E', fontWeight: 600 }}>
@@ -1263,7 +1272,7 @@ function RequestCard({
         {/* TRANSFER_SENT: provider uploaded proof, requester confirms */}
         {req.status === 'transfer_sent' && req.transferProof && (
           <div className="space-y-3">
-            <ProofCard proof={req.transferProof} label="📋 Nhà cung cấp đã chuyển tiền" />
+            {isDetail && <ProofCard proof={req.transferProof} label="📋 Nhà cung cấp đã chuyển tiền" />}
             <button
               onClick={() => onUpdate({ status: 'completed', completedAt: new Date().toISOString(), escrowLocked: false })}
               className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
@@ -1305,7 +1314,7 @@ function RequestCard({
               <p style={{ fontSize: 12, color: '#92400E' }}>Khiếu nại bởi: {req.disputedBy === 'requester' ? 'Bạn' : req.providerName}</p>
               {req.disputeNote && <p style={{ fontSize: 12, color: '#92400E', marginTop: 4, fontStyle: 'italic' }}>"{req.disputeNote}"</p>}
             </div>
-            <ProofCard proof={req.disputeProof} label="📎 Bằng chứng khiếu nại" />
+            {isDetail && <ProofCard proof={req.disputeProof} label="📎 Bằng chứng khiếu nại" />}
           </div>
         )}
 
@@ -1317,7 +1326,7 @@ function RequestCard({
               <span style={{ color: '#EF4444', fontSize: 13, fontWeight: 600 }}>Hủy yêu cầu</span>
             </button>
           )}
-          {canDispute && (
+          {canDispute && isDetail && (
             <button
               onClick={() => setShowDisputeModal(true)}
               className="flex items-center gap-1 px-3 py-2 rounded-xl"
@@ -1495,6 +1504,7 @@ function RequesterTransactionDetailScreen({
           req={request}
           onUpdate={partial => onUpdateRequest(request.id, partial)}
           onCancel={() => onCancelRequest(request.id)}
+          variant="detail"
         />
       </div>
     </div>
