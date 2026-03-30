@@ -56,6 +56,7 @@ import {
   ProofCard,
   EscrowBanner,
   StepProgress,
+  TransactionProofSections,
 } from "../shared/ProofModal";
 
 function fmt(amount: number, code: string) {
@@ -1444,6 +1445,26 @@ function ProviderRequestCard({
           </p>
         </div>
 
+        {isDetail &&
+          [
+            "accepted",
+            "payment_sent",
+            "payment_confirmed",
+            "transfer_sent",
+            "completed",
+            "disputed",
+          ].includes(req.status) && (
+            <TransactionProofSections
+              status={req.status}
+              paymentProof={req.paymentProof}
+              transferProof={req.transferProof}
+              labels={{
+                payment: "Bằng chứng thanh toán từ người gửi",
+                transfer: "Bằng chứng chuyển tiền cho người nhận",
+              }}
+            />
+          )}
+
         {/* Recipient — danh sách tạm ẩn; chi tiết hiện đủ */}
         {isDetail && (
         <div
@@ -1828,10 +1849,6 @@ function ProviderRequestCard({
 
         {req.status === "payment_sent" && req.paymentProof && isDetail && (
           <div className="space-y-3">
-            <ProofCard
-              proof={req.paymentProof}
-              label="📤 Bằng chứng thanh toán từ người gửi"
-            />
             <button
               onClick={() =>
                 onUpdate({
@@ -1854,7 +1871,10 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {req.status === "payment_confirmed" && (() => {
+        {/* Chuyển tiền + upload bằng chứng — danh sách tạm ẩn; chỉ màn chi tiết */}
+        {req.status === "payment_confirmed" &&
+          isDetail &&
+          (() => {
           const isRecipientBankTransfer =
             req.recipientPaymentMethod === "bank_transfer";
           return (
@@ -2008,12 +2028,6 @@ function ProviderRequestCard({
 
         {req.status === "transfer_sent" && req.transferProof && (
           <div className="space-y-2">
-            {isDetail && (
-            <ProofCard
-              proof={req.transferProof}
-              label="📋 Đã gửi bằng chứng chuyển tiền"
-            />
-            )}
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-xl"
               style={{ background: "#ECFDF5" }}

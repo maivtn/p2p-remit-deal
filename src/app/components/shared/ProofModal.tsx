@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   X,
@@ -415,6 +415,116 @@ export function ProofCard({
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+// ── Dual proof sections (detail screen) ───────────────────────
+export function defaultOpenPaymentSection(status: string): boolean {
+  return status === "accepted" || status === "payment_sent";
+}
+
+export function defaultOpenTransferSection(status: string): boolean {
+  return ["payment_confirmed", "transfer_sent", "completed"].includes(status);
+}
+
+export function TransactionProofSections({
+  status,
+  paymentProof,
+  transferProof,
+  labels,
+}: {
+  status: string;
+  paymentProof?: ProofData;
+  transferProof?: ProofData;
+  labels: { payment: string; transfer: string };
+}) {
+  const [openPayment, setOpenPayment] = useState(() =>
+    defaultOpenPaymentSection(status),
+  );
+  const [openTransfer, setOpenTransfer] = useState(() =>
+    defaultOpenTransferSection(status),
+  );
+
+  useEffect(() => {
+    setOpenPayment(defaultOpenPaymentSection(status));
+    setOpenTransfer(defaultOpenTransferSection(status));
+  }, [status]);
+
+  const summaryClass =
+    "flex items-center justify-between w-full px-3 py-2.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden";
+  const summaryStyle: React.CSSProperties = {
+    fontSize: 12,
+    fontWeight: 700,
+    listStyle: "none",
+    userSelect: "none",
+  };
+
+  return (
+    <div className="mb-3 space-y-2">
+      <details
+        open={openPayment}
+        onToggle={(e) => setOpenPayment(e.currentTarget.open)}
+        className="rounded-xl overflow-hidden border"
+        style={{ borderColor: "#BFDBFE", background: "#EFF6FF" }}
+      >
+        <summary style={summaryStyle} className={summaryClass}>
+          <span style={{ color: "#1E40AF" }}>{labels.payment}</span>
+          <span style={{ color: "#3B82F6", fontSize: 11 }}>▾</span>
+        </summary>
+        <div
+          className="px-3 pb-3"
+          style={{ borderTop: "1px solid rgba(191,219,254,0.85)" }}
+        >
+          {paymentProof ? (
+            <ProofCard proof={paymentProof} />
+          ) : (
+            <p
+              style={{
+                fontSize: 12,
+                color: "#64748B",
+                margin: 0,
+                padding: "6px 0 4px",
+              }}
+            >
+              Chưa có bằng chứng thanh toán.
+            </p>
+          )}
+        </div>
+      </details>
+      <details
+        open={openTransfer}
+        onToggle={(e) => setOpenTransfer(e.currentTarget.open)}
+        className="rounded-xl overflow-hidden border"
+        style={{ borderColor: "#6EE7B7", background: "#F0FDF4" }}
+      >
+        <summary
+          style={{ ...summaryStyle, color: "#065F46" }}
+          className={summaryClass}
+        >
+          <span>{labels.transfer}</span>
+          <span style={{ color: "#059669", fontSize: 11 }}>▾</span>
+        </summary>
+        <div
+          className="px-3 pb-3"
+          style={{ borderTop: "1px solid rgba(110,231,183,0.65)" }}
+        >
+          {transferProof ? (
+            <ProofCard proof={transferProof} />
+          ) : (
+            <p
+              style={{
+                fontSize: 12,
+                color: "#64748B",
+                margin: 0,
+                padding: "6px 0 4px",
+              }}
+            >
+              Chưa có bằng chứng chuyển tiền.
+            </p>
+          )}
+        </div>
+      </details>
+    </div>
   );
 }
 

@@ -14,7 +14,7 @@ import {
   type Deal, type DealRequest, type PaymentMethod, type ProofData,
   type ProviderAccount, PROVIDER_ACCOUNTS_INIT,
 } from '../../data/mockData';
-import { ProofModal, ProofCard, EscrowBanner, StepProgress } from '../shared/ProofModal';
+import { ProofModal, ProofCard, EscrowBanner, StepProgress, TransactionProofSections } from '../shared/ProofModal';
 
 type Tab = 'home' | 'requests' | 'profile';
 type RequestsViewMode = 'list' | 'detail';
@@ -1040,6 +1040,19 @@ function RequestCard({
           <p style={{ fontSize: 10, color: '#9CA3AF' }}>{fmtRate(req.rate, req.fromCurrency, req.toCurrency)}</p>
         </div>
 
+        {isDetail &&
+          ['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent', 'completed', 'disputed'].includes(req.status) && (
+            <TransactionProofSections
+              status={req.status}
+              paymentProof={req.paymentProof}
+              transferProof={req.transferProof}
+              labels={{
+                payment: 'Bằng chứng thanh toán của bạn',
+                transfer: 'Bằng chứng nhà cung cấp đã chuyển cho người nhận',
+              }}
+            />
+          )}
+
         {/* ACCEPTED: step 1 instruction — above payment info */}
         {req.status === 'accepted' && (
           <div className="rounded-xl p-3 mb-3" style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE' }}>
@@ -1054,20 +1067,24 @@ function RequestCard({
           </div>
         )}
 
-        {/* Provider payment info — pending: waiting banner; accepted+: full payment details */}
-        {(['pending', 'accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status) || req.providerPaymentAccount || req.providerEmail || req.providerBank) && (
-          <div className="rounded-xl mb-3" style={{ background: req.status === 'pending' ? '#FFFBEB' : '#F0FDF4', border: `1.5px solid ${req.status === 'pending' ? '#FDE68A' : '#6EE7B7'}`, padding: '8px 10px' }}>
-            {req.status !== 'pending' && <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 THÔNG TIN THANH TOÁN</p>}
-            {req.status === 'pending' ? (
-              /* ── Chờ chấp nhận ── */
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 20 }}>⏳</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>Chờ nhà cung cấp chấp nhận</p>
-                </div>
+        {/* Provider payment info — pending: danh sách + chi tiết; đã chấp nhận: chỉ chi tiết */}
+        {req.status === 'pending' && (
+          <div className="rounded-xl mb-3" style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A', padding: '8px 10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 20 }}>⏳</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>Chờ nhà cung cấp chấp nhận</p>
               </div>
-            ) : (
-              /* ── Đã chấp nhận ── */
+            </div>
+          </div>
+        )}
+        {isDetail &&
+          (['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status) ||
+            req.providerPaymentAccount ||
+            req.providerEmail ||
+            req.providerBank) && (
+          <div className="rounded-xl mb-3" style={{ background: '#F0FDF4', border: '1.5px solid #6EE7B7', padding: '8px 10px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 THÔNG TIN THANH TOÁN</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <UserRound size={12} color="#059669" />
@@ -1171,7 +1188,6 @@ function RequestCard({
                   ⚠️ Vui lòng điền chính xác <strong>{req.memo || req.id}</strong> vào ghi chú / memo của giao dịch khi chuyển tiền cho nhà cung cấp.
                 </p>
               </div>
-            )}
           </div>
         )}
 
@@ -1248,7 +1264,6 @@ function RequestCard({
         {/* PAYMENT_SENT: waiting for provider */}
         {req.status === 'payment_sent' && req.paymentProof && (
           <div className="space-y-2">
-            {isDetail && <ProofCard proof={req.paymentProof} label="✅ Bạn đã gửi bằng chứng thanh toán" />}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#EDE9FE' }}>
               <span style={{ fontSize: 16 }}>⏳</span>
               <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ nhà cung cấp xác nhận đã nhận tiền...</p>
@@ -1259,7 +1274,6 @@ function RequestCard({
         {/* PAYMENT_CONFIRMED: provider transferring */}
         {req.status === 'payment_confirmed' && (
           <div className="space-y-2">
-            {isDetail && req.paymentProof && <ProofCard proof={req.paymentProof} label="✅ Thanh toán đã được xác nhận" />}
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#FEF3C7', border: '1px solid #FCD34D' }}>
               <span style={{ fontSize: 16 }}>🔄</span>
               <p style={{ fontSize: 13, color: '#92400E', fontWeight: 600 }}>
@@ -1272,7 +1286,6 @@ function RequestCard({
         {/* TRANSFER_SENT: provider uploaded proof, requester confirms */}
         {req.status === 'transfer_sent' && req.transferProof && (
           <div className="space-y-3">
-            {isDetail && <ProofCard proof={req.transferProof} label="📋 Nhà cung cấp đã chuyển tiền" />}
             <button
               onClick={() => onUpdate({ status: 'completed', completedAt: new Date().toISOString(), escrowLocked: false })}
               className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
