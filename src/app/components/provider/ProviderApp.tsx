@@ -112,6 +112,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     paused: { label: "Tạm dừng", bg: "#FEF3C7", color: "#92400E" },
     expired: { label: "Hết hạn", bg: "#F3F4F6", color: "#4B5563" },
     pending: { label: "Chờ duyệt", bg: "#FEF3C7", color: "#92400E" },
+    waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
     accepted: { label: "Đã nhận", bg: "#DBEAFE", color: "#1E40AF" },
     in_progress: { label: "Đang xử lý", bg: "#EDE9FE", color: "#5B21B6" },
     completed: { label: "Hoàn thành", bg: "#D1FAE5", color: "#065F46" },
@@ -730,8 +731,8 @@ function HomeTab({
   onOpenRequestDetail: (requestId: string) => void;
 }) {
   const activeDeals = deals.filter((d) => d.status === "active").length;
-  const pendingReqs = requests.filter((r) => r.status === "pending").length;
-  const recentReqs = requests.filter((r) => r.status === "pending").slice(0, 3);
+  const pendingReqs = requests.filter((r) => r.status === "pending" || r.status === "waiting_accept").length;
+  const recentReqs = requests.filter((r) => r.status === "pending" || r.status === "waiting_accept").slice(0, 3);
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -1234,6 +1235,7 @@ const TX_STATUS_CFG: Record<
   { label: string; bg: string; color: string }
 > = {
   pending: { label: "Chờ duyệt", bg: "#FEF3C7", color: "#92400E" },
+  waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
   accepted: { label: "Chờ thanh toán", bg: "#DBEAFE", color: "#1E40AF" },
   payment_sent: { label: "Chờ xác nhận", bg: "#EDE9FE", color: "#5B21B6" },
   payment_confirmed: {
@@ -1306,6 +1308,8 @@ function ProviderRequestCard({
   const canDispute =
     !!req.transferProof &&
     ["transfer_sent"].includes(req.status);
+  const isAwaitingAcceptance =
+    req.status === "pending" || req.status === "waiting_accept";
 
   return (
     <motion.div
@@ -1471,7 +1475,7 @@ function ProviderRequestCard({
           style={{
             background: "#F0FDF4",
             border: "1.5px solid #6EE7B7",
-            display: req.status === "pending" ? "none" : undefined,
+            display: isAwaitingAcceptance ? "none" : undefined,
           }}
         >
           <button
@@ -1481,7 +1485,7 @@ function ProviderRequestCard({
               background: "none",
               border: "none",
               cursor: "pointer",
-              display: req.status === "pending" ? "none" : "flex",
+              display: isAwaitingAcceptance ? "none" : "flex",
             }}
           >
             <p
@@ -1565,7 +1569,7 @@ function ProviderRequestCard({
 
         {/* ── Status actions ────────��────────────────────── */}
 
-        {req.status === "pending" && (
+        {isAwaitingAcceptance && (
           <div className="space-y-2">
             {/* Payment method summary */}
             {showPaymentMethodBlock &&
@@ -1832,11 +1836,12 @@ function ProviderRequestCard({
                 border: "none",
                 cursor: "pointer",
               }}
-            >
-              <CheckCheck size={16} color="white" />
-              <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
-                ✅ Xác nhận đã nhận đủ tiền
-              </span>
+              >
+                <CheckCircle2 size={16} color="white" />
+                <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
+              Xác nhận đã nhận đủ {fmt(req.amount, req.fromCurrency)} qua{" "}
+                {senderMethod?.name ?? req.senderPaymentMethod}
+                </span>
             </button>
           </div>
         )}
@@ -2267,7 +2272,7 @@ function RequestsTab({
     "transfer_sent",
   ];
   const filterMap: Record<ProvReqFilter, (r: DealRequest) => boolean> = {
-    pending: (r) => r.status === "pending",
+    pending: (r) => r.status === "pending" || r.status === "waiting_accept",
     active: (r) => ACTIVE_STATUSES.includes(r.status),
     completed: (r) => r.status === "completed",
     other: (r) => ["rejected", "cancelled", "disputed"].includes(r.status),
@@ -2276,7 +2281,7 @@ function RequestsTab({
   const pendingCount = requests.filter(filterMap.pending).length;
   const activeCount = requests.filter(filterMap.active).length;
   const LABELS: Record<ProvReqFilter, string> = {
-    pending: `Chờ duyệt${pendingCount ? ` (${pendingCount})` : ""}`,
+    pending: `Chờ chấp nhận${pendingCount ? ` (${pendingCount})` : ""}`,
     active: `Đang xử lý${activeCount ? ` (${activeCount})` : ""}`,
     completed: "Hoàn thành",
     other: "Từ chối/Khiếu nại",
@@ -2291,7 +2296,8 @@ function RequestsTab({
     const selectedRequest = requests.find((r) => r.id === selectedRequestId);
     if (!selectedRequest) return;
     const nextFilter: ProvReqFilter =
-      selectedRequest.status === "pending"
+      selectedRequest.status === "pending" ||
+      selectedRequest.status === "waiting_accept"
         ? "pending"
         : ACTIVE_STATUSES.includes(selectedRequest.status)
           ? "active"
@@ -3312,7 +3318,7 @@ export function ProviderApp({
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null,
   );
-  const pendingCount = requests.filter((r) => r.status === "pending").length;
+  const pendingCount = requests.filter((r) => r.status === "pending" || r.status === "waiting_accept").length;
   const selectedRequest = selectedRequestId
     ? (requests.find((r) => r.id === selectedRequestId) ?? null)
     : null;

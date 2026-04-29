@@ -430,6 +430,7 @@ export interface Deal {
 
 export type TxStatus =
   | "pending"
+  | "waiting_accept"
   | "accepted"
   | "payment_sent"
   | "payment_confirmed"

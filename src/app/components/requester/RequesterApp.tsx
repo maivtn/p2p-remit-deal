@@ -775,7 +775,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
       dealId: deal.id, requesterId: 'self', requesterName: 'Nguyễn Văn A', requesterRating: 4.7,
       providerName: deal.providerName, providerId: deal.providerId,
       amount, fromCurrency: deal.fromCurrency, toCurrency: deal.toCurrency,
-      rate: deal.rate, receiveAmount, status: 'pending',
+      rate: deal.rate, receiveAmount, status: 'waiting_accept',
       createdAt: new Date().toISOString(), message,
       senderPaymentMethod: need.senderPaymentMethod,
       recipientPaymentMethod: need.recipientPaymentMethod,
@@ -987,6 +987,7 @@ type ReqFilter = 'active' | 'pending' | 'completed' | 'other';
 
 const STATUS_CFG: Record<string, { label: string; bg: string; color: string }> = {
   pending:           { label: 'Chờ duyệt',       bg: '#FEF3C7', color: '#92400E' },
+  waiting_accept:    { label: 'Chờ chấp nhận',   bg: '#DBEAFE', color: '#1E40AF' },
   accepted:          { label: 'Chờ thanh toán',   bg: '#DBEAFE', color: '#1E40AF' },
   payment_sent:      { label: 'Chờ xác nhận',     bg: '#EDE9FE', color: '#5B21B6' },
   payment_confirmed: { label: 'Đang chuyển tiền', bg: '#FEF3C7', color: '#B45309' },
@@ -1021,8 +1022,9 @@ function RequestCard({
   const [showPaymentUpload, setShowPaymentUpload] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [showTransferProof, setShowTransferProof] = useState(false);
+  const isWaitingAccept = req.status === 'pending' || req.status === 'waiting_accept';
   const [showRecipient, setShowRecipient] = useState(
-    variant === 'detail' || req.status === 'pending',
+    variant === 'detail' || isWaitingAccept,
   );
   const senderMethod = getPaymentMethod(req.fromCurrency, req.senderPaymentMethod);
   const recipientMethod = getPaymentMethod(req.toCurrency, req.recipientPaymentMethod);
@@ -1036,7 +1038,8 @@ function RequestCard({
     !!req.paymentProof &&
     ['payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status);
   const isDetail = variant === 'detail';
-  const showProviderPaymentInfo = req.status === 'accepted';
+  const canSendPayment = req.status === 'accepted';
+  const showProviderPaymentInfo = canSendPayment;
 
   return (
     <motion.div
@@ -1104,7 +1107,7 @@ function RequestCard({
           )}
 
         {/* Provider payment info */}
-        {req.status === 'pending' && (
+        {isWaitingAccept && (
           <div className="rounded-xl mb-3" style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A', padding: '8px 10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 20 }}>⏳</span>
@@ -1275,7 +1278,7 @@ function RequestCard({
         {/* ── Status-specific actions ─────────────────────── */}
 
         {/* ACCEPTED: requester needs to send payment */}
-        {req.status === 'accepted' && (
+        {canSendPayment && (
           <div className="space-y-3">
             <button
               onClick={() => setShowPaymentUpload(true)}
@@ -1362,7 +1365,7 @@ function RequestCard({
 
         {/* Actions row */}
         <div className="flex gap-2 mt-3">
-          {req.status === 'pending' && (
+          {isWaitingAccept && (
             <button onClick={onCancel} className="flex-1 py-2 rounded-xl flex items-center justify-center gap-1" style={{ background: '#FEE2E2', border: 'none', cursor: 'pointer' }}>
               <X size={13} color="#EF4444" />
               <span style={{ color: '#EF4444', fontSize: 13, fontWeight: 600 }}>Hủy yêu cầu</span>
@@ -1435,7 +1438,7 @@ function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active',
   const ACTIVE_STATUSES = ['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'];
   const filterMap: Record<ReqFilter, (r: DealRequest) => boolean> = {
     active:    r => ACTIVE_STATUSES.includes(r.status),
-    pending:   r => r.status === 'pending',
+    pending:   r => r.status === 'pending' || r.status === 'waiting_accept',
     completed: r => r.status === 'completed',
     other:     r => ['rejected', 'cancelled', 'disputed'].includes(r.status),
   };
@@ -1445,7 +1448,7 @@ function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active',
 
   const FILTER_LABELS: Record<ReqFilter, string> = {
     active:    `Đang xử lý${activeCount ? ` (${activeCount})` : ''}`,
-    pending:   `Chờ duyệt${pendingCount ? ` (${pendingCount})` : ''}`,
+    pending:   `Chờ chấp nhận${pendingCount ? ` (${pendingCount})` : ''}`,
     completed: 'Hoàn thành',
     other:     'Từ chối/Khiếu nại',
   };
@@ -2182,7 +2185,7 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [reqTabKey, setReqTabKey] = useState(0);
   const [reqInitFilter, setReqInitFilter] = useState<ReqFilter>('active');
-  const pendingCount = myRequests.filter(r => r.status === 'pending').length;
+  const pendingCount = myRequests.filter(r => r.status === 'pending' || r.status === 'waiting_accept').length;
   const selectedRequest = selectedRequestId
     ? myRequests.find(r => r.id === selectedRequestId) ?? null
     : null;
