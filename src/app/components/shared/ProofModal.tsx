@@ -355,7 +355,7 @@ export function ProofCard({
                     borderRadius: 10,
                   }}
                 >
-                  ✓ SUCCESS
+                  SUCCESS
                 </span>
               </div>
             </div>
