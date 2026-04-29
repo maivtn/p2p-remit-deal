@@ -6,17 +6,19 @@ import {
   CheckCircle2, XCircle, Inbox, Wallet, History, Settings,
   Star, Send, RefreshCw, ChevronLeft, Zap,
   UserRound, Phone, Building2, CreditCard, ArrowDown, MapPin, Mail,
+  Check, Copy, Plus, Edit2, Trash2,
 } from 'lucide-react';
 import {
   CURRENCIES, getCurrency, formatVND, formatAmount, timeAgo,
   getAvatarBg, getInitials,
   PAYMENT_METHODS_BY_CURRENCY, getPaymentMethod,
   type Deal, type DealRequest, type PaymentMethod, type ProofData,
-  type ProviderAccount, PROVIDER_ACCOUNTS_INIT,
+  type ProviderAccount, PROVIDER_ACCOUNTS_INIT, REQUESTER_ACCOUNTS_INIT,
 } from '../../data/mockData';
 import { ProofModal, ProofCard, EscrowBanner, StepProgress, TransactionProofSections } from '../shared/ProofModal';
+import { RecipientDetails } from '../shared/RecipientDetails';
 
-type Tab = 'home' | 'requests' | 'profile';
+type Tab = 'home' | 'requests' | 'accounts' | 'profile';
 type RequestsViewMode = 'list' | 'detail';
 const PRIMARY_REQ = '#059669';
 
@@ -157,7 +159,15 @@ interface Need {
 // ============================================================
 // STEP 1 – Nhập nhu cầu
 // ============================================================
-function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
+function NeedForm({
+  onSearch,
+  accounts = [],
+  onAccountsChange,
+}: {
+  onSearch: (need: Need) => void;
+  accounts?: ProviderAccount[];
+  onAccountsChange: (accounts: ProviderAccount[]) => void;
+}) {
   const [need, setNeed] = useState<Need>({
     senderCurrency: 'USD', recipientCurrency: 'VND',
     amount: '500',
@@ -168,6 +178,7 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
     recipientAddress: '123 Lê Lợi, Q1, TP.HCM', message: 'Cần chuyển gấp trong hôm nay',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showAccountsModal, setShowAccountsModal] = useState(false);
   const set = (k: keyof Need, v: string) => { setNeed(n => ({ ...n, [k]: v })); setErrors(e => ({ ...e, [k]: '' })); };
 
   const senderCurr = getCurrency(need.senderCurrency);
@@ -183,9 +194,9 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!need.amount || isNaN(Number(need.amount)) || Number(need.amount) <= 0) e.amount = 'Nhập số tiền hợp lệ';
-    if (!need.recipientName.trim()) e.recipientName = 'Nhập tên người nhận';
-    if (recipientMethod?.requiresPhone && !need.recipientPhone.trim()) e.recipientPhone = 'Nhập số điện thoại người nhận';
-    if (recipientMethod?.requiresAccount && !need.recipientAccount.trim()) e.recipientAccount = 'Nhập số tài khoản người nhận';
+    if (!need.recipientName.trim()) e.recipientName = 'Nhập tên chủ tài khoản';
+    if (recipientMethod?.requiresPhone && !need.recipientPhone.trim()) e.recipientPhone = 'Nhập số điện thoại';
+    if (recipientMethod?.requiresAccount && !need.recipientAccount.trim()) e.recipientAccount = 'Nhập số tài khoản';
     return e;
   };
 
@@ -217,6 +228,13 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
 
   return (
     <div className="flex-1 overflow-y-auto">
+      {showAccountsModal && (
+        <PaymentAccountsModal
+          accounts={accounts}
+          onSave={onAccountsChange}
+          onClose={() => setShowAccountsModal(false)}
+        />
+      )}
       {/* Header */}
       <div style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }} className="px-5 pt-12 pb-6 relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-44 h-44 rounded-full bg-white/10" />
@@ -338,11 +356,11 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
           </div>
         </div>
 
-        {/* ── CARD 3: Thông tin người nhận (adaptive) ── */}
+        {/* ── CARD 3: Thông tin tài khoản nhận (adaptive) ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 pt-4 pb-4">
             <div className="flex items-center gap-2 mb-3">
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5 }}>THÔNG TIN NGƯỜI NHẬN</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5 }}>THÔNG TIN TÀI KHOẢN NHẬN</p>
               {recipientMethod && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
                   <span style={{ fontSize: 13 }}>{recipientMethod.icon}</span>
@@ -352,14 +370,51 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
             </div>
 
             <div className="space-y-3">
+
+              {/* Saved Accounts Dropdown */}
+              {accounts.filter(a => a.currency === need.recipientCurrency && a.methodId === need.recipientPaymentMethod).length > 0 && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p style={{ fontSize: 12, color: '#6B7280' }}>Chọn tài khoản đã lưu:</p>
+                    <button
+                      type="button"
+                      onClick={() => setShowAccountsModal(true)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg"
+                      style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', cursor: 'pointer' }}
+                    >
+                      <Settings size={12} color="#6B7280" />
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#4B5563' }}>Cài đặt</span>
+                    </button>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                    {accounts.filter(a => a.currency === need.recipientCurrency && a.methodId === need.recipientPaymentMethod).map(acc => (
+                      <button
+                        key={acc.id}
+                        onClick={() => {
+                          set('recipientName', acc.accountName || '');
+                          if (acc.phone) set('recipientPhone', acc.phone);
+                          if (acc.accountNumber) set('recipientAccount', acc.accountNumber);
+                          if (acc.bankName) set('recipientBank', acc.bankName);
+                        }}
+                        className="whitespace-nowrap px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 active:bg-gray-100 text-left"
+                      >
+                        <p style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{acc.label}</p>
+                        <p style={{ fontSize: 11, color: '#6B7280' }}>{acc.accountName}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Name – always shown */}
+
               <div>
                 <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientName ? '#EF4444' : '#E5E7EB' }}>
                   <UserRound size={16} color="#9CA3AF" />
                   <input
                     value={need.recipientName}
                     onChange={e => set('recipientName', e.target.value)}
-                    placeholder="Tên người nhận *"
+                    placeholder="Tên chủ tài khoản *"
                     className="flex-1 bg-transparent outline-none"
                     style={{ fontSize: 14, color: '#111827' }}
                   />
@@ -426,35 +481,6 @@ function NeedForm({ onSearch }: { onSearch: (need: Need) => void }) {
                 </>
               )}
 
-              {/* Phone + Address – for cash */}
-              {recipientMethod?.requiresAddress && (
-                <>
-                  <div>
-                    <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientPhone ? '#EF4444' : '#E5E7EB' }}>
-                      <Phone size={16} color="#9CA3AF" />
-                      <input
-                        value={need.recipientPhone}
-                        onChange={e => set('recipientPhone', e.target.value)}
-                        placeholder="Số điện thoại liên hệ *"
-                        className="flex-1 bg-transparent outline-none"
-                        style={{ fontSize: 14, color: '#111827' }}
-                        type="tel"
-                      />
-                    </div>
-                    {errors.recipientPhone && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 3 }}>{errors.recipientPhone}</p>}
-                  </div>
-                  <div className="flex items-start gap-2 border border-gray-200 rounded-xl px-3 py-3 bg-gray-50">
-                    <MapPin size={16} color="#9CA3AF" style={{ marginTop: 2, flexShrink: 0 }} />
-                    <input
-                      value={need.recipientAddress}
-                      onChange={e => set('recipientAddress', e.target.value)}
-                      placeholder="Địa chỉ giao tiền mặt (nếu có)"
-                      className="flex-1 bg-transparent outline-none"
-                      style={{ fontSize: 14, color: '#111827' }}
-                    />
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -530,7 +556,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
           <div className="flex items-center gap-3">
             <span style={{ fontSize: 20 }}>{senderCurr?.flag}</span>
             <div className="flex-1">
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn gửi & trả qua</p>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn thanh toán qua</p>
               <p style={{ color: 'white', fontSize: 15, fontWeight: 800 }}>
                 {fmt(amount, need.senderCurrency)}
                 {senderMethod && <span style={{ fontSize: 12, fontWeight: 500 }}> · {senderMethod.icon} {senderMethod.name}</span>}
@@ -539,18 +565,26 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
             <ArrowRight size={14} color="rgba(255,255,255,0.5)" />
             <span style={{ fontSize: 20 }}>{recipientCurr?.flag}</span>
             <div>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Người nhận nhận qua</p>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn nhận qua</p>
               <p style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>
                 {need.recipientCurrency}
                 {recipientMethod && <span style={{ fontSize: 11, fontWeight: 400 }}> · {recipientMethod.icon} {recipientMethod.name}</span>}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 pt-1 border-t border-white/20">
-            <UserRound size={13} color="rgba(255,255,255,0.7)" />
-            <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>{need.recipientName}</span>
-            {need.recipientPhone && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>· {need.recipientPhone}</span>}
-            {need.recipientBank && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>· {need.recipientBank}</span>}
+          <div className="pt-1 border-t border-white/20">
+            <RecipientDetails
+              mode="inline"
+              name={need.recipientName}
+              method={recipientMethod}
+              phone={need.recipientPhone}
+              bank={need.recipientBank}
+              tone={{
+                icon: "rgba(255,255,255,0.7)",
+                text: "rgba(255,255,255,0.8)",
+                muted: "rgba(255,255,255,0.6)",
+              }}
+            />
           </div>
         </div>
       </div>
@@ -611,7 +645,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
                       <div className="flex items-center justify-between">
                         <div>
                           <p style={{ fontSize: 11, color: '#6B7280' }}>Tỷ giá</p>
-                          <p style={{ fontSize: 16, fontWeight: 800, color: i === 0 ? '#065F46' : '#374151' }}>
+                          <p style={{ fontSize: 12, fontWeight: 800, color: i === 0 ? '#065F46' : '#374151' }}>
                             {fmtRate(deal.rate, deal.fromCurrency, deal.toCurrency)}
                           </p>
                         </div>
@@ -621,8 +655,8 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
                           <span style={{ fontSize: 18 }}>{recipientCurr?.flag}</span>
                         </div>
                         <div className="text-right">
-                          <p style={{ fontSize: 11, color: '#6B7280' }}>Người nhận nhận</p>
-                          <p style={{ fontSize: 16, fontWeight: 800, color: i === 0 ? '#065F46' : '#374151' }}>
+                          <p style={{ fontSize: 11, color: '#6B7280' }}>Bạn nhận</p>
+                          <p style={{ fontSize: 12, fontWeight: 800, color: i === 0 ? '#065F46' : '#374151' }}>
                             {fmt(receiveAmount, deal.toCurrency)}
                           </p>
                         </div>
@@ -811,7 +845,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mx-auto mb-2 shadow-sm">
                 <span style={{ fontSize: 20 }}>{recipientCurr?.flag}</span>
               </div>
-              <p style={{ fontSize: 11, color: '#6B7280' }}>Người nhận nhận</p>
+              <p style={{ fontSize: 11, color: '#6B7280' }}>Bạn nhận</p>
               <p style={{ fontSize: 16, fontWeight: 800, color: '#065F46' }}>{fmt(receiveAmount, deal.toCurrency)}</p>
               {recipientMethod && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg mt-1" style={{ background: 'white', border: '1px solid #D1FAE5' }}>
@@ -843,7 +877,13 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
               </div>
               <div><p style={{ fontSize: 11, color: '#9CA3AF' }}>Tên</p><p style={{ fontSize: 14, fontWeight: 700 }}>{need.recipientName}</p></div>
             </div>
-            {need.recipientPhone && (
+            {recipientMethod?.requiresPhone && need.recipientPhone && recipientMethod?.id === 'momo' && (
+              <div>
+                <p style={{ fontSize: 11, color: '#9CA3AF' }}>Số điện thoại</p>
+                <p style={{ fontSize: 14, fontWeight: 600 }}>{need.recipientPhone}</p>
+              </div>
+            )}
+            {recipientMethod?.requiresPhone && need.recipientPhone && recipientMethod?.id !== 'momo' && (
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#F0FDF4' }}>
                   <span style={{ fontSize: 16 }}>{recipientMethod?.icon}</span>
@@ -851,7 +891,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
                 <div><p style={{ fontSize: 11, color: '#9CA3AF' }}>{recipientMethod?.name}</p><p style={{ fontSize: 14, fontWeight: 600 }}>{need.recipientPhone}</p></div>
               </div>
             )}
-            {need.recipientBank && (
+            {recipientMethod?.requiresAccount && need.recipientBank && (
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                   <Building2 size={14} color="#7C3AED" />
@@ -859,7 +899,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
                 <div><p style={{ fontSize: 11, color: '#9CA3AF' }}>Ngân hàng</p><p style={{ fontSize: 14, fontWeight: 600 }}>{need.recipientBank}</p></div>
               </div>
             )}
-            {need.recipientAccount && (
+            {recipientMethod?.requiresAccount && need.recipientAccount && (
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
                   <CreditCard size={14} color="#D97706" />
@@ -867,7 +907,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
                 <div><p style={{ fontSize: 11, color: '#9CA3AF' }}>Số tài khoản</p><p style={{ fontSize: 14, fontWeight: 600, letterSpacing: 0.5 }}>{need.recipientAccount}</p></div>
               </div>
             )}
-            {need.recipientAddress && (
+            {recipientMethod?.requiresAccount && need.recipientAddress && (
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
                   <MapPin size={14} color="#EF4444" />
@@ -902,9 +942,11 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
 // ============================================================
 type HomeStep = 'input' | 'results' | 'confirm';
 
-function HomeTab({ onRequestSent, availableDeals }: {
+function HomeTab({ onRequestSent, availableDeals, accounts, onAccountsChange }: {
   onRequestSent: (req: DealRequest) => void;
   availableDeals: Deal[];
+  accounts: ProviderAccount[];
+  onAccountsChange: (accounts: ProviderAccount[]) => void;
 }) {
   const [step, setStep] = useState<HomeStep>('input');
   const [need, setNeed] = useState<Need | null>(null);
@@ -915,7 +957,11 @@ function HomeTab({ onRequestSent, availableDeals }: {
       <AnimatePresence mode="wait">
         {step === 'input' && (
           <motion.div key="input" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.22 }} className="flex-1 overflow-hidden flex flex-col">
-            <NeedForm onSearch={n => { setNeed(n); setStep('results'); }} />
+            <NeedForm
+              accounts={accounts}
+              onAccountsChange={onAccountsChange}
+              onSearch={n => { setNeed(n); setStep('results'); }}
+            />
           </motion.div>
         )}
         {step === 'results' && need && (
@@ -984,9 +1030,13 @@ function RequestCard({
   const recipientCurr = getCurrency(req.toCurrency);
   const feeAmt = req.amount * req.systemFeeRate;
   const providerFeeAmt = req.receiveAmount * req.systemFeeRate;
+  const paymentMemo = req.memo || req.id;
 
-  const canDispute = ['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status);
+  const canDispute =
+    !!req.paymentProof &&
+    ['payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status);
   const isDetail = variant === 'detail';
+  const showProviderPaymentInfo = req.status === 'accepted';
 
   return (
     <motion.div
@@ -1048,26 +1098,12 @@ function RequestCard({
               transferProof={req.transferProof}
               labels={{
                 payment: 'Bằng chứng thanh toán của bạn',
-                transfer: 'Bằng chứng nhà cung cấp đã chuyển cho người nhận',
+                transfer: 'Bằng chứng nhà cung cấp đã chuyển tiền',
               }}
             />
           )}
 
-        {/* ACCEPTED: step 1 instruction — above payment info */}
-        {req.status === 'accepted' && (
-          <div className="rounded-xl p-3 mb-3" style={{ background: '#EFF6FF', border: '1.5px solid #BFDBFE' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', marginBottom: 6 }}>
-              💳 Bước 1: Gửi tiền cho nhà cung cấp
-            </p>
-            <p style={{ fontSize: 13, color: '#1E40AF' }}>
-              Chuyển <strong>{fmt(req.amount, req.fromCurrency)}</strong> qua{' '}
-              <strong>{senderMethod?.icon} {senderMethod?.name}</strong> cho{' '}
-              <strong>{req.providerName}</strong>
-            </p>
-          </div>
-        )}
-
-        {/* Provider payment info — pending: danh sách + chi tiết; đã chấp nhận: chỉ chi tiết */}
+        {/* Provider payment info */}
         {req.status === 'pending' && (
           <div className="rounded-xl mb-3" style={{ background: '#FFFBEB', border: '1.5px solid #FDE68A', padding: '8px 10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1078,116 +1114,119 @@ function RequestCard({
             </div>
           </div>
         )}
-        {isDetail &&
-          (['accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(req.status) ||
-            req.providerPaymentAccount ||
-            req.providerEmail ||
-            req.providerBank) && (
+        {showProviderPaymentInfo && (
           <div className="rounded-xl mb-3" style={{ background: '#F0FDF4', border: '1.5px solid #6EE7B7', padding: '8px 10px' }}>
-            <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 THÔNG TIN THANH TOÁN</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <UserRound size={12} color="#059669" />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#065F46' }}>{req.providerName}</span>
-                </div>
-                {senderMethod && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{ fontSize: 11, color: '#6B7280' }}>Hình thức thanh toán:</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#047857' }}>{senderMethod.icon} {senderMethod.name}</span>
-                  </div>
-                )}
-                {req.providerPaymentAccount && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Phone size={12} color="#059669" />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 0.4 }}>{req.providerPaymentAccount}</span>
-                    </div>
-                    <button onClick={() => safeCopy(req.providerPaymentAccount!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                  </div>
-                )}
-                {req.providerEmail && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Mail size={12} color="#059669" />
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#047857' }}>{req.providerEmail}</span>
-                    </div>
-                    <button onClick={() => safeCopy(req.providerEmail!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                  </div>
-                )}
-                {req.providerBank && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <Building2 size={12} color="#059669" />
-                    <span style={{ fontSize: 11, color: '#374151' }}>{req.providerBank}</span>
-                  </div>
-                )}
-                {req.providerBankAccount && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <CreditCard size={12} color="#059669" />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 1 }}>{req.providerBankAccount}</span>
-                    </div>
-                    <button onClick={() => safeCopy(req.providerBankAccount!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                  </div>
-                )}
-                {!req.providerPaymentAccount && !req.providerEmail && !req.providerBank && (() => {
-                  const autoAcc: ProviderAccount | undefined = PROVIDER_ACCOUNTS_INIT.find(
-                    a => a.methodId === req.senderPaymentMethod && a.currency === req.fromCurrency
-                  );
-                  return autoAcc ? (
-                    <>
-                      {autoAcc.phone && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                            <span style={{ fontSize: 11, color: '#6B7280' }}>{senderMethod?.name ?? autoAcc.label} account:</span>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 0.4 }}>{autoAcc.phone}</span>
-                          </div>
-                          <button onClick={() => safeCopy(autoAcc.phone!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                        </div>
-                      )}
-                      {autoAcc.handle && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                            <UserRound size={12} color="#059669" />
-                            <span style={{ fontSize: 13, fontWeight: 700, color: '#047857' }}>{autoAcc.handle}</span>
-                          </div>
-                          <button onClick={() => safeCopy(autoAcc.handle!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                        </div>
-                      )}
-                      {autoAcc.email && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                            <Mail size={12} color="#059669" />
-                            <span style={{ fontSize: 12, fontWeight: 700, color: '#047857' }}>{autoAcc.email}</span>
-                          </div>
-                          <button onClick={() => safeCopy(autoAcc.email!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                        </div>
-                      )}
-                      {(autoAcc.bankName || autoAcc.accountNumber) && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-                            {autoAcc.bankName && <><Building2 size={12} color="#059669" /><span style={{ fontSize: 11, color: '#374151' }}>{autoAcc.bankName}</span></>}
-                            {autoAcc.accountNumber && <><CreditCard size={12} color="#059669" /><span style={{ fontSize: 12, fontWeight: 700, color: '#047857', letterSpacing: 1 }}>{autoAcc.accountNumber}</span></>}
-                          </div>
-                          {autoAcc.accountNumber && <button onClick={() => safeCopy(autoAcc.accountNumber!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>}
-                        </div>
-                      )}
-                      {autoAcc.accountName && <span style={{ fontSize: 10, color: '#6B7280' }}>Chủ TK: {autoAcc.accountName}</span>}
-                    </>
-                  ) : (
-                    <div style={{ background: '#FEF9C3', border: '1px solid #FDE68A', borderRadius: 8, padding: '5px 8px' }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: '#92400E' }}>⚠️ Chưa có tài khoản · Liên hệ <span style={{ fontWeight: 700 }}>{req.providerName}</span></p>
-                    </div>
-                  );
-                })()}
-                {/* Memo — always visible */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
-                  <span style={{ fontSize: 11, color: '#047857' }}><span style={{ color: '#6B7280' }}>Ghi chú:</span> <strong style={{ letterSpacing: 0.3 }}>{req.memo || req.id}</strong></span>
-                  <button onClick={() => safeCopy(req.memo || req.id)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
-                </div>
-                <p style={{ fontSize: 10, color: '#92400E', background: '#FEF3C7', borderRadius: 5, padding: '4px 7px', marginTop: 4, lineHeight: 1.5 }}>
-                  ⚠️ Vui lòng điền chính xác <strong>{req.memo || req.id}</strong> vào ghi chú / memo của giao dịch khi chuyển tiền cho nhà cung cấp.
-                </p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 Bước 1: Gửi tiền cho nhà cung cấp</p>
+            <p style={{ fontSize: 13, color: '#065F46', marginBottom: 8 }}>
+              Chuyển <strong>{fmt(req.amount, req.fromCurrency)}</strong> qua{' '}
+              <strong>{senderMethod?.icon} {senderMethod?.name}</strong> cho{' '}
+              <strong>{req.providerName}</strong>
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <UserRound size={12} color="#059669" />
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#065F46' }}>{req.providerName}</span>
               </div>
+              {senderMethod && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 11, color: '#6B7280' }}>Hình thức thanh toán:</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#047857' }}>{senderMethod.icon} {senderMethod.name}</span>
+                </div>
+              )}
+              {req.providerPaymentAccount && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Phone size={12} color="#059669" />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 0.4 }}>{req.providerPaymentAccount}</span>
+                  </div>
+                  <button onClick={() => safeCopy(req.providerPaymentAccount!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                </div>
+              )}
+              {req.providerEmail && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Mail size={12} color="#059669" />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#047857' }}>{req.providerEmail}</span>
+                  </div>
+                  <button onClick={() => safeCopy(req.providerEmail!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                </div>
+              )}
+              {req.providerBank && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <Building2 size={12} color="#059669" />
+                  <span style={{ fontSize: 11, color: '#374151' }}>{req.providerBank}</span>
+                </div>
+              )}
+              {req.providerBankAccount && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <CreditCard size={12} color="#059669" />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 1 }}>{req.providerBankAccount}</span>
+                  </div>
+                  <button onClick={() => safeCopy(req.providerBankAccount!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                </div>
+              )}
+              {!req.providerPaymentAccount && !req.providerEmail && !req.providerBank && (() => {
+                const autoAcc: ProviderAccount | undefined = PROVIDER_ACCOUNTS_INIT.find(
+                  a => a.methodId === req.senderPaymentMethod && a.currency === req.fromCurrency
+                );
+                return autoAcc ? (
+                  <>
+                    {autoAcc.phone && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ fontSize: 11, color: '#6B7280' }}>{senderMethod?.name ?? autoAcc.label} account:</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: '#047857', letterSpacing: 0.4 }}>{autoAcc.phone}</span>
+                        </div>
+                        <button onClick={() => safeCopy(autoAcc.phone!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                      </div>
+                    )}
+                    {autoAcc.handle && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <UserRound size={12} color="#059669" />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: '#047857' }}>{autoAcc.handle}</span>
+                        </div>
+                        <button onClick={() => safeCopy(autoAcc.handle!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                      </div>
+                    )}
+                    {autoAcc.email && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <Mail size={12} color="#059669" />
+                          <span style={{ fontSize: 12, fontWeight: 700, color: '#047857' }}>{autoAcc.email}</span>
+                        </div>
+                        <button onClick={() => safeCopy(autoAcc.email!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+                      </div>
+                    )}
+                    {(autoAcc.bankName || autoAcc.accountNumber) && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                          {autoAcc.bankName && <><Building2 size={12} color="#059669" /><span style={{ fontSize: 11, color: '#374151' }}>{autoAcc.bankName}</span></>}
+                          {autoAcc.accountNumber && <><CreditCard size={12} color="#059669" /><span style={{ fontSize: 12, fontWeight: 700, color: '#047857', letterSpacing: 1 }}>{autoAcc.accountNumber}</span></>}
+                        </div>
+                        {autoAcc.accountNumber && <button onClick={() => safeCopy(autoAcc.accountNumber!)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>}
+                      </div>
+                    )}
+                    {autoAcc.accountName && <span style={{ fontSize: 10, color: '#6B7280' }}>Chủ TK: {autoAcc.accountName}</span>}
+                  </>
+                ) : (
+                  <div style={{ background: '#FEF9C3', border: '1px solid #FDE68A', borderRadius: 8, padding: '5px 8px' }}>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#92400E' }}>⚠️ Chưa có tài khoản · Liên hệ <span style={{ fontWeight: 700 }}>{req.providerName}</span></p>
+                  </div>
+                );
+              })()}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
+                <span style={{ fontSize: 11, color: '#047857' }}>
+                  <span style={{ color: '#6B7280' }}>Memo / Nội dung chuyển khoản:</span>{' '}
+                  <strong style={{ letterSpacing: 0.3 }}>{paymentMemo}</strong>
+                </span>
+                <button onClick={() => safeCopy(paymentMemo)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
+              </div>
+              <p style={{ fontSize: 10, color: '#92400E', background: '#FEF3C7', borderRadius: 5, padding: '4px 7px', marginTop: 4, lineHeight: 1.5 }}>
+                ⚠️ Vui lòng điền chính xác <strong>{paymentMemo}</strong> vào ghi chú / memo của giao dịch khi chuyển tiền cho nhà cung cấp.
+              </p>
+            </div>
           </div>
         )}
 
@@ -1202,36 +1241,24 @@ function RequestCard({
             <p style={{ fontSize: 10, fontWeight: 700, color: '#1E40AF', letterSpacing: 0.4, margin: 0 }}>👤 NGƯỜI THỤ HƯỞNG</p>
             <ChevronRight size={14} color="#1E40AF" style={{ transform: showRecipient ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
           </button>
-          {showRecipient && (
-            <div className="space-y-1.5 px-3 pb-3">
-              <div className="flex items-center gap-2">
-                <UserRound size={14} color="#2563EB" />
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#1E40AF' }}>{req.recipientName}</span>
-              </div>
-              {req.recipientPhone && (
-                <div className="flex items-center gap-2">
-                  <Phone size={13} color="#2563EB" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#1D4ED8', letterSpacing: 0.5 }}>{req.recipientPhone}</span>
-                </div>
-              )}
-              {req.recipientBank && (
-                <div className="flex items-center gap-2">
-                  <Building2 size={13} color="#2563EB" />
-                  <span style={{ fontSize: 13, color: '#374151' }}>{req.recipientBank}</span>
-                </div>
-              )}
-              {req.recipientAccount && (
-                <div className="flex items-center gap-2">
-                  <CreditCard size={13} color="#2563EB" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#1D4ED8', letterSpacing: 1 }}>{req.recipientAccount}</span>
-                </div>
-              )}
-              {req.recipientAddress && (
-                <div className="flex items-center gap-2">
-                  <MapPin size={13} color="#2563EB" />
-                  <span style={{ fontSize: 13, color: '#374151' }}>{req.recipientAddress}</span>
-                </div>
-              )}
+        {showRecipient && (
+            <div className="px-3 pb-3">
+              <RecipientDetails
+                mode="stacked"
+                name={req.recipientName}
+                method={recipientMethod}
+                phone={req.recipientPhone}
+                bank={req.recipientBank}
+                account={req.recipientAccount}
+                address={req.recipientAddress}
+                tone={{
+                  title: '#1E40AF',
+                  text: '#1D4ED8',
+                  muted: '#9CA3AF',
+                  label: '#9CA3AF',
+                  icon: '#2563EB',
+                }}
+              />
             </div>
           )}
         </div>
@@ -1292,7 +1319,9 @@ function RequestCard({
               style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)`, border: 'none', cursor: 'pointer' }}
             >
               <CheckCircle2 size={16} color="white" />
-              <span style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>✅ Người thân đã nhận đủ tiền — Hoàn tất</span>
+              <span style={{ color: 'white', fontSize: 14, fontWeight: 700 }}>
+                Đã nhận đủ tiền {req.toCurrency} - Hoàn tất
+              </span>
             </button>
           </div>
         )}
@@ -1339,23 +1368,14 @@ function RequestCard({
               <span style={{ color: '#EF4444', fontSize: 13, fontWeight: 600 }}>Hủy yêu cầu</span>
             </button>
           )}
-          {canDispute && isDetail && (
+          {canDispute && (
             <button
               onClick={() => setShowDisputeModal(true)}
               className="flex items-center gap-1 px-3 py-2 rounded-xl"
               style={{ background: '#FFF7ED', border: '1.5px solid #FCD34D', cursor: 'pointer' }}
             >
               <span style={{ fontSize: 13 }}>⚠️</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#D97706' }}>Khiếu nại</span>
-            </button>
-          )}
-          {req.status === 'transfer_sent' && (
-            <button
-              onClick={() => setShowTransferProof(true)}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl"
-              style={{ background: '#F0FDF4', border: '1px solid #6EE7B7', cursor: 'pointer' }}
-            >
-              <span style={{ fontSize: 12, color: '#059669', fontWeight: 600 }}>📋 Xem bằng chứng</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#D97706' }}>Khiếu Nại</span>
             </button>
           )}
         </div>
@@ -1527,16 +1547,550 @@ function RequesterTransactionDetailScreen({
 // ============================================================
 // Profile Tab
 // ============================================================
-function ProfileTabReq({ onRoleChange }: { onRoleChange: () => void }) {
+type AccountFormView = "list" | "form";
+
+function PaymentAccountsModal({
+  accounts,
+  onSave,
+  onClose,
+  inline = false,
+}: {
+  accounts: ProviderAccount[];
+  onSave: (accounts: ProviderAccount[]) => void;
+  onClose: () => void;
+  inline?: boolean;
+}) {
+  const [view, setView] = useState<AccountFormView>("list");
+  const [editTarget, setEditTarget] = useState<ProviderAccount | null>(null);
+  const [currency, setCurrency] = useState("USD");
+  const [form, setForm] = useState<Partial<ProviderAccount>>({});
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const openAdd = () => {
+    setCurrency("USD");
+    setForm({ currency: "USD" });
+    setEditTarget(null);
+    setView("form");
+  };
+  const openEdit = (acc: ProviderAccount) => {
+    setCurrency(acc.currency);
+    setForm({ ...acc });
+    setEditTarget(acc);
+    setView("form");
+  };
+  const handleDelete = (id: string) =>
+    {
+      if (!window.confirm("Xoá tài khoản này?")) return;
+      onSave(accounts.filter((a) => a.id !== id));
+    };
+  const handleSave = () => {
+    if (!form.methodId || !form.label) return;
+    if (editTarget) {
+      onSave(
+        accounts.map((a) =>
+          a.id === editTarget.id
+            ? ({ ...a, ...form, currency } as ProviderAccount)
+            : a,
+        ),
+      );
+    } else {
+      onSave([
+        ...accounts,
+        {
+          id: `pa${Date.now()}`,
+          methodId: form.methodId!,
+          currency,
+          label: form.label!,
+          phone: form.phone,
+          email: form.email,
+          handle: form.handle,
+          bankName: form.bankName,
+          accountNumber: form.accountNumber,
+          accountName: form.accountName,
+        },
+      ]);
+    }
+    setView("list");
+  };
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopied(id);
+    setTimeout(() => setCopied(null), 1500);
+  };
+
+  const selectedMethod = form.methodId
+    ? getPaymentMethod(currency, form.methodId)
+    : undefined;
+  const grouped: Record<string, ProviderAccount[]> = {};
+  accounts.forEach((a) => {
+    if (!grouped[a.currency]) grouped[a.currency] = [];
+    grouped[a.currency].push(a);
+  });
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: "1.5px solid #E5E7EB",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+    color: "#111827",
+  };
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    fontWeight: 600,
+    color: "#374151",
+    marginBottom: 6,
+    display: "block",
+  };
+
+  return (
+    <div className={inline ? "flex-1 overflow-y-auto bg-gray-50 flex flex-col" : "absolute inset-0 z-50 bg-gray-50 flex flex-col"}>
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-4 bg-white border-b border-gray-100">
+        <button
+          onClick={view === "list" ? onClose : () => setView("list")}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 4,
+            display: "flex",
+          }}
+        >
+          {view === "list" ? (
+            <X size={22} color="#374151" />
+          ) : (
+            <ChevronLeft size={22} color="#374151" />
+          )}
+        </button>
+        <h2
+          style={{
+            fontSize: 17,
+            fontWeight: 700,
+            color: "#111827",
+            flex: 1,
+            textAlign: "center",
+            marginRight: 30,
+          }}
+        >
+          {view === "list"
+            ? "Tài khoản liên kết"
+            : editTarget
+              ? "Chỉnh sửa tài khoản"
+              : "Thêm tài khoản"}
+        </h2>
+      </div>
+
+      {view === "list" ? (
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          <div
+            className="rounded-2xl p-4 border"
+            style={{ background: "#ECFDF5", borderColor: "#BBF7D0" }}
+          >
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#065F46" }}>
+              Tài khoản nhận tiền
+            </p>
+            <p style={{ fontSize: 13, color: "#047857", marginTop: 4 }}>
+              Quản lý tài khoản đã lưu, thêm mới hoặc sửa thông tin để dùng nhanh khi tạo yêu cầu.
+            </p>
+            <div className="flex gap-2 flex-wrap mt-3">
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold" style={{ background: "white", color: "#047857" }}>
+                {accounts.length} tài khoản
+              </span>
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold" style={{ background: "white", color: "#047857" }}>
+                {Object.keys(grouped).length} loại tiền
+              </span>
+            </div>
+          </div>
+
+          {Object.keys(grouped).length === 0 && (
+            <div className="flex flex-col items-center py-12">
+              <Wallet size={44} color="#E5E7EB" />
+              <p style={{ color: "#9CA3AF", marginTop: 10, fontSize: 15 }}>
+                Chưa có tài khoản nào
+              </p>
+              <p style={{ color: "#D1D5DB", fontSize: 13, marginTop: 4 }}>
+                Thêm tài khoản để nhận thanh toán
+              </p>
+            </div>
+          )}
+          {Object.entries(grouped).map(([cur, accs]) => {
+            const ci = getCurrency(cur);
+            return (
+              <div key={cur}>
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: "#6B7280",
+                    marginBottom: 8,
+                  }}
+                >
+                  {ci?.flag} {ci?.name} ({cur})
+                </p>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  {accs.map((acc, i) => {
+                    const m = getPaymentMethod(cur, acc.methodId);
+                    const detail =
+                      acc.handle ||
+                      acc.phone ||
+                      acc.email ||
+                      acc.accountNumber ||
+                      "";
+                    const subDetail = acc.bankName
+                      ? `${acc.bankName}${acc.accountName ? ` · ${acc.accountName}` : ""}`
+                      : "";
+                    return (
+                      <div
+                        key={acc.id}
+                        className="px-4 py-3"
+                        style={{
+                          borderBottom:
+                            i < accs.length - 1 ? "1px solid #F3F4F6" : "none",
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: "#ECFDF5", fontSize: 20 }}
+                          >
+                            {m?.icon || "💳"}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: "#111827",
+                              }}
+                            >
+                              {acc.label}
+                            </p>
+                            {detail && (
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    color: "#6B7280",
+                                    wordBreak: "break-all",
+                                  }}
+                                >
+                                  {detail}
+                                </p>
+                                <button
+                                  onClick={() =>
+                                    handleCopy(detail, acc.id + "d")
+                                  }
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    padding: 2,
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {copied === acc.id + "d" ? (
+                                    <Check size={12} color="#059669" />
+                                  ) : (
+                                    <Copy size={12} color="#9CA3AF" />
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                            {subDetail && (
+                              <p
+                                style={{
+                                  fontSize: 11,
+                                  color: "#9CA3AF",
+                                  marginTop: 1,
+                                }}
+                              >
+                                {subDetail}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex gap-2 flex-shrink-0">
+                            <button
+                              onClick={() => openEdit(acc)}
+                              style={{
+                                background: "#F3F4F6",
+                                border: "none",
+                                borderRadius: 8,
+                                padding: "6px 8px",
+                                cursor: "pointer",
+                                display: "flex",
+                              }}
+                            >
+                              <Edit2 size={14} color="#6B7280" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(acc.id)}
+                              style={{
+                                background: "#FEE2E2",
+                                border: "none",
+                                borderRadius: 8,
+                                padding: "6px 8px",
+                                cursor: "pointer",
+                                display: "flex",
+                              }}
+                            >
+                              <Trash2 size={14} color="#EF4444" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+          <button
+            onClick={openAdd}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl"
+            style={{
+              background: "#ECFDF5",
+              border: "2px dashed #93C5FD",
+              cursor: "pointer",
+            }}
+          >
+            <Plus size={18} color={PRIMARY_REQ} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: PRIMARY_REQ }}>
+              Thêm tài khoản mới
+            </span>
+          </button>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {/* Currency */}
+          <div>
+            <label style={labelStyle}>Loại tiền tệ</label>
+            <div className="flex flex-wrap gap-2">
+              {CURRENCIES.map((c) => {
+                return (
+                  <button
+                    key={c.code}
+                    onClick={() => {
+                      setCurrency(c.code);
+                      setForm((f) => ({
+                        ...f,
+                        currency: c.code,
+                        methodId: undefined,
+                      }));
+                    }}
+                    className="px-3 py-2 rounded-xl"
+                    style={{
+                      background: currency === c.code ? "#ECFDF5" : "#F9FAFB",
+                      border: `2px solid ${currency === c.code ? PRIMARY_REQ : "#E5E7EB"}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: currency === c.code ? 700 : 400,
+                        color: currency === c.code ? PRIMARY_REQ : "#374151",
+                      }}
+                    >
+                      {c.flag} {c.code}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Method */}
+          <div>
+            <label style={labelStyle}>Hình thức thanh toán</label>
+            <div className="flex flex-wrap gap-2">
+              {(PAYMENT_METHODS_BY_CURRENCY[currency] ?? [])
+                .map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setForm((f) => ({ ...f, methodId: m.id }))}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl"
+                    style={{
+                      background:
+                        form.methodId === m.id ? "#ECFDF5" : "#F9FAFB",
+                      border: `2px solid ${form.methodId === m.id ? PRIMARY_REQ : "#E5E7EB"}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span style={{ fontSize: 15 }}>{m.icon}</span>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: form.methodId === m.id ? 700 : 400,
+                        color: form.methodId === m.id ? PRIMARY_REQ : "#374151",
+                      }}
+                    >
+                      {m.name}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          {/* Label */}
+          <div>
+            <label style={labelStyle}>Tên gợi nhớ</label>
+            <input
+              value={form.label || ""}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, label: e.target.value }))
+              }
+              placeholder="Ví dụ: Zelle chính, PayPal cá nhân..."
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Dynamic fields */}
+          {selectedMethod && (
+            <div
+              className="space-y-3 p-4 rounded-2xl"
+              style={{ background: "#F8FAFF", border: "1.5px solid #DBEAFE" }}
+            >
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: PRIMARY_REQ,
+                  marginBottom: 4,
+                }}
+              >
+                📋 Thông tin tài khoản
+              </p>
+
+              {selectedMethod.id === "venmo" && (
+                <div>
+                  <label style={labelStyle}>Venmo username</label>
+                  <input
+                    value={form.handle || ""}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, handle: e.target.value }))
+                    }
+                    placeholder="@username"
+                    style={inputStyle}
+                  />
+                </div>
+              )}
+              {selectedMethod.requiresPhone &&
+                selectedMethod.id !== "venmo" && (
+                  <div>
+                    <label style={labelStyle}>
+                      Số điện thoại / Email liên kết
+                    </label>
+                    <input
+                      value={form.phone || ""}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, phone: e.target.value }))
+                      }
+                      placeholder="+1 (xxx) xxx-xxxx hoặc email"
+                      style={inputStyle}
+                    />
+                  </div>
+                )}
+              {!selectedMethod.requiresPhone &&
+                !selectedMethod.requiresAccount && (
+                  <div>
+                    <label style={labelStyle}>Email tài khoản</label>
+                    <input
+                      value={form.email || ""}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, email: e.target.value }))
+                      }
+                      placeholder="email@example.com"
+                      style={inputStyle}
+                    />
+                  </div>
+                )}
+              {selectedMethod.requiresAccount && (
+                <>
+                  <div>
+                    <label style={labelStyle}>Tên ngân hàng</label>
+                    <input
+                      value={form.bankName || ""}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, bankName: e.target.value }))
+                      }
+                      placeholder="Chase, Bank of America, Wells Fargo, SEPA..."
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>
+                      Số tài khoản / IBAN / Routing
+                    </label>
+                    <input
+                      value={form.accountNumber || ""}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          accountNumber: e.target.value,
+                        }))
+                      }
+                      placeholder="Số tài khoản hoặc IBAN"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Tên chủ tài khoản</label>
+                    <input
+                      value={form.accountName || ""}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, accountName: e.target.value }))
+                      }
+                      placeholder="Tên đầy đủ"
+                      style={inputStyle}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={!form.methodId || !form.label}
+            className="w-full py-4 rounded-2xl"
+            style={{
+              background: form.methodId && form.label ? PRIMARY_REQ : "#E5E7EB",
+              border: "none",
+              color: form.methodId && form.label ? "white" : "#9CA3AF",
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: form.methodId && form.label ? "pointer" : "not-allowed",
+            }}
+            >
+            {editTarget ? "Cập nhật tài khoản" : "Lưu tài khoản"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProfileTabReq({
+  onRoleChange,
+  onOpenAccounts,
+}: {
+  onRoleChange: () => void;
+  onOpenAccounts: () => void;
+}) {
+
   const menuItems = [
-    { icon: <Wallet size={18} color={PRIMARY_REQ} />, label: 'Tài khoản liên kết', bg: '#F0FDF4' },
+    { icon: <Wallet size={18} color={PRIMARY_REQ} />, label: 'Tài khoản liên kết', bg: '#F0FDF4', onClick: onOpenAccounts },
     { icon: <History size={18} color="#2563EB" />, label: 'Lịch sử giao dịch', bg: '#EFF6FF' },
     { icon: <Settings size={18} color="#6B7280" />, label: 'Cài đặt thông báo', bg: '#F9FAFB' },
     { icon: <RefreshCw size={18} color="#D97706" />, label: 'Bảo mật & xác thực', bg: '#FFFBEB' },
   ];
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto relative">
       <div style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }} className="px-5 pt-12 pb-12 relative overflow-hidden">
+
         <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
         <div className="flex flex-col items-center relative z-10">
           <div className="relative mb-3">
@@ -1564,7 +2118,7 @@ function ProfileTabReq({ onRoleChange }: { onRoleChange: () => void }) {
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {menuItems.map((item, i) => (
-            <button key={i} className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50" style={{ borderBottom: i < menuItems.length - 1 ? '1px solid #F3F4F6' : 'none', background: 'none', border: 'none', cursor: 'pointer', borderBottomWidth: i < menuItems.length - 1 ? 1 : 0, borderBottomColor: '#F3F4F6', borderBottomStyle: 'solid' }}>
+            <button key={i} onClick={item.onClick} className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50" style={{ borderBottom: i < menuItems.length - 1 ? '1px solid #F3F4F6' : 'none', background: 'none', border: 'none', cursor: 'pointer', borderBottomWidth: i < menuItems.length - 1 ? 1 : 0, borderBottomColor: '#F3F4F6', borderBottomStyle: 'solid' }}>
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: item.bg }}>{item.icon}</div>
               <span style={{ fontSize: 15, color: '#111827', fontWeight: 500, flex: 1, textAlign: 'left' }}>{item.label}</span>
               <ChevronRight size={16} color="#D1D5DB" />
@@ -1591,6 +2145,7 @@ function BottomNavReq({ tab, onTab, pendingCount }: { tab: Tab; onTab: (t: Tab) 
   const items: { key: Tab; icon: React.ReactNode; label: string }[] = [
     { key: 'home', icon: <Home size={22} />, label: 'Gửi tiền' },
     { key: 'requests', icon: <Bell size={22} />, label: 'Yêu cầu' },
+    { key: 'accounts', icon: <Wallet size={22} />, label: 'Liên kết' },
     { key: 'profile', icon: <User size={22} />, label: 'Hồ sơ' },
   ];
   return (
@@ -1612,6 +2167,8 @@ function BottomNavReq({ tab, onTab, pendingCount }: { tab: Tab; onTab: (t: Tab) 
 }
 
 export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmitRequest, onCancelRequest, onUpdateRequest }: {
+  accounts?: ProviderAccount[];
+
   onRoleChange: () => void;
   availableDeals: Deal[];
   myRequests: DealRequest[];
@@ -1619,6 +2176,7 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
   onCancelRequest: (id: string) => void;
   onUpdateRequest: (id: string, partial: Partial<DealRequest>) => void;
 }) {
+  const [accounts, setAccounts] = useState<ProviderAccount[]>(REQUESTER_ACCOUNTS_INIT);
   const [tab, setTab] = useState<Tab>('home');
   const [requestsViewMode, setRequestsViewMode] = useState<RequestsViewMode>('list');
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
@@ -1651,7 +2209,14 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
     <div className="flex flex-col h-full bg-gray-50">
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="flex-1 overflow-hidden flex flex-col">
-          {tab === 'home' && <HomeTab onRequestSent={req => { onSubmitRequest(req); setReqInitFilter('pending'); setReqTabKey(k => k + 1); setRequestsViewMode('list'); setTab('requests'); }} availableDeals={availableDeals} />}
+          {tab === 'home' && (
+            <HomeTab
+              accounts={accounts}
+              onAccountsChange={setAccounts}
+              onRequestSent={req => { onSubmitRequest(req); setReqInitFilter('pending'); setReqTabKey(k => k + 1); setRequestsViewMode('list'); setTab('requests'); }}
+              availableDeals={availableDeals}
+            />
+          )}
           {tab === 'requests' && (
             requestsViewMode === 'list' ? (
               <MyRequestsTab
@@ -1672,7 +2237,30 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
               />
             )
           )}
-          {tab === 'profile' && <ProfileTabReq onRoleChange={onRoleChange} />}
+          {tab === 'accounts' && (
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <div className="px-5 pt-12 pb-4" style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }}>
+                <button onClick={() => setTab('profile')} className="flex items-center gap-1 mb-3" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
+                  <ChevronLeft size={18} />
+                  <span style={{ fontSize: 14 }}>Quay lại hồ sơ</span>
+                </button>
+                <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Tài khoản liên kết</h1>
+                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>Thêm, sửa hoặc xoá tài khoản nhận tiền</p>
+              </div>
+              <PaymentAccountsModal
+                inline
+                accounts={accounts}
+                onSave={setAccounts}
+                onClose={() => setTab('profile')}
+              />
+            </div>
+          )}
+          {tab === 'profile' && (
+            <ProfileTabReq
+              onRoleChange={onRoleChange}
+              onOpenAccounts={() => setTab('accounts')}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
       <BottomNavReq tab={tab} onTab={handleTabChange} pendingCount={pendingCount} />

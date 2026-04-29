@@ -308,12 +308,12 @@ export function ProofCard({
   return (
     <>
       <div
-        className="rounded-xl overflow-hidden border border-emerald-200"
+        className="overflow-hidden"
         style={{ background: "#F0FDF4" }}
       >
         {label && (
           <div
-            className="px-3 py-1.5 flex items-center gap-1.5"
+            className="  py-1.5 flex items-center gap-1.5"
             style={{ background: "#065F46" }}
           >
             <CheckCircle2 size={12} color="white" />
@@ -322,7 +322,7 @@ export function ProofCard({
             </span>
           </div>
         )}
-        <div className="px-3 py-3">
+        <div className=" py-3">
           {/* Receipt row */}
           <div
             className="rounded-lg p-3 mb-2 border border-emerald-100"

@@ -109,6 +109,61 @@ export interface ProviderAccount {
   accountName?: string;
 }
 
+
+export const REQUESTER_ACCOUNTS_INIT: ProviderAccount[] = [
+  {
+    id: "ra1",
+    methodId: "bank_transfer",
+    currency: "VND",
+    label: "Vietcombank chính",
+    bankName: "VCB",
+    accountNumber: "0123456789",
+    accountName: "Nguyen Van A",
+  },
+  {
+    id: "ra2",
+    methodId: "momo",
+    currency: "VND",
+    label: "Ví MoMo",
+    phone: "0901234567",
+    accountName: "Nguyen Van A",
+  },
+  {
+    id: "ra3",
+    methodId: "bank_transfer",
+    currency: "VND",
+    label: "Techcombank phụ",
+    bankName: "Techcombank",
+    accountNumber: "0987654321",
+    accountName: "Nguyen Van A",
+  },
+  {
+    id: "ra4",
+    methodId: "zelle",
+    currency: "USD",
+    label: "Zelle cá nhân",
+    phone: "+1 (415) 555-0128",
+    accountName: "Nguyen Van A",
+  },
+  {
+    id: "ra5",
+    methodId: "paypal",
+    currency: "USD",
+    label: "PayPal USD",
+    email: "van.a.remit@gmail.com",
+    accountName: "Nguyen Van A",
+  },
+  {
+    id: "ra6",
+    methodId: "bank_transfer",
+    currency: "EUR",
+    label: "SEPA Euro",
+    bankName: "ING",
+    accountNumber: "NL91INGB0001234567",
+    accountName: "Nguyen Van A",
+  },
+];
+
 export const PROVIDER_ACCOUNTS_INIT: ProviderAccount[] = [
   {
     id: "pa1",
@@ -158,7 +213,6 @@ export interface PaymentMethod {
   icon: string;
   requiresPhone?: boolean; // MoMo, ZaloPay, PayNow, PromptPay...
   requiresAccount?: boolean; // Bank Transfer
-  requiresAddress?: boolean; // Cash
 }
 
 export const PAYMENT_METHODS_BY_CURRENCY: Record<
@@ -166,12 +220,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   PaymentMethod[]
 > = {
   USD: [
-    {
-      id: "cash",
-      name: "Cash",
-      icon: "💵",
-      requiresAddress: true,
-    },
     {
       id: "zelle",
       name: "Zelle",
@@ -199,12 +247,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   ],
   EUR: [
     {
-      id: "cash",
-      name: "Cash",
-      icon: "💶",
-      requiresAddress: true,
-    },
-    {
       id: "paypal",
       name: "PayPal",
       icon: "🅿️",
@@ -225,12 +267,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   ],
   GBP: [
     {
-      id: "cash",
-      name: "Cash",
-      icon: "💷",
-      requiresAddress: true,
-    },
-    {
       id: "paypal",
       name: "PayPal",
       icon: "🅿️",
@@ -245,12 +281,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   ],
   SGD: [
     {
-      id: "cash",
-      name: "Cash",
-      icon: "💵",
-      requiresAddress: true,
-    },
-    {
       id: "paynow",
       name: "PayNow",
       icon: "📱",
@@ -264,12 +294,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
     },
   ],
   AUD: [
-    {
-      id: "cash",
-      name: "Cash",
-      icon: "💵",
-      requiresAddress: true,
-    },
     {
       id: "payid",
       name: "PayID",
@@ -291,12 +315,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   ],
   JPY: [
     {
-      id: "cash",
-      name: "現金 (Cash)",
-      icon: "💴",
-      requiresAddress: true,
-    },
-    {
       id: "paypay",
       name: "PayPay",
       icon: "📱",
@@ -310,12 +328,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
     },
   ],
   KRW: [
-    {
-      id: "cash",
-      name: "Cash",
-      icon: "💵",
-      requiresAddress: true,
-    },
     {
       id: "kakaopay",
       name: "KakaoPay",
@@ -331,12 +343,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
   ],
   THB: [
     {
-      id: "cash",
-      name: "Cash",
-      icon: "💵",
-      requiresAddress: true,
-    },
-    {
       id: "promptpay",
       name: "PromptPay",
       icon: "📱",
@@ -350,12 +356,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
     },
   ],
   CNY: [
-    {
-      id: "cash",
-      name: "现金 (Cash)",
-      icon: "💴",
-      requiresAddress: true,
-    },
     {
       id: "wechat_pay",
       name: "WeChat Pay",
@@ -376,12 +376,6 @@ export const PAYMENT_METHODS_BY_CURRENCY: Record<
     },
   ],
   VND: [
-    {
-      id: "cash",
-      name: "Tiền mặt",
-      icon: "💵",
-      requiresAddress: true,
-    },
     {
       id: "momo",
       name: "MoMo",
@@ -546,8 +540,7 @@ export const PROVIDER_DEALS_INIT: Deal[] = [
       "momo",
       "zalopay",
       "bank_transfer",
-      "cash",
-    ],
+      ],
   },
   {
     id: "d2",
@@ -621,15 +614,13 @@ export const AVAILABLE_DEALS: Deal[] = [
       "zelle",
       "venmo",
       "paypal",
-      "cash",
       "bank_transfer",
     ],
     recipientPaymentMethods: [
       "momo",
       "zalopay",
       "bank_transfer",
-      "cash",
-    ],
+      ],
   },
   {
     id: "ad2",
@@ -674,8 +665,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     recipientPaymentMethods: [
       "zalopay",
       "bank_transfer",
-      "cash",
-    ],
+      ],
   },
   {
     id: "ad4",
@@ -721,7 +711,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     notes: "GBP → VND. Uy tín, nhanh chóng.",
     transferTime: "1-2 giờ",
     senderPaymentMethods: ["paypal", "bank_transfer"],
-    recipientPaymentMethods: ["momo", "bank_transfer", "cash"],
+    recipientPaymentMethods: ["momo", "bank_transfer"],
   },
   {
     id: "ad6",
@@ -787,7 +777,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-14T00:00:00",
     notes: "Yen → VND. PayPay hoặc chuyển khoản.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypay", "bank_transfer", "cash"],
+    senderPaymentMethods: ["paypay", "bank_transfer"],
     recipientPaymentMethods: [
       "momo",
       "zalopay",
@@ -987,8 +977,8 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
     status: "rejected",
     createdAt: "2026-02-23T09:00:00",
     message: "Tỷ giá 25600 được không?",
-    senderPaymentMethod: "cash",
-    recipientPaymentMethod: "cash",
+    senderPaymentMethod: "bank_transfer",
+    recipientPaymentMethod: "bank_transfer",
     recipientName: "Đoàn Thị Lan",
     recipientAddress: "123 Lê Lợi, Q1, TP.HCM",
     systemFeeRate: 0.005,

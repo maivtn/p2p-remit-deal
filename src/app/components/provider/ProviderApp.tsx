@@ -58,6 +58,7 @@ import {
   StepProgress,
   TransactionProofSections,
 } from "../shared/ProofModal";
+import { RecipientDetails } from "../shared/RecipientDetails";
 
 function fmt(amount: number, code: string) {
   if (code === "VND") return formatVND(amount);
@@ -240,6 +241,7 @@ const TRANSFER_TIMES = [
   "Trong 24 giờ",
 ];
 const SUGGESTED_RATES: Record<string, string> = {
+  VND: "1",
   USD: "25500",
   EUR: "27900",
   GBP: "32200",
@@ -352,7 +354,7 @@ function CreateDealModal({
 
   const fc = getCurrency(form.fromCurrency);
   const tc = getCurrency(form.toCurrency);
-  const fromCurrs = CURRENCIES.filter((c) => c.code !== "VND");
+  const fromCurrs = CURRENCIES;
 
   return (
     <motion.div
@@ -585,7 +587,7 @@ function CreateDealModal({
                 marginBottom: 10,
               }}
             >
-              📤 Tôi gửi tiền {tc?.flag} cho người nhận qua
+              📤 Tôi gửi tiền {tc?.flag} qua
             </p>
             <PaymentMethodPicker
               currency={form.toCurrency}
@@ -1301,12 +1303,9 @@ function ProviderRequestCard({
   const feeAmt = req.amount * req.systemFeeRate;
   const providerFeeAmt = req.receiveAmount * req.systemFeeRate;
   const isNew = newRequestIds.includes(req.id);
-  const canDispute = [
-    "accepted",
-    "payment_sent",
-    "payment_confirmed",
-    "transfer_sent",
-  ].includes(req.status);
+  const canDispute =
+    !!req.transferProof &&
+    ["transfer_sent"].includes(req.status);
 
   return (
     <motion.div
@@ -1460,7 +1459,7 @@ function ProviderRequestCard({
               transferProof={req.transferProof}
               labels={{
                 payment: "Bằng chứng thanh toán từ người gửi",
-                transfer: "Bằng chứng chuyển tiền cho người nhận",
+                transfer: "Bằng chứng chuyển tiền",
               }}
             />
           )}
@@ -1506,52 +1505,23 @@ function ProviderRequestCard({
             />
           </button>
           {showRecipient && (
-            <div className="space-y-1.5 px-3 pb-3">
-              <div className="flex items-center gap-2">
-                <UserRound size={14} color="#059669" />
-                <span style={{ fontSize: 14, fontWeight: 700 }}>
-                  {req.recipientName}
-                </span>
-              </div>
-              {req.recipientPhone && (
-                <div className="flex items-center gap-2">
-                  <span style={{ fontSize: 15 }}>{recipientMethod?.icon}</span>
-                  <span
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      letterSpacing: 0.5,
-                    }}
-                  >
-                    {req.recipientPhone}
-                  </span>
-                  <span style={{ fontSize: 11, color: "#6B7280" }}>
-                    ({recipientMethod?.name})
-                  </span>
-                </div>
-              )}
-              {req.recipientBank && (
-                <div className="flex items-center gap-2">
-                  <Building2 size={13} color="#059669" />
-                  <span style={{ fontSize: 13 }}>{req.recipientBank}</span>
-                </div>
-              )}
-              {req.recipientAccount && (
-                <div className="flex items-center gap-2">
-                  <CreditCard size={13} color="#059669" />
-                  <span
-                    style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1 }}
-                  >
-                    {req.recipientAccount}
-                  </span>
-                </div>
-              )}
-              {req.recipientAddress && (
-                <div className="flex items-center gap-2">
-                  <MapPin size={13} color="#059669" />
-                  <span style={{ fontSize: 13 }}>{req.recipientAddress}</span>
-                </div>
-              )}
+            <div className="px-3 pb-3">
+              <RecipientDetails
+                mode="stacked"
+                name={req.recipientName}
+                method={recipientMethod}
+                phone={req.recipientPhone}
+                bank={req.recipientBank}
+                account={req.recipientAccount}
+                address={req.recipientAddress}
+                tone={{
+                  title: "#065F46",
+                  text: "#047857",
+                  muted: "#6B7280",
+                  label: "#B45309",
+                  icon: "#059669",
+                }}
+              />
             </div>
           )}
         </div>
@@ -1875,8 +1845,6 @@ function ProviderRequestCard({
         {req.status === "payment_confirmed" &&
           isDetail &&
           (() => {
-          const isRecipientBankTransfer =
-            req.recipientPaymentMethod === "bank_transfer";
           return (
           <div className="space-y-3">
             <div
@@ -1892,7 +1860,7 @@ function ProviderRequestCard({
                   letterSpacing: 0.2,
                 }}
               >
-                🔄 Chuyển tiền cho người nhận ngay
+                🔄 Chuyển tiền ngay
               </p>
               <div
                 className="space-y-2.5"
@@ -1916,69 +1884,22 @@ function ProviderRequestCard({
                   </span>
                   <span style={{ fontWeight: 700 }}>{req.recipientName}</span>
                 </div>
-                {!isRecipientBankTransfer ? (
-                  <>
-                    {req.recipientPhone && (
-                      <div className="flex flex-col gap-0.5">
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                          Số điện thoại
-                        </span>
-                        <span style={{ fontWeight: 700, letterSpacing: 0.3 }}>{req.recipientPhone}</span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-0.5">
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                        Hình thức
-                      </span>
-                      <span>
-                        {recipientMethod && (
-                          <>
-                            <span style={{ fontSize: 15, marginRight: 4 }}>{recipientMethod.icon}</span>
-                            <strong>{recipientMethod.name}</strong>
-                          </>
-                        )}
-                        {!recipientMethod && (
-                          <strong>Chuyển khoản ngân hàng</strong>
-                        )}
-                      </span>
-                    </div>
-                    {req.recipientBank && (
-                      <div className="flex flex-col gap-0.5">
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                          Ngân hàng
-                        </span>
-                        <span>{req.recipientBank}</span>
-                      </div>
-                    )}
-                    {req.recipientAccount && (
-                      <div className="flex flex-col gap-0.5">
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                          Số tài khoản
-                        </span>
-                        <span style={{ fontWeight: 700, letterSpacing: 0.5 }}>{req.recipientAccount}</span>
-                      </div>
-                    )}
-                    {req.recipientPhone && (
-                      <div className="flex flex-col gap-0.5">
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                          Số điện thoại
-                        </span>
-                        <span style={{ fontWeight: 700, letterSpacing: 0.3 }}>{req.recipientPhone}</span>
-                      </div>
-                    )}
-                    {req.recipientAddress && (
-                      <div className="flex flex-col gap-0.5">
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                          Địa chỉ
-                        </span>
-                        <span>{req.recipientAddress}</span>
-                      </div>
-                    )}
-                  </>
-                )}
+                <RecipientDetails
+                  mode="stacked"
+                  name={req.recipientName}
+                  method={recipientMethod}
+                  phone={req.recipientPhone}
+                  bank={req.recipientBank}
+                  account={req.recipientAccount}
+                  address={req.recipientAddress}
+                  tone={{
+                    title: "#92400E",
+                    text: "#78350F",
+                    muted: "#6B7280",
+                    label: "#B45309",
+                    icon: "#B45309",
+                  }}
+                />
                 {(req.memo || req.id) && (
                   <>
                     <div
@@ -2019,7 +1940,7 @@ function ProviderRequestCard({
             >
               <span style={{ fontSize: 16 }}>📤</span>
               <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
-                Đã chuyển — Upload bằng chứng
+                Đã chuyển {req.toCurrency} — Upload bằng chứng
               </span>
             </button>
           </div>
@@ -2034,7 +1955,7 @@ function ProviderRequestCard({
             >
               <span style={{ fontSize: 16 }}>⏳</span>
               <p style={{ fontSize: 13, color: "#065F46", fontWeight: 600 }}>
-                Chờ người dùng xác nhận người thân đã nhận...
+                Chờ người dùng xác nhận đã nhận tiền...
               </p>
             </div>
           </div>
@@ -2091,7 +2012,7 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {canDispute && isDetail && (
+        {canDispute && (
           <div className="mt-3">
             <button
               onClick={() => setShowDisputeModal(true)}
@@ -2104,7 +2025,7 @@ function ProviderRequestCard({
             >
               <span style={{ fontSize: 13 }}>⚠️</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: "#D97706" }}>
-                Khiếu nại giao dịch
+                Khiếu Nại
               </span>
             </button>
           </div>
@@ -2158,7 +2079,7 @@ function ProviderRequestCard({
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span style={{ fontSize: 13, color: "#374151" }}>
-                    Gửi đến người nhận
+                    Gửi đến tài khoản
                   </span>
                   <span
                     style={{ fontSize: 14, fontWeight: 700, color: "#059669" }}
@@ -2168,7 +2089,7 @@ function ProviderRequestCard({
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span style={{ fontSize: 13, color: "#374151" }}>
-                    Gửi đến người nhận ở
+                    Gửi đến
                   </span>
                   <span
                     style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}
@@ -2927,7 +2848,6 @@ function PaymentAccountsModal({
             <label style={labelStyle}>Hình thức thanh toán</label>
             <div className="flex flex-wrap gap-2">
               {(PAYMENT_METHODS_BY_CURRENCY[currency] ?? [])
-                .filter((m) => m.id !== "cash")
                 .map((m) => (
                   <button
                     key={m.id}
@@ -3086,7 +3006,7 @@ function PaymentAccountsModal({
               cursor: form.methodId && form.label ? "pointer" : "not-allowed",
             }}
           >
-            {editTarget ? "Cập nhật tài khoản" : "Lưu tài kho��n"}
+            {editTarget ? "Cập nhật tài khoản" : "Lưu tài khoản"}
           </button>
         </div>
       )}
@@ -3324,7 +3244,7 @@ function BottomNav({
     { key: "home", icon: <Home size={22} />, label: "Trang chủ" },
     { key: "deals", icon: <LayoutGrid size={22} />, label: "Deals" },
     { key: "requests", icon: <Bell size={22} />, label: "Yêu cầu" },
-    { key: "profile", icon: <User size={22} />, label: "H�� sơ" },
+    { key: "profile", icon: <User size={22} />, label: "Hồ sơ" },
   ];
   return (
     <div
