@@ -59,10 +59,12 @@ disputed → resolved        (Admin ra outcome R1/R2/R3/R4)
 | INV-08 | Mọi action tài chính phải có idempotency key. |
 | INV-09 | Mọi unmask dữ liệu nhạy cảm phải ghi audit log. |
 | INV-10 | Không tự `completed` ở `transfer_sent` nếu thiếu xác nhận Requester hoặc outcome R1. |
+| INV-11 | **Một account chỉ được có tối đa 1 request non-terminal tại mọi thời điểm, tính gộp qua cả hai vai (Requester và Provider).** Account KYC T2 có thể giữ cả hai vai (dual-role) nhưng không thể tham gia 2 giao dịch đồng thời dù ở bất kỳ sự kết hợp vai nào. Block `create_request` và `accept_request` nếu account đã có bất kỳ request non-terminal nào ở bất kỳ vai nào. Non-terminal = `pending_acceptance`, `accepted`, `payment_sent`, `payment_confirmed`, `transfer_sent`, `disputed`. |
 
 ## Guard conditions quan trọng
 
-- **accept_request**: Provider KYC T2 + deal active + `wallet.available >= collateralRequired` + request chưa expired
+- **create_request** (Requester): KYC T1 + deal active + amount trong min/max + **account không có request non-terminal nào ở bất kỳ vai nào** (INV-11)
+- **accept_request**: KYC T2 + deal active + `wallet.available >= collateralRequired` + request chưa expired + **account không có request non-terminal nào ở bất kỳ vai nào** (INV-11)
 - **submit_payment_proof**: proof hợp lệ (có note hoặc file) + request chưa ở terminal status
 - **confirm_payment_received**: xác nhận 2 bước + không có dispute đang mở
 - **complete_request**: `transferProof` tồn tại + xác nhận 2 bước + checkbox "đã nhận đủ" được check

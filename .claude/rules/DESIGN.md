@@ -36,13 +36,13 @@ monday.com runs a white-canvas productivity language with violet as its singular
 
 ## Tokens — Typography
 
-### Poppins — Sole typeface — used for all nav, body, headings, buttons, badges, and product UI. Geometric humanist sans with friendly rounded terminals; the rounded forms harmonize with the pill buttons and 24px card radii, making the whole UI feel approachable. Weight 300 for display headlines creates a soft, modern presence; weight 700 for nav and button labels carries authority without heaviness. · `--font-poppins`
-- **Substitute:** Manrope, DM Sans, Plus Jakarta Sans
-- **Weights:** 300, 400, 500, 700
+### Inter — Sole typeface — used for all nav, body, headings, buttons, badges, and product UI. Highly legible geometric grotesque designed for screen; optical sizing and tight letter-fit make it read cleanly at every size from 12px caption to 64px display. Weight 300 for display headlines creates a modern, open presence; weight 700 for UI labels carries authority without heaviness. · `--font-inter`
+- **Substitute:** ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont
+- **Weights:** 300, 400, 500, 600, 700
 - **Sizes:** 8, 12, 13, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 52, 56, 64
 - **Line height:** 1.15–2.46
 - **Letter spacing:** Negative tracking tightens large display: -0.04em at 64px, -0.02em at 48–56px, -0.015em at 28–40px, -0.01em at body sizes. Positive +0.2em appears for small uppercase labels (likely 8–12px tracking for eyebrow text).
-- **Role:** Sole typeface — used for all nav, body, headings, buttons, badges, and product UI. Geometric humanist sans with friendly rounded terminals; the rounded forms harmonize with the pill buttons and 24px card radii, making the whole UI feel approachable. Weight 300 for display headlines creates a soft, modern presence; weight 700 for nav and button labels carries authority without heaviness.
+- **Role:** Sole typeface — used for all nav, body, headings, buttons, badges, and product UI. Clean geometric grotesque optimised for digital screens; harmonises with the pill buttons and 24px card radii while staying highly readable at small sizes.
 
 ### Type Scale
 
@@ -110,7 +110,7 @@ monday.com runs a white-canvas productivity language with violet as its singular
 ### Primary Pill Button
 **Role:** Main CTA — the most prominent action on any page
 
-Filled violet #6161ff background, white text in Poppins 16px weight 500, 160px border-radius (full pill), 13px vertical / 24px horizontal padding, inline arrow icon. Drives the hero 'Get Started' and any conversion moment.
+Filled violet #6161ff background, white text in Inter 16px weight 500, 160px border-radius (full pill), 13px vertical / 24px horizontal padding, inline arrow icon. Drives the hero 'Get Started' and any conversion moment.
 
 ### Outlined Pill Button
 **Role:** Secondary CTA — paired with the primary to offer a lower-commitment path
@@ -125,7 +125,7 @@ No background or border, Slate (#535768) text weight 500, often paired with a dr
 ### Pastel Feature Card
 **Role:** Icon-and-text card used in feature grids and exploration menus
 
-Soft-tinted background (one of the accent palette: Mint, Sky, Apricot, Lavender, Periwinkle, Aqua), 24px border-radius, 24px internal padding, small monochrome icon, Poppins 16px weight 500 label. The 2:3 aspect ratio card is the system's workhorse tile.
+Soft-tinted background (one of the accent palette: Mint, Sky, Apricot, Lavender, Periwinkle, Aqua), 24px border-radius, 24px internal padding, small monochrome icon, Inter 16px weight 500 label. The 2:3 aspect ratio card is the system's workhorse tile.
 
 ### Board Mockup Card
 **Role:** Product showcase — embedded board UI that floats above the page edge
@@ -145,7 +145,7 @@ Violet #6161ff background fills the entire right column, white card sits on top 
 ### Status Pill
 **Role:** Inline metadata badge in board rows and lists
 
-Small pill (6px radius), tinted background matching status color (green/mint for done, orange for working, blue for stuck, red for stuck). Poppins 12–13px weight 500 label, 2px vertical / 8px horizontal padding.
+Small pill (6px radius), tinted background matching status color (green/mint for done, orange for working, blue for stuck, red for stuck). Inter 12–13px weight 500 label, 2px vertical / 8px horizontal padding.
 
 ### Avatar Stack
 **Role:** Social/collaboration indicator in board rows
@@ -160,7 +160,7 @@ Single-row horizontal layout of monochrome black wordmarks at ~60% opacity, cent
 ### Exploration Grid Card
 **Role:** 'What would you like to explore?' category picker
 
-White card, Mist 1px border, 6px radius, small square icon, 2-line Poppins label. Arranged in a 3-column grid on white panel with subtle shadow.
+White card, Mist 1px border, 6px radius, small square icon, 2-line Inter label. Arranged in a 3-column grid on white panel with subtle shadow.
 
 ### Navigation Bar
 **Role:** Top-level site navigation
@@ -173,7 +173,7 @@ White #ffffff background, sticky top, 8px vertical / 16px horizontal padding for
 - Use 160px border-radius for all buttons and CTAs — the pill shape is non-negotiable and defines the brand's friendly tone
 - Reserve #6161ff for primary actions and brand panels; let it carry the most important decision on every screen
 - Apply pastel accent backgrounds (Mint, Sky, Apricot, Lavender) to feature cards, not to buttons or text
-- Set display headlines at 48–64px Poppins weight 300 with negative letter-spacing (-0.04em to -0.02em) — thin geometric headlines distinguish this from typical 700-weight SaaS heroes
+- Set display headlines at 48–64px Inter weight 300 with negative letter-spacing (-0.04em to -0.02em) — thin geometric headlines distinguish this from typical 700-weight SaaS heroes
 - Use 24px radius for cards and 6px for badges/inputs — keep these two tiers consistent
 - Apply the conic-gradient prism (#8181ff → teal → green → yellow → pink → back to violet) to brand dividers, the logo mark, and loading states only
 - Use gradient text (pink→orange or cyan→violet) exclusively on hero headlines to inject warmth into the white canvas
@@ -225,13 +225,13 @@ Create a Primary Action Button: #6161ff background, #ffffff text, 9999px radius,
 ## 5 Example Component Prompts
 
 
-2. **Pastel Feature Card**: Background #abf0ff (or one of the accent palette: #bcfe90, #ff8940, #eddff7, #93beff, #d1faff). 24px border-radius. 24px internal padding. Small monochrome icon top-left, Poppins 16px weight 500 label below in #333333.
+2. **Pastel Feature Card**: Background #abf0ff (or one of the accent palette: #bcfe90, #ff8940, #eddff7, #93beff, #d1faff). 24px border-radius. 24px internal padding. Small monochrome icon top-left, Inter 16px weight 500 label below in #333333.
 
 3. **Board Mockup Card**: White #ffffff surface, 1px #d0d4e4 border, 24px border-radius, soft shadow rgba(205,208,223,0.4) 0 2px 48px. Contains rows with colored status pills (6px radius, tinted backgrounds like #bcfe90, #ff8940) and circular avatar stacks.
 
-4. **AI Prompt Card**: White surface, 6px border-radius, 16px padding, brand-color icon left, placeholder text 'Analyze sales pipeline' in Poppins 16px weight 500 #333333, mic and send icons right.
+4. **AI Prompt Card**: White surface, 6px border-radius, 16px padding, brand-color icon left, placeholder text 'Analyze sales pipeline' in Inter 16px weight 500 #333333, mic and send icons right.
 
-5. **Logo Trust Strip**: Centered eyebrow text 16px Poppins weight 400 #535768 reading 'Trusted by over 60% of the Fortune 500'. Below: single horizontal row of 7–8 monochrome black wordmarks (Holt Renfrew, Universal, Coca-Cola, Lionsgate, Carrefour, BD, Glossier style) at ~60% opacity, generous 32–48px gap between logos, no dividers.
+5. **Logo Trust Strip**: Centered eyebrow text 16px Inter weight 400 #535768 reading 'Trusted by over 60% of the Fortune 500'. Below: single horizontal row of 7–8 monochrome black wordmarks (Holt Renfrew, Universal, Coca-Cola, Lionsgate, Carrefour, BD, Glossier style) at ~60% opacity, generous 32–48px gap between logos, no dividers.
 
 ## Gradient System
 
@@ -284,7 +284,7 @@ The system follows a **flat-with-soft-shadow** approach: components are mostly f
   --gradient-prism: conic-gradient(from 270deg, rgb(129, 129, 255) 15%, rgb(51, 219, 219) 40%, rgb(51, 213, 142) 55%, rgb(255, 214, 51) 65%, rgb(252, 82, 125) 85%, rgb(129, 129, 255) 100%);
 
   /* Typography — Font Families */
-  --font-poppins: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
   --text-caption: 12px;
@@ -398,7 +398,7 @@ The system follows a **flat-with-soft-shadow** approach: components are mostly f
   --color-prism: #8181ff;
 
   /* Typography */
-  --font-poppins: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
   --text-caption: 12px;

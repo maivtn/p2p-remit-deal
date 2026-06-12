@@ -8,7 +8,7 @@ Chi tiết được chia theo chủ đề trong `.claude/rules/`:
 
 | File | Chủ đề | Apply |
 |---|---|---|
-| [01-project-overview.md](.claude/rules/01-project-overview.md) | Mô tả sản phẩm, actors, tài liệu tham chiếu, phạm vi prototype | Always |
+| [01-project-overview.md](.claude/rules/01-project-overview.md) | Mô tả sản phẩm, actors, tài liệu tham chiếu, **web app target platforms**, responsive rules, phạm vi prototype | Always |
 | [02-tech-stack.md](.claude/rules/02-tech-stack.md) | Stack, cấu trúc thư mục, path alias, lệnh dev | Always |
 | [03-state-machine.md](.claude/rules/03-state-machine.md) | State machine, timers, invariants, guard conditions | `src/app/**` |
 | [04-data-model.md](.claude/rules/04-data-model.md) | Interfaces Deal/DealRequest/Proof, fee model, wallet model | `src/app/data/**`, components |

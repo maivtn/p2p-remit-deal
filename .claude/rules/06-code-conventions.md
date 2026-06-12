@@ -17,6 +17,9 @@ alwaysApply: true
 | Action tài chính không có idempotency key | INV-08 |
 | Sửa/xóa proof đã submit | INV-06 — proof là immutable |
 | Unmask tài khoản/SĐT mà không ghi audit log | INV-09 |
+| Cho phép tạo request mới khi account đang có request non-terminal ở bất kỳ vai nào | INV-11 — check gộp cả Requester lẫn Provider; kiểm tra trước khi render form và validate lại ở backend |
+| Cho phép accept request khi account đang có request non-terminal ở bất kỳ vai nào | INV-11 — check gộp cả Requester lẫn Provider; kiểm tra trước khi hiển thị nút "Duyệt" và validate lại ở backend |
+| Giả định Requester và Provider là 2 tài khoản khác nhau trong logic kiểm tra INV-11 | Account KYC T2 có thể giữ cả 2 vai (dual-role); phải query theo `accountId` không theo `role` |
 
 ## Naming conventions
 

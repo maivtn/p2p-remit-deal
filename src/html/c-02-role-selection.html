@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Role — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="theme.css" />
+
+  <style>
+    body {
+      background: var(--color-cloud);
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ────────────────────────────────── */
+    .topbar {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--color-ink);
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-monday-violet);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+    }
+    .demo-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--color-periwinkle-wash);
+      color: var(--color-monday-violet);
+      padding: 4px 12px;
+      border-radius: var(--radius-buttons);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Page hero ─────────────────────────────── */
+    .page-hero {
+      padding: 48px 0 32px;
+      text-align: center;
+    }
+    .page-hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .page-hero p {
+      font-size: 15px;
+      color: var(--color-slate);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Section label ─────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-iron);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-pebble);
+    }
+
+    /* ── Role card ─────────────────────────────── */
+    .role-card {
+      background: var(--surface-card);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: var(--radius-cards);
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .role-card:hover {
+      border-color: var(--color-monday-violet);
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-2px);
+    }
+    .role-card:focus-visible {
+      outline: 2px solid var(--color-monday-violet);
+      outline-offset: 3px;
+    }
+    .role-card.active-demo {
+      border-color: var(--color-monday-violet);
+      background: var(--color-periwinkle);
+    }
+
+    /* Avatar */
+    .user-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-bottom: 14px;
+    }
+
+    /* Name & meta */
+    .user-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-ink);
+      margin-bottom: 2px;
+      letter-spacing: -0.2px;
+    }
+    .user-meta {
+      font-size: 13px;
+      color: var(--color-slate);
+      margin-bottom: 16px;
+    }
+
+    /* Stats row */
+    .user-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .u-stat-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+    .u-stat-lbl {
+      font-size: 11px;
+      color: var(--color-iron);
+      margin-top: 1px;
+    }
+
+    /* Tags */
+    .user-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .tag {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: var(--radius-buttons);
+      border: 1px solid var(--color-pebble);
+      background: var(--color-cloud);
+      color: var(--color-slate);
+    }
+    .tag-kyc {
+      background: #dcfce7;
+      border-color: #bbf7d0;
+      color: var(--color-forest);
+    }
+    .tag-admin {
+      background: var(--color-periwinkle-wash);
+      border-color: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+    }
+
+    /* CTA */
+    .card-cta { margin-top: auto; }
+    .btn-enter {
+      width: 100%;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--radius-buttons);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-enter:hover  { opacity: 0.88; }
+    .btn-enter:active { transform: scale(0.98); }
+    .btn-violet { background: var(--color-monday-violet); color: #fff; }
+    .btn-forest { background: var(--color-forest); color: #fff; }
+    .btn-ink    { background: var(--color-ink); color: #fff; }
+
+    /* Active indicator pip */
+    .active-pip {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-monday-violet);
+      border-radius: 50%;
+      display: none;
+    }
+    .role-card.active-demo .active-pip { display: block; }
+
+    /* ── Current session bar ───────────────────── */
+    .session-bar {
+      background: var(--color-periwinkle);
+      border: 1.5px solid var(--color-periwinkle-wash);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .session-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .session-info { flex: 1; min-width: 0; }
+    .session-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+    .session-role {
+      font-size: 13px;
+      color: var(--color-slate);
+    }
+    .session-continue {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-monday-violet);
+      background: var(--surface-card);
+      border: 1px solid var(--color-monday-violet);
+      padding: 8px 16px;
+      border-radius: var(--radius-buttons);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      min-height: 44px;
+    }
+    .session-continue:hover { background: var(--color-periwinkle); }
+    .session-continue:focus-visible { outline: 2px solid var(--color-monday-violet); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ──────────────────────────────────── -->
+<nav class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a href="home.html" class="topbar-brand">
+        <div class="brand-icon"><i class="bi bi-arrow-left-right"></i></div>
+        P2P Remit Deals
+      </a>
+      <span class="demo-badge"><i class="bi bi-play-circle-fill" style="font-size:10px;"></i> Demo</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ────────────────────────────────────── -->
+<main>
+  <div class="container pb-5">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <h1>Chọn persona để demo</h1>
+      <p>Tất cả tài khoản đã KYC đầy đủ. Chọn vai trò bạn muốn trải nghiệm.</p>
+    </div>
+
+    <!-- Current session bar -->
+    <div class="session-bar">
+      <div class="session-avatar" id="sess-av" style="background:var(--color-periwinkle);color:var(--color-monday-violet);">MT</div>
+      <div class="session-info">
+        <div class="session-name" id="sess-name">Minh Tuấn Nguyễn</div>
+        <div class="session-role" id="sess-role">Requester đang hoạt động</div>
+      </div>
+      <button class="session-continue" onclick="continueSession()">Tiếp tục →</button>
+    </div>
+
+    <!-- ── REQUESTER ───────────────────────────── -->
+    <div class="section-label">Requester — Người gửi tiền</div>
+    <div class="row g-3 mb-4">
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="role-card" id="card-U-REQ-001" tabindex="0"
+             onclick="selectRole('U-REQ-001')"
+             onkeydown="if(event.key==='Enter')selectRole('U-REQ-001')">
+          <div class="active-pip"></div>
+          <div class="user-avatar" style="background:var(--color-periwinkle);color:var(--color-monday-violet);">MT</div>
+          <div class="user-name">Minh Tuấn Nguyễn</div>
+          <div class="user-meta">TPHCM · 5 năm kinh nghiệm chuyển tiền</div>
+          <div class="user-stats">
+            <div><div class="u-stat-val">12</div><div class="u-stat-lbl">Giao dịch</div></div>
+            <div><div class="u-stat-val">4.7★</div><div class="u-stat-lbl">Rating</div></div>
+            <div><div class="u-stat-val">$8.400</div><div class="u-stat-lbl">Tổng gửi</div></div>
+          </div>
+          <div class="user-tags">
+            <span class="tag tag-kyc"><i class="bi bi-patch-check-fill" style="font-size:10px;"></i> KYC T1</span>
+            <span class="tag">Zelle · PayPal</span>
+            <span class="tag">USD → VND</span>
+          </div>
+          <div class="card-cta">
+            <button class="btn-enter btn-violet" onclick="event.stopPropagation();enterApp('U-REQ-001')">
+              <i class="bi bi-arrow-right-circle-fill" style="font-size:16px;"></i> Vào app Người gửi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="role-card" id="card-U-REQ-002" tabindex="0"
+             onclick="selectRole('U-REQ-002')"
+             onkeydown="if(event.key==='Enter')selectRole('U-REQ-002')">
+          <div class="active-pip"></div>
+          <div class="user-avatar" style="background:var(--color-sky);color:#0369a1;">LP</div>
+          <div class="user-name">Lan Phương Trần</div>
+          <div class="user-meta">Hà Nội · Gửi tiền cho gia đình định kỳ</div>
+          <div class="user-stats">
+            <div><div class="u-stat-val">34</div><div class="u-stat-lbl">Giao dịch</div></div>
+            <div><div class="u-stat-val">4.9★</div><div class="u-stat-lbl">Rating</div></div>
+            <div><div class="u-stat-val">$31.200</div><div class="u-stat-lbl">Tổng gửi</div></div>
+          </div>
+          <div class="user-tags">
+            <span class="tag tag-kyc"><i class="bi bi-patch-check-fill" style="font-size:10px;"></i> KYC T1</span>
+            <span class="tag">Venmo · MoMo</span>
+            <span class="tag">USD → VND</span>
+          </div>
+          <div class="card-cta">
+            <button class="btn-enter btn-violet" onclick="event.stopPropagation();enterApp('U-REQ-002')">
+              <i class="bi bi-arrow-right-circle-fill" style="font-size:16px;"></i> Vào app Người gửi
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── PROVIDER ────────────────────────────── -->
+    <div class="section-label">Provider — Nhà cung cấp thanh khoản</div>
+    <div class="row g-3 mb-4">
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="role-card" id="card-U-PRV-001" tabindex="0"
+             onclick="selectRole('U-PRV-001')"
+             onkeydown="if(event.key==='Enter')selectRole('U-PRV-001')">
+          <div class="active-pip"></div>
+          <div class="user-avatar" style="background:#dcfce7;color:var(--color-forest);">HM</div>
+          <div class="user-name">Hùng Mạnh Lê</div>
+          <div class="user-meta">TPHCM · Provider chuyên nghiệp</div>
+          <div class="user-stats">
+            <div><div class="u-stat-val">247</div><div class="u-stat-lbl">Hoàn tất</div></div>
+            <div><div class="u-stat-val">4.9★</div><div class="u-stat-lbl">Rating</div></div>
+            <div><div class="u-stat-val">98.4%</div><div class="u-stat-lbl">Đúng SLA</div></div>
+          </div>
+          <div class="user-tags">
+            <span class="tag tag-kyc"><i class="bi bi-patch-check-fill" style="font-size:10px;"></i> KYC T2</span>
+            <span class="tag">Zelle · Venmo · PayPal</span>
+            <span class="tag">3 deal mở</span>
+          </div>
+          <div class="card-cta">
+            <button class="btn-enter btn-forest" onclick="event.stopPropagation();enterApp('U-PRV-001')">
+              <i class="bi bi-arrow-right-circle-fill" style="font-size:16px;"></i> Vào app Provider
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="role-card" id="card-U-PRV-002" tabindex="0"
+             onclick="selectRole('U-PRV-002')"
+             onkeydown="if(event.key==='Enter')selectRole('U-PRV-002')">
+          <div class="active-pip"></div>
+          <div class="user-avatar" style="background:#fce7f3;color:#9d174d;">TM</div>
+          <div class="user-name">Thị Mai Phạm</div>
+          <div class="user-meta">Đà Nẵng · Provider mới, đang xây dựng uy tín</div>
+          <div class="user-stats">
+            <div><div class="u-stat-val">18</div><div class="u-stat-lbl">Hoàn tất</div></div>
+            <div><div class="u-stat-val">4.6★</div><div class="u-stat-lbl">Rating</div></div>
+            <div><div class="u-stat-val">94.4%</div><div class="u-stat-lbl">Đúng SLA</div></div>
+          </div>
+          <div class="user-tags">
+            <span class="tag tag-kyc"><i class="bi bi-patch-check-fill" style="font-size:10px;"></i> KYC T2</span>
+            <span class="tag">MoMo · ZaloPay</span>
+            <span class="tag">1 deal mở</span>
+          </div>
+          <div class="card-cta">
+            <button class="btn-enter btn-forest" onclick="event.stopPropagation();enterApp('U-PRV-002')">
+              <i class="bi bi-arrow-right-circle-fill" style="font-size:16px;"></i> Vào app Provider
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── ADMIN ───────────────────────────────── -->
+    <div class="section-label">Admin — Trọng tài</div>
+    <div class="row g-3 mb-5">
+
+      <div class="col-sm-6 col-lg-4">
+        <div class="role-card" id="card-U-ADM-001" tabindex="0"
+             onclick="selectRole('U-ADM-001')"
+             onkeydown="if(event.key==='Enter')selectRole('U-ADM-001')">
+          <div class="active-pip"></div>
+          <div class="user-avatar" style="background:var(--color-periwinkle-wash);color:var(--color-monday-violet);">AD</div>
+          <div class="user-name">Admin — Trọng tài</div>
+          <div class="user-meta">Truy cập toàn bộ hệ thống · Phân xử tranh chấp</div>
+          <div class="user-stats">
+            <div><div class="u-stat-val">3</div><div class="u-stat-lbl">Dispute mở</div></div>
+            <div><div class="u-stat-val">48h</div><div class="u-stat-lbl">SLA phân xử</div></div>
+            <div><div class="u-stat-val">100%</div><div class="u-stat-lbl">Đúng hạn</div></div>
+          </div>
+          <div class="user-tags">
+            <span class="tag tag-admin"><i class="bi bi-shield-fill-check" style="font-size:10px;"></i> Admin</span>
+            <span class="tag">Disputes · Ledger · Risk</span>
+          </div>
+          <div class="card-cta">
+            <button class="btn-enter btn-ink" onclick="event.stopPropagation();enterApp('U-ADM-001')">
+              <i class="bi bi-arrow-right-circle-fill" style="font-size:16px;"></i> Vào Admin console
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<div class="toast-demo" id="toast"></div>
+
+<script src="mock-data.js"></script>
+<script>
+  var DEMO_USERS = {
+    'U-REQ-001': { name: 'Minh Tuấn Nguyễn', role: 'Requester',     initials: 'MT', avatarBg: 'var(--color-periwinkle)',     avatarColor: 'var(--color-monday-violet)', dest: 'home.html' },
+    'U-REQ-002': { name: 'Lan Phương Trần',   role: 'Requester',     initials: 'LP', avatarBg: 'var(--color-sky)',            avatarColor: '#0369a1',                    dest: 'home.html' },
+    'U-PRV-001': { name: 'Hùng Mạnh Lê',      role: 'Provider',      initials: 'HM', avatarBg: '#dcfce7',                    avatarColor: 'var(--color-forest)',         dest: 'home.html' },
+    'U-PRV-002': { name: 'Thị Mai Phạm',       role: 'Provider',      initials: 'TM', avatarBg: '#fce7f3',                    avatarColor: '#9d174d',                    dest: 'home.html' },
+    'U-ADM-001': { name: 'Admin — Trọng tài',  role: 'Admin console', initials: 'AD', avatarBg: 'var(--color-periwinkle-wash)', avatarColor: 'var(--color-monday-violet)', dest: 'home.html' },
+  };
+
+  var activeUserId = localStorage.getItem('p2p_demo_user') || 'U-REQ-001';
+
+  function selectRole(uid) {
+    activeUserId = uid;
+    localStorage.setItem('p2p_demo_user', uid);
+    Object.keys(DEMO_USERS).forEach(function (id) {
+      var el = document.getElementById('card-' + id);
+      if (el) el.classList.toggle('active-demo', id === uid);
+    });
+    var u = DEMO_USERS[uid];
+    var av = document.getElementById('sess-av');
+    av.style.background = u.avatarBg;
+    av.style.color = u.avatarColor;
+    av.textContent = u.initials;
+    document.getElementById('sess-name').textContent = u.name;
+    document.getElementById('sess-role').textContent = u.role + ' đang hoạt động';
+  }
+
+  function enterApp(uid) {
+    selectRole(uid);
+    var u = DEMO_USERS[uid];
+    showToast('→ ' + u.role + ' · ' + u.name);
+    setTimeout(function () { window.location.href = u.dest; }, 500);
+  }
+
+  function continueSession() { enterApp(activeUserId); }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  selectRole(activeUserId);
+</script>
+</body>
+</html>

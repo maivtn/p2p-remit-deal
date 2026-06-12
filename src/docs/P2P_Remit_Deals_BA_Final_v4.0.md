@@ -108,15 +108,26 @@ Vì mô hình có rủi ro pháp lý, thanh khoản và vận hành, BA đề xu
 
 ## 3. ACTORS, PERSONA VÀ RACI
 
-### 3.1. Actors nghiệp vụ
+### 3.1. Loại tài khoản và vai nghiệp vụ
 
-| Actor | Mục tiêu | Quyền chính | Điều kiện/ràng buộc |
+Hệ thống phân biệt **loại tài khoản** (account type) với **vai nghiệp vụ** (role). Có 2 loại tài khoản:
+
+| Loại tài khoản | Vai có thể giữ | KYC bắt buộc | Mục tiêu |
 |---|---|---|---|
-| Requester | Gửi tiền nhanh, tỷ giá tốt, người nhận nhận đúng đủ | Tìm deal, gửi request, chuyển tiền ngoài hệ thống, upload proof, khiếu nại, xác nhận hoàn tất, đánh giá | KYC T1; phí 0,5% cộng vào tổng phải chuyển; tuân thủ SLA thanh toán |
-| Provider | Kiếm chênh lệch tỷ giá, xoay vòng vốn, giữ uy tín | Tạo/sửa deal, accept/reject, xác nhận nhận tiền, chi trả, upload proof, khiếu nại, quản lý ví | KYC T2; có tài khoản thanh toán; đủ ký quỹ; chịu SLA |
-| Beneficiary | Nhận tiền cuối cùng | Không dùng hệ thống trực tiếp | Thông tin do Requester khai báo hoặc chọn từ tài khoản lưu |
-| Admin/Arbitrator | Đảm bảo tranh chấp có kết luận và thực thi được | Xem toàn bộ case, yêu cầu bằng chứng, tham gia chat, ra outcome, khóa/mở user | Phải có audit log; phán quyết có rationale |
-| System | Điều phối trạng thái, validate, lưu vết, thông báo, ledger | State machine, SLA scheduler, notification, fee/collateral, masking | Không tự completed nếu thiếu xác nhận hoặc phán quyết |
+| **Member** | Requester, Provider, hoặc cả hai (dual-role) | T1 → Requester · T2 → Provider + dual-role | Tham gia giao dịch P2P — gửi tiền hoặc cung cấp thanh khoản |
+| **Admin** | Admin / Arbitrator | Không áp dụng (tài khoản nội bộ, không tự đăng ký) | Phân xử tranh chấp, quản lý nền tảng, kiểm duyệt rủi ro |
+
+#### Vai trong tài khoản Member
+
+| Vai | KYC tối thiểu | Quyền chính | Ràng buộc chính |
+|---|---|---|---|
+| **Requester** | T1 | Tìm deal, gửi request, chuyển tiền ngoài hệ thống, upload proof, khiếu nại, xác nhận hoàn tất, đánh giá | Phí 0,5%; tuân thủ SLA thanh toán |
+| **Provider** | T2 | Tạo/sửa deal, accept/reject request, xác nhận nhận tiền, chi trả Beneficiary, upload proof, khiếu nại, quản lý ví | Đủ ký quỹ; có tài khoản thanh toán; chịu SLA |
+| **Dual-role** (Requester + Provider) | T2 | Toàn bộ quyền cả hai vai; chuyển đổi vai qua role switcher trong app | **Tối đa 1 giao dịch active tại mọi thời điểm, tính gộp cả hai vai** (INV-11) |
+
+> **Beneficiary** (người nhận tiền) không có tài khoản hệ thống; thông tin do Member vai Requester khai báo hoặc chọn từ danh sách đã lưu.
+>
+> **System** điều phối state machine, SLA scheduler, notification, fee/collateral, masking — không tự `completed` nếu thiếu xác nhận hoặc phán quyết Admin.
 
 ### 3.2. RACI cấp quy trình
 
@@ -258,7 +269,8 @@ payment_sent / payment_confirmed / transfer_sent
 
 | ID | From | Action | Actor | Guard bắt buộc | To | Side effect |
 |---|---|---|---|---|---|---|
-| ST-01 | pending_acceptance | accept_request | Provider | Provider KYC T2; deal active/version valid; wallet available >= collateral; request not expired | accepted | lock collateral; snapshot fee/rate/SLA; start T2; notify Requester |
+| ST-00 | — (tạo mới) | create_request | Requester | Requester KYC T1; deal active; amount trong min/max; **account không có request non-terminal nào ở bất kỳ vai nào** (INV-11) | pending_acceptance | start T1; notify Provider |
+| ST-01 | pending_acceptance | accept_request | Provider | Provider KYC T2; deal active/version valid; wallet available >= collateral; request not expired; **account không có request non-terminal nào ở bất kỳ vai nào** (INV-11) | accepted | lock collateral; snapshot fee/rate/SLA; start T2; notify Requester |
 | ST-02 | pending_acceptance | reject_request | Provider | rejectReason not empty | rejected | store reason; notify Requester; stop T1 |
 | ST-03 | pending_acceptance | cancel_request | Requester | confirm dialog accepted | cancelled | stop T1; no fee |
 | ST-04 | pending_acceptance | timer_expired_T1 | System | now > deadline; no prior terminal status | expired | notify both; suggest alternative deals |
@@ -289,6 +301,7 @@ payment_sent / payment_confirmed / transfer_sent
 | INV-08 | Tất cả action tài chính phải có idempotency key. |
 | INV-09 | Mọi unmask dữ liệu nhạy cảm phải ghi audit log: actor, requestId, field, timestamp, purpose. |
 | INV-10 | Không tự completed ở transfer_sent nếu thiếu xác nhận Requester hoặc outcome R1 của Admin. |
+| INV-11 | **Một account chỉ được có tối đa 1 request ở non-terminal status tại mọi thời điểm, tính gộp qua cả hai vai (Requester và Provider).** Một account KYC T2 có thể giữ cả hai vai, nhưng không thể tham gia 2 giao dịch đồng thời dù ở bất kỳ sự kết hợp vai nào. Non-terminal = `pending_acceptance`, `accepted`, `payment_sent`, `payment_confirmed`, `transfer_sent`, `disputed`. System phải block `create_request` và `accept_request` nếu account đã có bất kỳ request non-terminal nào ở bất kỳ vai nào, và phải hiển thị deep-link đến giao dịch đang dở. |
 
 ---
 
@@ -502,11 +515,14 @@ Giả sử request USD -> VND, Requester gửi 500 USD, Provider phải chi 12.7
 
 ### 11.1. KYC tiers
 
-| Tier | Yêu cầu | Quyền | Hạn mức đề xuất |
-|---|---|---|---|
-| T0 | Email/SĐT + OTP | Xem marketplace, lưu account | Không giao dịch |
-| T1 | eKYC giấy tờ + liveness | Gửi request | <= 1.000 USD/GD; <= 5.000 USD/30 ngày hoặc theo Legal |
-| T2 | T1 + địa chỉ + nguồn tiền + tài khoản chính chủ | Làm Provider; hạn mức cao hơn | Theo thẩm định và risk score |
+KYC chỉ áp dụng cho tài khoản **Member**. Tài khoản **Admin** được tạo nội bộ và không đi qua luồng KYC tự phục vụ.
+
+| Tier | Yêu cầu | Loại tài khoản | Vai mở khóa | Hạn mức đề xuất |
+|---|---|---|---|---|
+| T0 | Email/SĐT + OTP | Member | Xem marketplace, lưu account (chưa giao dịch) | Không giao dịch |
+| T1 | eKYC giấy tờ + liveness | Member | **Requester** | <= 1.000 USD/GD; <= 5.000 USD/30 ngày hoặc theo Legal |
+| T2 | T1 + địa chỉ + nguồn tiền + tài khoản chính chủ | Member | **Provider** + giữ nguyên Requester → **Dual-role** | Theo thẩm định và risk score; giới hạn 1 giao dịch active gộp cả hai vai (INV-11) |
+| — | Tạo nội bộ | **Admin** | Admin / Arbitrator | Không áp dụng |
 
 ### 11.2. Risk controls
 
@@ -540,12 +556,15 @@ Giả sử request USD -> VND, Requester gửi 500 USD, Provider phải chi 12.7
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-ONB-01 | System shall allow user registration/login with phone/email OTP. | P0 |
-| FR-ONB-02 | System shall prevent any transaction action if user has not met required KYC tier. | P0 |
-| FR-ONB-03 | System shall allow Requester transaction only at KYC T1 or higher. | P0 |
-| FR-ONB-04 | System shall allow Provider role only at KYC T2 or higher. | P0 |
-| FR-ONB-05 | System shall enforce transaction limits by KYC tier, corridor and rolling window. | P0 |
-| FR-ONB-06 | System shall store KYC status, tier, review reason and effective time for audit. | P0 |
+| FR-ONB-01 | System shall support two account types: **Member** (self-registered, subject to KYC) and **Admin** (internally provisioned, no KYC self-service). | P0 |
+| FR-ONB-02 | System shall allow Member registration/login with phone/email OTP. Admin accounts shall be provisioned by platform operators only. | P0 |
+| FR-ONB-03 | System shall prevent any transaction action for a Member account that has not met the required KYC tier. | P0 |
+| FR-ONB-04 | System shall unlock the Requester role for Member accounts at KYC T1 or higher. | P0 |
+| FR-ONB-05 | System shall unlock the Provider role for Member accounts at KYC T2; KYC T2 Member retains the Requester role (dual-role). | P0 |
+| FR-ONB-06 | System shall enforce transaction limits by KYC tier, corridor and rolling window. | P0 |
+| FR-ONB-07 | System shall store KYC status, tier, review reason and effective time for audit. | P0 |
+| FR-ONB-08 | A KYC T2 Member account shall operate in both Requester and Provider roles (dual-role) without creating a separate account; the app shall provide a role switcher UI to navigate between both feature sets. | P0 |
+| FR-ONB-09 | System shall enforce the cross-role single active transaction rule (INV-11): a Member account with an active non-terminal request in any role cannot initiate or accept another request in any role until the active request reaches a terminal status. | P0 |
 
 ### 12.2. Provider wallet & ledger
 
@@ -594,6 +613,8 @@ Giả sử request USD -> VND, Requester gửi 500 USD, Provider phải chi 12.7
 | FR-TXN-06 | Provider shall submit transferProof to move payment_confirmed to transfer_sent. | P0 |
 | FR-TXN-07 | Requester shall complete request with irreversible confirmation dialog and beneficiary checked checkbox. | P0 |
 | FR-TXN-08 | On completed, system shall charge fee, unlock collateral and open rating window. | P0 |
+| FR-TXN-09 | System shall block `create_request` if the account has any non-terminal request in any role (Requester or Provider); error message shall name the blocking request and include a deep-link to it. | P0 |
+| FR-TXN-10 | System shall block `accept_request` if the account has any non-terminal request in any role (Requester or Provider); error message shall name the blocking request and include a deep-link to it. | P0 |
 
 ### 12.6. Proof, memo and file handling
 

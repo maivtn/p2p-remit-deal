@@ -63,11 +63,11 @@ paths:
 
 ## Typography
 
-**Font:** Poppins — duy nhất cho toàn bộ app (nav, body, heading, button, badge, số tiền)  
-**Fallback:** Manrope, DM Sans, Plus Jakarta Sans
+**Font:** Inter — duy nhất cho toàn bộ app (nav, body, heading, button, badge, số tiền)  
+**Fallback:** ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont
 
 ```css
---font-poppins: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+--font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 ```
 
 | Role | Size | Weight | Line height | Letter spacing | Token |
@@ -157,7 +157,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 ### Button
 
 **Bootstrap base:** `.btn` + `.btn-primary` / `.btn-outline-secondary` / `.btn-danger`  
-**Override bắt buộc:** radius 160px (pill), font Poppins, màu từ token.
+**Override bắt buộc:** radius 160px (pill), font Inter, màu từ token.
 
 ```html
 <!-- Primary -->
@@ -181,7 +181,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 ```css
 /* ── Override .btn chung ── */
 .btn {
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-weight: 500;
   border-radius: var(--radius-buttons) !important; /* 160px — pill bắt buộc */
   padding: 13px 24px;
@@ -253,7 +253,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 /* ── Override .form-control & .form-select ── */
 .form-control,
 .form-select {
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 15px;
   border: 1px solid #dddfeb;       /* pebble */
   border-radius: 6px !important;   /* radius-inputs */
@@ -360,7 +360,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 ### Badge / Status Pill
 
 **Bootstrap base:** `.badge`  
-**Override:** radius 6px, Poppins, màu pastel từ token.
+**Override:** radius 6px, Inter, màu pastel từ token.
 
 ```html
 <span class="badge badge-p2p badge-accepted">Chờ bạn chuyển tiền</span>
@@ -371,7 +371,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 
 ```css
 .badge.badge-p2p {
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 12px; font-weight: 500;
   border-radius: 6px !important;    /* radius-badges */
   padding: 3px 10px;
@@ -420,7 +420,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 /* Section tabs */
 .nav-tabs.p2p-tabs          { border-bottom: 1px solid #dddfeb; gap: 4px; }
 .nav-tabs.p2p-tabs .nav-link {
-  font-family: var(--font-poppins); font-size: 14px; font-weight: 500;
+  font-family: var(--font-inter); font-size: 14px; font-weight: 500;
   color: #535768; border: none; border-radius: 6px 6px 0 0 !important;
   padding: 8px 16px;
   transition: color var(--transition-base), background-color var(--transition-base);
@@ -438,7 +438,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 .p2p-nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   gap: 3px; padding: 4px 8px; color: #535768; text-decoration: none;
-  font-family: var(--font-poppins); font-size: 10px; font-weight: 500;
+  font-family: var(--font-inter); font-size: 10px; font-weight: 500;
   border-radius: 8px !important;
   transition: color var(--transition-base), background-color var(--transition-base);
 }
@@ -475,7 +475,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
   box-shadow: rgba(0,0,0,0.15) 0px 4px 40px 0px; padding: 6px;
 }
 .p2p-dropdown-item {
-  font-family: var(--font-poppins); font-size: 14px;
+  font-family: var(--font-inter); font-size: 14px;
   border-radius: 8px !important; padding: 8px 14px;
   color: #333333;
   transition: background-color var(--transition-fast);
@@ -544,7 +544,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 
 ```css
 .countdown {
-  font-family: var(--font-poppins); font-size: 13px; font-weight: 500;
+  font-family: var(--font-inter); font-size: 13px; font-weight: 500;
   background: #fff8e1; color: #f59e0b;
   border-radius: 160px; padding: 3px 12px;
   transition: background-color var(--transition-base), color var(--transition-base);
@@ -787,7 +787,7 @@ Mobile < 768px:
 ### Do
 - Dùng **160px border-radius** cho tất cả button và CTA — pill shape là chữ ký
 - Reserve `#6161ff` cho primary action; pastel chỉ dùng cho card surface
-- Font Poppins weight 300 cho display headline; weight 500–600 cho UI label; weight 700 cho memo/ref
+- Font Inter weight 300 cho display headline; weight 500–600 cho UI label; weight 700 cho memo/ref
 - `24px radius` cho card, `6px` cho badge/input — giữ 2 tier này nhất quán
 - Shadow `rgba(205,208,223,0.4) 0 2px 48px` — một lớp shadow nhẹ; không stack shadow
 
