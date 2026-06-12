@@ -4,6 +4,7 @@ import bankTransfer from '../../images/bank-transfer.png'
 import cash from '../../images/cash.png'
 import cashApp from '../../images/cash_app.png'
 import kakaoPay from '../../images/kakao-pay.png'
+import momo from '../../images/momo.png'
 import payId from '../../images/pay-id.png'
 import payNow from '../../images/pay-now.png'
 import paypal from '../../images/paypal.png'
@@ -11,6 +12,7 @@ import promptPay from '../../images/promt-pay.png'
 import sepa from '../../images/sepa.png'
 import venmo from '../../images/venmo.png'
 import wechatPay from '../../images/wechat-pay.png'
+import zalopay from '../../images/zalopay.png'
 import zelle from '../../images/zelle.png'
 
 export const PAYMENT_ICONS: Record<string, string> = {
@@ -20,6 +22,7 @@ export const PAYMENT_ICONS: Record<string, string> = {
   cash,
   cash_app: cashApp,
   kakaopay: kakaoPay,
+  momo,
   payid: payId,
   paynow: payNow,
   paypal,
@@ -28,5 +31,6 @@ export const PAYMENT_ICONS: Record<string, string> = {
   venmo,
   wechatPay,
   wechat_pay: wechatPay,
+  zalopay,
   zelle,
 }
