@@ -1,5 +1,6 @@
 import { Building2, CreditCard, MapPin, Phone, UserRound } from "lucide-react";
 import { type PaymentMethod } from "../../data/mockData";
+import { MethodIcon } from "./MethodIcon";
 
 type RecipientTone = {
   title: string;
@@ -77,7 +78,7 @@ export function RecipientDetails({
 
       {showMethod && method && !isMomo && (
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 15 }}>{method.icon}</span>
+          <MethodIcon id={method.id} icon={method.icon} size={15} />
           <span style={{ fontSize: 13, fontWeight: 700, color: t.text }}>
             {method.name}
           </span>

@@ -17,6 +17,7 @@ import {
 } from '../../data/mockData';
 import { ProofModal, ProofCard, EscrowBanner, StepProgress, TransactionProofSections } from '../shared/ProofModal';
 import { RecipientDetails } from '../shared/RecipientDetails';
+import { MethodIcon } from '../shared/MethodIcon';
 
 type Tab = 'home' | 'requests' | 'accounts' | 'profile';
 type RequestsViewMode = 'list' | 'detail';
@@ -103,7 +104,7 @@ function PaymentMethodSelector({
               cursor: 'pointer',
             }}
           >
-            <span style={{ fontSize: 16 }}>{m.icon}</span>
+            <MethodIcon id={m.id} icon={m.icon} size={16} />
             <span style={{ fontSize: 13, fontWeight: selected === m.id ? 700 : 500, color: selected === m.id ? PRIMARY_REQ : '#374151' }}>
               {m.name}
             </span>
@@ -120,7 +121,7 @@ function MethodBadge({ currency, methodId }: { currency: string; methodId: strin
   if (!m) return <span style={{ fontSize: 12, color: '#6B7280' }}>{methodId}</span>;
   return (
     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-      <span style={{ fontSize: 14 }}>{m.icon}</span>
+      <MethodIcon id={m.id} icon={m.icon} size={14} />
       <span style={{ fontSize: 12, fontWeight: 600, color: '#065F46' }}>{m.name}</span>
     </span>
   );
@@ -363,7 +364,7 @@ function NeedForm({
               <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5 }}>THÔNG TIN TÀI KHOẢN NHẬN</p>
               {recipientMethod && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-                  <span style={{ fontSize: 13 }}>{recipientMethod.icon}</span>
+                  <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={13} />
                   <span style={{ fontSize: 11, color: '#065F46', fontWeight: 600 }}>{recipientMethod.name}</span>
                 </span>
               )}
@@ -426,7 +427,7 @@ function NeedForm({
               {recipientMethod?.requiresPhone && (
                 <div>
                   <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientPhone ? '#EF4444' : '#E5E7EB' }}>
-                    <span style={{ fontSize: 16 }}>{recipientMethod.icon}</span>
+                    <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={16} />
                     <input
                       value={need.recipientPhone}
                       onChange={e => set('recipientPhone', e.target.value)}
@@ -559,7 +560,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn thanh toán qua</p>
               <p style={{ color: 'white', fontSize: 15, fontWeight: 800 }}>
                 {fmt(amount, need.senderCurrency)}
-                {senderMethod && <span style={{ fontSize: 12, fontWeight: 500 }}> · {senderMethod.icon} {senderMethod.name}</span>}
+                {senderMethod && <span className="inline-flex items-center gap-0.5" style={{ fontSize: 12, fontWeight: 500 }}> · <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={12} /> {senderMethod.name}</span>}
               </p>
             </div>
             <ArrowRight size={14} color="rgba(255,255,255,0.5)" />

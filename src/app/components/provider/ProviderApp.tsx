@@ -59,6 +59,7 @@ import {
   TransactionProofSections,
 } from "../shared/ProofModal";
 import { RecipientDetails } from "../shared/RecipientDetails";
+import { MethodIcon } from "../shared/MethodIcon";
 
 function fmt(amount: number, code: string) {
   if (code === "VND") return formatVND(amount);
@@ -179,7 +180,7 @@ function PaymentMethodPicker({
                 cursor: "pointer",
               }}
             >
-              <span style={{ fontSize: 15 }}>{m.icon}</span>
+              <MethodIcon id={m.id} icon={m.icon} size={15} />
               <span
                 style={{
                   fontSize: 12,
@@ -217,7 +218,7 @@ function MethodBadge({
         border: `1px solid ${highlight ? "#6EE7B7" : "#E5E7EB"}`,
       }}
     >
-      <span style={{ fontSize: 13 }}>{m.icon}</span>
+      <MethodIcon id={m.id} icon={m.icon} size={13} />
       <span
         style={{
           fontSize: 11,
@@ -939,9 +940,9 @@ function HomeTab({
                         {fmt(req.receiveAmount, req.toCurrency)}
                       </div>
                       {senderMethod && recipientMethod && (
-                        <div style={{ fontSize: 11, color: "#9CA3AF" }}>
-                          {senderMethod.icon}
-                          {senderMethod.name} → {recipientMethod.icon}
+                        <div style={{ fontSize: 11, color: "#9CA3AF" }} className="flex items-center gap-0.5 flex-wrap">
+                          <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={11} />
+                          {senderMethod.name} → <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={11} />
                           {recipientMethod.name}
                         </div>
                       )}
@@ -1616,9 +1617,7 @@ function ProviderRequestCard({
                           Người gửi thanh toán
                         </p>
                         <div className="flex items-center gap-1">
-                          <span style={{ fontSize: 15 }}>
-                            {senderMethod?.icon}
-                          </span>
+                          {senderMethod && <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={15} />}
                           <span
                             style={{
                               fontSize: 13,
@@ -1654,9 +1653,7 @@ function ProviderRequestCard({
                           Bạn chuyển đến người thụ hưởng
                         </p>
                         <div className="flex items-center justify-end gap-1">
-                          <span style={{ fontSize: 15 }}>
-                            {recipientMethod?.icon}
-                          </span>
+                          {recipientMethod && <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={15} />}
                           <span
                             style={{
                               fontSize: 13,
@@ -1814,8 +1811,9 @@ function ProviderRequestCard({
             style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}
           >
             <span style={{ fontSize: 16 }}>⏳</span>
-            <p style={{ fontSize: 13, color: "#1E40AF", fontWeight: 600 }}>
-              Chờ người gửi chuyển tiền qua {senderMethod?.icon}{" "}
+            <p style={{ fontSize: 13, color: "#1E40AF", fontWeight: 600 }} className="flex items-center gap-1 flex-wrap">
+              Chờ người gửi chuyển tiền qua{" "}
+              {senderMethod && <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={13} />}
               {senderMethod?.name} và upload bằng chứng...
             </p>
           </div>
@@ -2688,9 +2686,9 @@ function PaymentAccountsModal({
                         <div className="flex items-center gap-3">
                           <div
                             className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ background: "#EFF6FF", fontSize: 20 }}
+                            style={{ background: "#EFF6FF" }}
                           >
-                            {m?.icon || "💳"}
+                            {m ? <MethodIcon id={m.id} icon={m.icon} size={22} /> : <span style={{ fontSize: 20 }}>💳</span>}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p
@@ -2866,7 +2864,7 @@ function PaymentAccountsModal({
                       cursor: "pointer",
                     }}
                   >
-                    <span style={{ fontSize: 15 }}>{m.icon}</span>
+                    <MethodIcon id={m.id} icon={m.icon} size={15} />
                     <span
                       style={{
                         fontSize: 12,
@@ -3149,7 +3147,7 @@ function ProfileTab({ onRoleChange }: { onRoleChange: () => void }) {
                       border: "1px solid #DBEAFE",
                     }}
                   >
-                    <span style={{ fontSize: 13 }}>{m?.icon || "💳"}</span>
+                    {m ? <MethodIcon id={m.id} icon={m.icon} size={13} /> : <span style={{ fontSize: 13 }}>💳</span>}
                     <span
                       style={{
                         fontSize: 11,
