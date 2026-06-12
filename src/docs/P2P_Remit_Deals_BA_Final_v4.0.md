@@ -123,7 +123,7 @@ Hệ thống phân biệt **loại tài khoản** (account type) với **vai ngh
 |---|---|---|---|
 | **Requester** | T1 | Tìm deal, gửi request, chuyển tiền ngoài hệ thống, upload proof, khiếu nại, xác nhận hoàn tất, đánh giá | Phí 0,5%; tuân thủ SLA thanh toán |
 | **Provider** | T2 | Tạo/sửa deal, accept/reject request, xác nhận nhận tiền, chi trả Beneficiary, upload proof, khiếu nại, quản lý ví | Đủ ký quỹ; có tài khoản thanh toán; chịu SLA |
-| **Dual-role** (Requester + Provider) | T2 | Toàn bộ quyền cả hai vai; chuyển đổi vai qua role switcher trong app | **Tối đa 1 giao dịch active tại mọi thời điểm, tính gộp cả hai vai** (INV-11) |
+| **Dual-role** (Requester + Provider) | T2 | Toàn bộ quyền cả hai vai; chuyển đổi qua **2 tab tính năng** — tab "Yêu cầu" (Requester flow) và tab "Tạo deal" (Provider flow) — trên cùng account | **Tối đa 1 giao dịch active tại mọi thời điểm, tính gộp cả hai vai** (INV-11); CTA ở tab kia bị block khi đang có giao dịch active |
 
 > **Beneficiary** (người nhận tiền) không có tài khoản hệ thống; thông tin do Member vai Requester khai báo hoặc chọn từ danh sách đã lưu.
 >
@@ -563,8 +563,9 @@ KYC chỉ áp dụng cho tài khoản **Member**. Tài khoản **Admin** đượ
 | FR-ONB-05 | System shall unlock the Provider role for Member accounts at KYC T2; KYC T2 Member retains the Requester role (dual-role). | P0 |
 | FR-ONB-06 | System shall enforce transaction limits by KYC tier, corridor and rolling window. | P0 |
 | FR-ONB-07 | System shall store KYC status, tier, review reason and effective time for audit. | P0 |
-| FR-ONB-08 | A KYC T2 Member account shall operate in both Requester and Provider roles (dual-role) without creating a separate account; the app shall provide a role switcher UI to navigate between both feature sets. | P0 |
-| FR-ONB-09 | System shall enforce the cross-role single active transaction rule (INV-11): a Member account with an active non-terminal request in any role cannot initiate or accept another request in any role until the active request reaches a terminal status. | P0 |
+| FR-ONB-08 | A KYC T2 Member account shall operate in both Requester and Provider roles (dual-role) without creating a separate account. | P0 |
+| FR-ONB-09 | The Member app shall be structured into two top-level feature tabs: **"Yêu cầu"** (Requester flow — available to all Member KYC T1+) and **"Tạo deal"** (Provider flow — visible only to Member KYC T2). The "Tạo deal" tab shall not appear in navigation for KYC T1 Members; it shall become visible automatically upon KYC T2 approval. Each tab has its own bottom navigation set. | P0 |
+| FR-ONB-10 | System shall enforce the cross-role single active transaction rule (INV-11): when a Member has an active non-terminal request in any tab/role, the CTA to start a new transaction in the other tab shall be blocked and replaced with a deep-link to the active request. | P0 |
 
 ### 12.2. Provider wallet & ledger
 

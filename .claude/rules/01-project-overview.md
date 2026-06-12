@@ -28,16 +28,27 @@ Dòng tiền giao dịch chính **chạy ngoài hệ thống** qua Zelle, Venmo,
 
 ## Loại tài khoản, vai và navigation
 
-| Loại tài khoản | Vai | KYC | Kênh chính | Navigation | Breakpoint |
-|---|---|---|---|---|---|
-| **Member** | Requester | T1 | Mobile app | Bottom tabs: Gửi tiền · Yêu cầu · Liên kết · Hồ sơ | 320px+ |
-| **Member** | Provider | T2 | Mobile app | Bottom tabs: Trang chủ · Deals · Yêu cầu · Ví/Hồ sơ | 320px+ |
-| **Member** | Dual-role (Requester + Provider) | T2 | Mobile app | Role switcher + cả hai bộ nav trên cùng account | 320px+ |
-| **Admin** | Admin / Trọng tài | N/A (nội bộ) | Desktop web | Sidebar: Disputes · Users · Deals · Ledger · Risk · Config | 768px+ |
+| Loại tài khoản | KYC | Kênh chính | Cấu trúc điều hướng | Breakpoint |
+|---|---|---|---|---|
+| **Member** (KYC T1) | T1 | Mobile app | 1 tab chính **Yêu cầu** + bottom nav Requester | 320px+ |
+| **Member** (KYC T2 — dual-role) | T2 | Mobile app | 2 tab chính **Yêu cầu** \| **Tạo deal** + bottom nav đổi theo tab | 320px+ |
+| **Admin** | N/A (nội bộ) | Desktop web | Sidebar: Disputes · Users · Deals · Ledger · Risk · Config | 768px+ |
 
-> **Dual-role (Member KYC T2):** Một Member account KYC T2 được phép hoạt động ở cả hai vai Requester và Provider mà không cần tạo tài khoản riêng. Tuy nhiên, **tại mỗi thời điểm chỉ được có đúng 1 giao dịch đang diễn ra (non-terminal), tính gộp cả hai vai** (INV-11). Nếu đang có giao dịch active ở bất kỳ vai nào, mọi hành động tạo request mới hoặc accept request đều bị block cho đến khi giao dịch hiện tại kết thúc.
->
 > **Admin account** được platform cấp nội bộ, không đi qua luồng đăng ký/KYC của Member.
+
+### Cấu trúc tab trong Member app
+
+Member app chia theo **tính năng**, không theo vai tĩnh. Thanh tab nằm ở vị trí nổi bật (top bar hoặc segment control dưới header), cho phép Member chuyển đổi giữa hai nhóm chức năng:
+
+| Tab | Hiện với | Chức năng | Bottom nav |
+|---|---|---|---|
+| **Yêu cầu** | Mọi Member (KYC T1+) | Gửi tiền → chọn deal → tạo request → theo dõi → xác nhận hoàn tất | Gửi tiền · Yêu cầu · Liên kết · Hồ sơ |
+| **Tạo deal** | Member KYC T2 (dual-role) | Quản lý deal → nhận request → xác nhận nhận tiền → chi trả → quản lý ví | Trang chủ · Deals · Yêu cầu · Ví/Hồ sơ |
+
+**Quy tắc hiển thị tab:**
+- Member KYC T1: chỉ thấy tab **Yêu cầu**; không hiển thị tab "Tạo deal" (không bị ẩn xám — đơn giản là không tồn tại trong nav).
+- Member KYC T2: thấy cả 2 tab; tab **Tạo deal** mở khóa tự động sau khi KYC T2 được duyệt.
+- Khi đang có giao dịch active ở một tab, CTA khởi tạo giao dịch mới ở tab kia bị block kèm deep-link đến giao dịch đang dở (INV-11).
 
 ## Yêu cầu 3-party responsive
 
@@ -47,9 +58,9 @@ Dòng tiền giao dịch chính **chạy ngoài hệ thống** qua Zelle, Venmo,
 
 | Viewport | Layout |
 |---|---|
-| **Desktop** ≥ 1024px | 3 cột song song: [Requester phone] [Provider phone] [Admin panel] |
-| **Tablet** 768–1023px | 2 cột: [Requester + Provider] / [Admin] hoặc tab switcher |
-| **Mobile** < 768px | 1 cột + role switcher ở top để chuyển giữa 3 bên |
+| **Desktop** ≥ 1024px | 3 cột song song: [Member app — tab Yêu cầu] [Member app — tab Tạo deal] [Admin panel] |
+| **Tablet** 768–1023px | 2 cột: [Member app (Yêu cầu + Tạo deal)] / [Admin] hoặc tab switcher |
+| **Mobile** < 768px | 1 cột + tab switcher ở top để chuyển giữa Yêu cầu · Tạo deal · Admin |
 
 ### Requester & Provider (mobile-first)
 - Toàn bộ màn hình thiết kế theo chiều dọc 390×844px (iPhone 14 reference)
