@@ -14,6 +14,7 @@ Chi tiết được chia theo chủ đề trong `.claude/rules/`:
 | [04-data-model.md](.claude/rules/04-data-model.md) | Interfaces Deal/DealRequest/Proof, fee model, wallet model | `src/app/data/**`, components |
 | [05-design-system.md](.claude/rules/05-design-system.md) | Color tokens, UX principles, component inventory | `src/app/components/**` |
 | [06-code-conventions.md](.claude/rules/06-code-conventions.md) | Forbidden patterns, naming, imports, TypeScript | Always |
+| [07-mock-data.md](.claude/rules/07-mock-data.md) | Mock data JS layer cho HTML screens — load, schema, helper functions | `src/html/**` |
 
 ## Tài liệu nghiệp vụ
 
