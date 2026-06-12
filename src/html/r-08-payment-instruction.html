@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-08 · Payment Instruction — P2P Remit Deals</title>
+
+  <!-- Bootstrap 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    crossorigin="anonymous"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  />
+  <!-- Design Tokens -->
+  <link rel="stylesheet" href="theme.css" />
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px 60px;
+      background: radial-gradient(ellipse at 60% 0%, #dbdbff 0%, var(--color-cloud) 60%);
+    }
+
+    /* Page label */
+    .screen-label {
+      font-size: var(--text-caption);
+      font-weight: 600;
+      color: var(--color-slate);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: var(--spacing-16);
+    }
+
+    /* QR placeholder */
+    .qr-placeholder {
+      width: 120px;
+      height: 120px;
+      background: var(--color-cloud);
+      border: 1.5px dashed var(--color-mist);
+      border-radius: var(--radius-nav);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-iron);
+      font-size: 11px;
+      gap: 6px;
+    }
+
+    /* Fee breakdown rows */
+    .fee-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-8) 0;
+      font-size: var(--text-body-sm);
+      border-bottom: 1px solid var(--color-pebble);
+    }
+    .fee-row:last-child { border-bottom: none; }
+    .fee-row-total {
+      font-weight: 600;
+      font-size: var(--text-body);
+      color: var(--color-ink);
+      padding-top: var(--spacing-12);
+    }
+
+    /* Important notice */
+    .notice-box {
+      background: #fff8e1;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius-nav);
+      padding: var(--spacing-12) var(--spacing-16);
+      font-size: var(--text-body-sm);
+      color: #78350f;
+    }
+    .notice-box strong { color: #92400e; }
+  </style>
+</head>
+<body>
+
+<!-- Screen label -->
+<div class="d-flex flex-column align-items-center w-100" style="max-width: 500px;">
+  <div class="screen-label">R-08 · Payment Instruction · status: accepted</div>
+
+  <!-- ══════════ PHONE SHELL ══════════ -->
+  <div class="phone-shell">
+
+    <!-- ── App Header ── -->
+    <div class="app-header">
+      <button class="app-header-back" aria-label="Quay lại">
+        <i class="bi bi-arrow-left" style="font-size:16px; color:var(--color-ink);"></i>
+      </button>
+      <div class="app-header-info">
+        <div class="app-header-title">Thanh toán cho Provider</div>
+        <div class="app-header-sub">
+          <span style="color:var(--color-iron); font-size:11px;">RQ-7K2M9</span>
+          <span class="badge-status badge-accepted">
+            <i class="bi bi-clock" style="font-size:10px;"></i>
+            Chờ bạn chuyển tiền
+          </span>
+        </div>
+      </div>
+      <!-- Countdown T2 -->
+      <span class="countdown" id="countdown-display">48:12</span>
+    </div>
+
+    <!-- ── Scrollable Screen Content ── -->
+    <div class="phone-screen">
+      <div class="px-3 pt-3 d-flex flex-column gap-3">
+
+        <!-- ── Stepper ── -->
+        <div class="p2p-card py-3 px-3">
+          <div class="stepper">
+            <div class="step done">
+              <div class="step-dot"><i class="bi bi-check-lg" style="font-size:12px;"></i></div>
+              <span class="step-label">Ghép nối</span>
+            </div>
+            <div class="step active">
+              <div class="step-dot"><i class="bi bi-currency-dollar" style="font-size:12px;"></i></div>
+              <span class="step-label">Bạn chuyển</span>
+            </div>
+            <div class="step">
+              <div class="step-dot">3</div>
+              <span class="step-label">Provider chuyển</span>
+            </div>
+            <div class="step">
+              <div class="step-dot">4</div>
+              <span class="step-label">Hoàn tất</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── "Bạn được bảo vệ" Banner ── -->
+        <div class="banner-protected">
+          <div class="d-flex gap-2 align-items-start">
+            <i class="bi bi-shield-check-fill" style="color:var(--color-monday-violet); font-size:20px; flex-shrink:0; margin-top:1px;"></i>
+            <div>
+              <div style="font-size:var(--text-body-sm); font-weight:600; color:var(--color-monday-violet); margin-bottom:2px;">
+                Bạn được bảo vệ
+              </div>
+              <div style="font-size:var(--text-caption); color:var(--color-slate); line-height:1.5;">
+                Provider đã ký quỹ <strong style="color:var(--color-ink);">12.900.000 ₫</strong>.
+                Nếu có tranh chấp, Admin xử lý trong <strong style="color:var(--color-ink);">48 giờ</strong>.
+              </div>
+              <a href="#" style="font-size:var(--text-caption); color:var(--color-monday-violet); font-weight:500; text-decoration:none; margin-top:4px; display:inline-block;">
+                Xem chính sách bảo vệ →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Transfer Ticket ── -->
+        <div>
+          <div class="section-label">Phiếu chuyển tiền</div>
+          <div class="ticket-card">
+            <div class="ticket-header">
+              <i class="bi bi-receipt"></i>&nbsp; Chi tiết thanh toán
+            </div>
+
+            <!-- Provider name + method -->
+            <div class="ticket-row">
+              <span class="ticket-label">Chuyển cho</span>
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:28px; height:28px; border-radius:50%; background:var(--color-periwinkle); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--color-monday-violet);">HM</div>
+                <span class="ticket-value" style="text-align:left;">Hùng Mạnh</span>
+              </div>
+            </div>
+
+            <!-- Method -->
+            <div class="ticket-row">
+              <span class="ticket-label">Phương thức</span>
+              <div class="d-flex align-items-center gap-2">
+                <span style="font-size:16px;">💱</span>
+                <span class="ticket-value" style="text-align:left;">Zelle</span>
+              </div>
+            </div>
+
+            <!-- Account (masked) -->
+            <div class="ticket-row">
+              <span class="ticket-label">Tài khoản</span>
+              <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end" style="gap:8px;">
+                <span class="ticket-value masked" id="account-value">+1 ••• ••• 7890</span>
+                <button
+                  class="btn-copy btn"
+                  onclick="handleUnmask(event)"
+                  id="btn-unmask"
+                >
+                  Hiện & Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="ticket-row" style="background:var(--color-cloud);">
+              <span class="ticket-label">Khoản P2P cần chuyển</span>
+              <div class="d-flex align-items-center gap-2">
+                <span class="money money-lg" id="amount-value">$500.00</span>
+                <button class="btn-copy btn" onclick="copyText('$500.00', this)">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- Memo -->
+            <div class="ticket-row" style="flex-direction:column; align-items:stretch; gap:8px; padding-bottom:16px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="ticket-label" style="font-weight:600; color:var(--color-danger);">
+                  <i class="bi bi-exclamation-circle-fill"></i> Memo bắt buộc
+                </span>
+                <button class="btn-copy btn" onclick="copyText('RQ-7K2M9', this)">Copy</button>
+              </div>
+              <div class="memo-box" id="memo-value">RQ-7K2M9</div>
+            </div>
+
+            <!-- QR + Copy All -->
+            <div class="d-flex align-items-center justify-content-between gap-3 px-4 pb-4">
+              <div class="qr-placeholder">
+                <i class="bi bi-qr-code" style="font-size:36px; color:var(--color-iron);"></i>
+                <span>QR Code</span>
+              </div>
+              <button
+                class="btn btn-outline-secondary flex-fill py-3"
+                style="font-size:var(--text-body-sm); font-weight:600;"
+                onclick="copyAll()"
+              >
+                <i class="bi bi-copy me-2"></i>Sao chép tất cả
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Important Notice ── -->
+        <div class="notice-box">
+          <div class="d-flex gap-2">
+            <i class="bi bi-info-circle-fill" style="color:var(--color-warning); flex-shrink:0; font-size:16px; margin-top:1px;"></i>
+            <div>
+              <strong>Lưu ý quan trọng:</strong> Dán đúng mã
+              <strong>RQ-7K2M9</strong> vào nội dung chuyển khoản.
+              Sai memo có thể làm chậm quá trình đối soát và dẫn đến tranh chấp.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Fee Breakdown ── -->
+        <div class="p2p-card">
+          <div class="section-label">Chi phí giao dịch</div>
+
+          <div class="fee-row">
+            <span style="color:var(--color-slate);">Khoản chuyển cho Provider</span>
+            <span class="money" style="font-size:var(--text-body);">$500.00</span>
+          </div>
+          <div class="fee-row">
+            <span style="color:var(--color-slate);">
+              Phí nền tảng (0.5%)
+              <i class="bi bi-question-circle" style="font-size:11px; cursor:pointer;" title="Thu khi giao dịch hoàn tất"></i>
+            </span>
+            <span class="money money-fee">$2.50</span>
+          </div>
+          <div class="fee-row fee-row-total">
+            <span>Tổng chi phí của bạn</span>
+            <span class="money" style="font-size:20px; color:var(--color-monday-violet);">$502.50</span>
+          </div>
+
+          <div style="font-size:11px; color:var(--color-iron); margin-top:var(--spacing-8);">
+            <i class="bi bi-info-circle"></i>
+            Phí nền tảng chỉ thu khi giao dịch hoàn tất hoặc theo phán quyết trọng tài.
+          </div>
+        </div>
+
+        <!-- ── Provider Info ── -->
+        <div class="p2p-card">
+          <div class="section-label">Thông tin Provider</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:40px; height:40px; border-radius:50%; background:var(--color-periwinkle); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:var(--color-monday-violet);">HM</div>
+              <div>
+                <div style="font-weight:600; font-size:var(--text-body-sm);">Hùng Mạnh</div>
+                <div style="font-size:var(--text-caption); color:var(--color-slate);">KYC T2 · 234 giao dịch</div>
+              </div>
+            </div>
+            <div class="d-flex flex-column align-items-end gap-1">
+              <div style="font-size:var(--text-caption); color:var(--color-slate);">
+                <i class="bi bi-star-fill" style="color:#f59e0b;"></i> 4.9
+              </div>
+              <div style="font-size:var(--text-caption); color:var(--color-forest); font-weight:500;">
+                <i class="bi bi-clock-history"></i> 97% đúng hạn
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom spacer for sticky CTA -->
+        <div style="height: 8px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Sticky Bottom CTA ── -->
+    <div class="sticky-bottom">
+      <button
+        class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
+        style="font-size:var(--text-body-sm); padding:16px 24px;"
+        onclick="openProofSheet()"
+      >
+        <i class="bi bi-upload"></i>
+        Đã chuyển tiền &amp; tải bằng chứng
+      </button>
+    </div>
+
+  </div>
+  <!-- end phone-shell -->
+
+  <!-- Screen notes -->
+  <div class="mt-4 p-3" style="max-width:390px; width:100%; background:var(--color-snow); border-radius:var(--radius-cards); box-shadow:var(--shadow-xl); font-size:12px; color:var(--color-slate);">
+    <div style="font-weight:600; color:var(--color-ink); margin-bottom:8px; font-size:13px;">
+      <i class="bi bi-info-circle-fill" style="color:var(--color-monday-violet);"></i>
+      Screen notes (R-08)
+    </div>
+    <ul class="mb-0 ps-3" style="line-height:1.8;">
+      <li><strong>Bạn được bảo vệ</strong> — ký quỹ + SLA 48h hiển thị nổi bật</li>
+      <li><strong>Memo</strong> — mono bold, màu danger, copy riêng</li>
+      <li><strong>Fee tách 3 dòng</strong> — khoản P2P / phí / tổng</li>
+      <li><strong>Tài khoản masked</strong> — chỉ lộ khi bấm "Hiện & Copy"</li>
+      <li><strong>Copy all</strong> — số tiền + tài khoản + memo</li>
+      <li><strong>Entry:</strong> R-07 → <strong>Exit:</strong> R-09 Proof Upload</li>
+    </ul>
+  </div>
+
+</div>
+<!-- end wrapper -->
+
+<!-- Toast -->
+<div class="toast-demo" id="toast">Đã sao chép!</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+  /* ── Toast helper ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  /* ── Copy text to clipboard ── */
+  function copyText(val, btn) {
+    navigator.clipboard.writeText(val).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied';
+      showToast('Đã sao chép: ' + val);
+      setTimeout(() => btn.textContent = orig, 1800);
+    });
+  }
+
+  /* ── Unmask account + copy ── */
+  let unmasked = false;
+  function handleUnmask(e) {
+    const el = document.getElementById('account-value');
+    const btn = document.getElementById('btn-unmask');
+    if (!unmasked) {
+      el.textContent = '+1 (415) 555-7890';
+      el.classList.remove('masked');
+      btn.textContent = 'Copy';
+      unmasked = true;
+      // audit log would be recorded here
+    }
+    copyText('+1 (415) 555-7890', btn);
+  }
+
+  /* ── Copy all ── */
+  function copyAll() {
+    const all = 'Tài khoản: +1 (415) 555-7890\nSố tiền: $500.00\nMemo: RQ-7K2M9';
+    navigator.clipboard.writeText(all).then(() => {
+      showToast('Đã sao chép số tiền, tài khoản và memo');
+    });
+  }
+
+  /* ── Open proof sheet (placeholder) ── */
+  function openProofSheet() {
+    showToast('→ Mở R-09 Proof Upload Sheet');
+  }
+
+  /* ── Countdown timer (demo: counts down from 48:12) ── */
+  let totalSeconds = 48 * 60 + 12;
+  const countdownEl = document.getElementById('countdown-display');
+  const interval = setInterval(() => {
+    if (totalSeconds <= 0) { clearInterval(interval); return; }
+    totalSeconds--;
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    countdownEl.textContent = `${m}:${String(s).padStart(2, '0')}`;
+    if (totalSeconds < 600) countdownEl.classList.add('urgent');
+  }, 1000);
+</script>
+
+</body>
+</html>
