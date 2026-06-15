@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
   <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
   <style>
     body { background: var(--color-cloud); }
 
@@ -20,13 +22,98 @@
     }
     .topbar-inner { display: flex; align-items: center; gap: 12px; }
 
-    .bottom-nav { background: #fff; border-top: 1px solid var(--color-pebble); }
+    .form-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
 
-    /* Method chips */
+    .currency-select {
+      min-width: 116px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .currency-select select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: var(--radius-inputs);
+      padding: 10px 30px 10px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-ink);
+      cursor: pointer;
+      outline: none;
+    }
+    .currency-select::after {
+      content: '\F282';
+      font-family: 'bootstrap-icons';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-slate);
+      font-size: 11px;
+      pointer-events: none;
+    }
+    .currency-input {
+      flex: 1;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: var(--radius-inputs);
+      padding: 10px 14px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--color-ink);
+      outline: none;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .amount-preview {
+      flex: 1;
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      border-radius: var(--radius-inputs);
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--color-forest);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .rate-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0;
+    }
+    .rate-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .method-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     .method-chip {
       border: 1.5px solid var(--color-pebble);
       border-radius: var(--radius-buttons);
-      padding: 7px 14px;
+      padding: 7px 12px;
       font-size: 13px;
       font-weight: 500;
       color: var(--color-slate);
@@ -44,393 +131,845 @@
       background: var(--color-periwinkle);
       color: var(--color-monday-violet);
     }
-    .method-chip.receive-chip.selected {
+    .method-chip.receive.selected {
       border-color: var(--color-forest);
       background: var(--color-mint);
       color: var(--color-forest);
     }
+    .method-chip .method-icon { width: 18px; height: 18px; }
 
-    /* Amount input block */
-    .amount-block {
-      background: #fff;
-      border-radius: var(--radius-cards);
-      border: 1.5px solid var(--color-mist);
-      box-shadow: var(--shadow-xl);
-      overflow: hidden;
-    }
-    .amount-row-inner {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 18px;
-    }
-    .amount-row-inner + .amount-row-inner {
-      border-top: 1px solid var(--color-pebble);
-      background: #f9fafb;
-    }
-
-    .currency-selector {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--color-cloud);
-      border-radius: var(--radius-inputs);
-      padding: 8px 12px;
-      cursor: pointer;
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--color-ink);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .amount-input {
-      border: none;
-      outline: none;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--color-ink);
-      text-align: right;
-      background: transparent;
-      width: 100%;
-      font-variant-numeric: tabular-nums;
-    }
-    .amount-input::placeholder { color: var(--color-fog); }
-    .amount-input-receive {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--color-forest);
-      text-align: right;
-      background: transparent;
-      border: none;
-      outline: none;
-      width: 100%;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .exchange-divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      border-top: 1px solid var(--color-pebble);
-      border-bottom: 1px solid var(--color-pebble);
-      padding: 6px 0;
-      background: #f0f1f8;
-    }
-    .exchange-divider-badge {
-      background: var(--color-monday-violet);
-      color: #fff;
-      border-radius: 30px;
-      padding: 3px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Form card */
-    .form-card {
-      background: #fff;
-      border-radius: var(--radius-cards);
-      border: 1px solid var(--color-mist);
-      box-shadow: var(--shadow-xl);
-      padding: 20px;
-    }
-    .form-label-custom {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--color-slate);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 6px;
-    }
-    .form-control {
-      border: 1.5px solid var(--color-pebble) !important;
-      border-radius: var(--radius-inputs) !important;
-      font-size: 14px;
-      color: var(--color-ink);
-      padding: 10px 14px;
-    }
-    .form-control:focus {
-      border-color: var(--color-monday-violet) !important;
-      box-shadow: 0 0 0 3px rgba(97,97,255,0.12) !important;
-    }
-    .form-control::placeholder { color: var(--color-iron); }
-
-    /* Beneficiary preset */
-    .bene-preset {
+    .bene-card {
       display: flex;
       align-items: center;
       gap: 10px;
       background: var(--color-cloud);
       border-radius: var(--radius-inputs);
-      padding: 10px 14px;
-      cursor: pointer;
+      padding: 10px 12px;
       border: 1.5px solid var(--color-pebble);
-      transition: border-color 0.15s;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .bene-preset.selected {
+    .bene-card.selected {
       border-color: var(--color-forest);
       background: var(--color-mint);
     }
     .bene-avatar {
-      width: 32px; height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: var(--color-periwinkle);
       color: var(--color-monday-violet);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
     }
+    .bene-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-ink);
+      line-height: 1.2;
+    }
+    .bene-sub {
+      font-size: 11px;
+      color: var(--color-slate);
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-slate);
+      margin-bottom: 5px;
+    }
+    .field-control {
+      width: 100%;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: var(--radius-inputs);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--color-ink);
+      outline: none;
+    }
+    .field-control:focus {
+      border-color: var(--color-monday-violet);
+      background: #fff;
+    }
+    .field-err {
+      display: none;
+      font-size: 12px;
+      color: #dc2626;
+      margin-top: 4px;
+    }
+    .field-err.show { display: block; }
+    .field-control.err { border-color: #dc2626; }
+
+    .hint-box {
+      background: #f8fafc;
+      border-radius: var(--radius-inputs);
+      border: 1.5px solid var(--color-pebble);
+      padding: 12px 14px;
+      color: var(--color-slate);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .hint-box strong { color: var(--color-ink); }
+
+    .sticky-bottom {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, #fff 70%, transparent);
+      padding-top: 12px;
+      padding-bottom: 20px;
+      z-index: 90;
+    }
+    .btn-search {
+      background: linear-gradient(135deg, var(--color-forest), #047857);
+      color: #fff;
+      border: none;
+      border-radius: 160px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-search:hover { opacity: 0.95; }
+
+    .support-note {
+      font-size: 12px;
+      color: var(--color-slate);
+    }
+    .support-note strong { color: var(--color-ink); }
   </style>
 </head>
 <body>
-  <script src="mock-data.js"></script>
-  <script src="components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.P2P_DATA && P2P_DATA.DEMO && P2P_DATA.DEMO.requester) {
+        document.title = 'R-02 · Gửi yêu cầu — P2P Remit Deals';
+      }
+    });
+  </script>
 
   <!-- Topbar -->
   <nav class="topbar">
-    <div class="container-sm topbar-inner">
-      <button class="btn p-0 border-0" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;" onclick="history.back()">
-        <i class="bi bi-arrow-left" style="color:var(--color-ink);font-size:16px;"></i>
-      </button>
-      <div style="flex:1;">
-        <div style="font-size:15px;font-weight:700;color:var(--color-ink);">Gửi yêu cầu</div>
-        <div style="font-size:12px;color:var(--color-slate);">Nhập nhu cầu — hệ thống tìm deal tốt nhất</div>
+    <div class="container-sm">
+      <div class="topbar-inner">
+        <a href="m-01-overview.html" class="btn p-0 border-0" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--color-ink);flex-shrink:0;" aria-label="Quay lại">
+          <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+        </a>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:700;color:var(--color-ink);">Gửi yêu cầu</div>
+          <div style="font-size:12px;color:var(--color-slate);">Nhập nhu cầu — hệ thống tìm deal tốt nhất</div>
+        </div>
       </div>
     </div>
   </nav>
 
   <!-- Main -->
-  <main class="container-sm py-3 d-flex flex-column gap-3">
+  <main class="container-sm py-3" style="padding-bottom: 120px;">
+    <div class="d-flex flex-column gap-3">
 
-    <!-- Section: Amount -->
-    <div>
-      <div class="section-label">Số tiền chuyển</div>
-      <div class="amount-block">
-        <!-- Send row -->
-        <div class="amount-row-inner">
-          <div style="flex:1;">
-            <div style="font-size:11px;color:var(--color-slate);font-weight:500;margin-bottom:6px;">Bạn gửi</div>
-            <button class="currency-selector" id="send-currency-btn" onclick="openCurrencyPicker('send')">
-              <span id="send-flag">🇺🇸</span>
-              <span id="send-code">USD</span>
-              <i class="bi bi-chevron-down" style="font-size:10px;color:var(--color-slate);"></i>
-            </button>
+      <!-- Amount -->
+      <section>
+        <div class="section-label">SỐ TIỀN CHUYỂN</div>
+        <div class="p2p-card">
+          <div class="field">
+            <div class="field-label">Bạn gửi (đang ở quốc gia nào, trả bằng)</div>
+            <div class="form-row">
+              <div class="currency-select">
+                <select id="send-currency"></select>
+              </div>
+              <input id="send-amount" class="currency-input" type="number" min="0" step="0.01" value="500" inputmode="decimal"/>
+            </div>
+            <div class="field-err" id="err-send-amount">Nhập số tiền hợp lệ</div>
           </div>
-          <input type="number" class="amount-input" id="send-amount" placeholder="0" value="500" oninput="calcReceive()" min="0"/>
-        </div>
 
-        <!-- Exchange rate divider -->
-        <div class="exchange-divider">
-          <div class="exchange-divider-badge">
-            <i class="bi bi-arrow-down-up"></i>
-            <span id="rate-display">1 USD ≈ 25.500đ</span>
+          <div class="rate-divider">
+            <div class="rate-pill">
+              <i class="bi bi-arrow-down-up"></i>
+              <span id="rate-display">1 USD ≈ 25.500 ₫</span>
+            </div>
+          </div>
+
+          <div class="field mb-0">
+            <div class="field-label">Người nhận sẽ nhận bằng</div>
+            <div class="form-row">
+              <div class="currency-select">
+                <select id="receive-currency"></select>
+              </div>
+              <div class="amount-preview" id="receive-amount">≈ 0 ₫</div>
+            </div>
+            <div class="support-note mt-2">
+              <i class="bi bi-info-circle me-1"></i>
+              Tỷ giá ước tính. Tỷ giá thực theo nhà cung cấp.
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- Receive row -->
-        <div class="amount-row-inner" style="background:#f9fafb;">
-          <div style="flex:1;">
-            <div style="font-size:11px;color:var(--color-slate);font-weight:500;margin-bottom:6px;">Người nhận sẽ nhận bằng</div>
-            <button class="currency-selector" id="recv-currency-btn" onclick="openCurrencyPicker('recv')">
-              <span id="recv-flag">🇻🇳</span>
-              <span id="recv-code">VND</span>
-              <i class="bi bi-chevron-down" style="font-size:10px;color:var(--color-slate);"></i>
-            </button>
+      <!-- Methods -->
+      <section>
+        <div class="section-label">HÌNH THỨC THANH TOÁN</div>
+        <div class="p2p-card">
+          <div class="field" style="margin-bottom:18px;">
+            <div class="field-label">Bạn trả nhà cung cấp qua</div>
+            <div class="method-grid" id="send-methods"></div>
           </div>
-          <input type="text" class="amount-input-receive" id="recv-amount" readonly placeholder="≈ 0"/>
+          <div class="field mb-0">
+            <div class="field-label">Người nhận sẽ nhận qua</div>
+            <div class="method-grid" id="receive-methods"></div>
+          </div>
         </div>
+      </section>
 
-        <!-- Rate note -->
-        <div style="padding:10px 18px;border-top:1px solid var(--color-pebble);background:#f9fafb;">
-          <p style="font-size:11px;color:var(--color-iron);margin:0;">
-            <i class="bi bi-info-circle me-1"></i>
-            Tỷ giá ước tính. Tỷ giá thực theo nhà cung cấp được chọn.
-          </p>
+      <!-- Beneficiaries -->
+      <section>
+        <div class="section-label">THÔNG TIN TÀI KHOẢN NHẬN</div>
+        <div class="p2p-card">
+          <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="section-label mb-0" style="margin-bottom:0;" id="bene-section-title">Thông tin tài khoản nhận · MoMo</div>
+              <span class="badge-status badge-pending" style="font-size:11px;" id="selected-method-pill">MoMo</span>
+            </div>
+            <a href="s-27-beneficiaries.html" style="font-size:12px;color:var(--color-monday-violet);text-decoration:none;font-weight:600;">
+              <i class="bi bi-gear me-1"></i>Cài đặt
+            </a>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Chọn tài khoản đã lưu</div>
+            <div class="d-flex flex-column gap-2" id="beneficiary-list"></div>
+          </div>
+
+          <hr class="p2p-divider"/>
+
+          <div id="recipient-fields">
+            <div class="field">
+              <div class="field-label">Tên người thụ hưởng</div>
+              <input id="recipient-name" class="field-control" type="text" placeholder="Họ và tên đầy đủ"/>
+              <div class="field-err" id="err-recipient-name">Nhập tên chủ tài khoản</div>
+            </div>
+
+            <div class="field" id="phone-field">
+              <div class="field-label" id="phone-label">Số điện thoại</div>
+              <input id="recipient-phone" class="field-control" type="tel" placeholder="0901234567"/>
+              <div class="field-err" id="err-recipient-phone">Nhập số điện thoại</div>
+            </div>
+
+            <div class="field d-none" id="email-field">
+              <div class="field-label" id="email-label">Email</div>
+              <input id="recipient-email" class="field-control" type="email" placeholder="ten@email.com"/>
+              <div class="field-err" id="err-recipient-email">Nhập email</div>
+            </div>
+
+            <div id="bank-fields" class="d-none">
+              <div class="field">
+                <div class="field-label">Ngân hàng</div>
+                <select id="recipient-bank" class="field-control">
+                  <option value="">Chọn ngân hàng</option>
+                  <option>Vietcombank</option>
+                  <option>Techcombank</option>
+                  <option>MB Bank</option>
+                  <option>BIDV</option>
+                  <option>Agribank</option>
+                  <option>VPBank</option>
+                  <option>ACB</option>
+                  <option>TPBank</option>
+                  <option>Sacombank</option>
+                </select>
+                <div class="field-err" id="err-recipient-bank">Chọn ngân hàng</div>
+              </div>
+
+              <div class="field mb-0">
+                <div class="field-label">Số tài khoản</div>
+                <input id="recipient-account" class="field-control" type="text" placeholder="1234567890"/>
+                <div class="field-err" id="err-recipient-account">Nhập số tài khoản</div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
+
+      <!-- Note -->
+      <section>
+        <div class="section-label">GHI CHÚ CHO NHÀ CUNG CẤP</div>
+        <div class="p2p-card">
+          <textarea id="request-note" class="field-control" rows="3" placeholder="Nhập ghi chú (không bắt buộc)...">Cần chuyển gấp trong hôm nay</textarea>
+        </div>
+      </section>
+
+      <!-- USDV note -->
+      <section>
+        <div class="section-label">KIỂM TRA USDV</div>
+        <div class="p2p-card" style="background:#fffbeb;border-color:#fde68a;">
+          <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-shield-check" style="font-size:18px;color:#b45309;line-height:1.2;"></i>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:3px;">Sẽ kiểm tra khi bấm Tìm deal</div>
+              <div style="font-size:13px;color:#92400e;line-height:1.5;">
+                Hệ thống sẽ xác minh ví USDV của bạn theo snapshot tỷ giá tại thời điểm tạo request.
+                Nếu không đủ, yêu cầu sẽ không được tạo và sẽ hiện popup thiếu số dư.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sticky CTA -->
+      <div class="sticky-bottom">
+        <button type="button" class="btn-search" id="find-deal-btn">
+          <i class="bi bi-search"></i>
+          ⚡ Tìm Deal Phù Hợp
+        </button>
       </div>
+
     </div>
-
-    <!-- Section: Payment Method (send side) -->
-    <div>
-      <div class="form-card">
-        <div class="section-label mb-2">Hình thức thanh toán</div>
-
-        <div style="font-size:13px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Bạn trả nhà cung cấp qua</div>
-        <div class="d-flex flex-wrap gap-2 mb-3" id="send-methods">
-          <!-- Injected by JS -->
-        </div>
-
-        <div style="font-size:13px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Người nhận sẽ nhận qua</div>
-        <div class="d-flex flex-wrap gap-2" id="recv-methods">
-          <!-- Injected by JS -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Section: Beneficiary info -->
-    <div id="beneficiary-section">
-      <div class="form-card">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="section-label mb-0" id="bene-section-title">Thông tin tài khoản nhận · MoMo</div>
-          <a href="s-27-beneficiaries.html" style="font-size:12px;color:var(--color-monday-violet);text-decoration:none;font-weight:600;">
-            <i class="bi bi-gear me-1"></i>Cài đặt
-          </a>
-        </div>
-
-        <!-- Saved beneficiary preset -->
-        <div style="font-size:12px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Chọn tài khoản đã lưu:</div>
-        <div class="bene-preset selected mb-3" id="bene-preset-1" onclick="selectBene('BEN-001')">
-          <div class="bene-avatar">NL</div>
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">Ví MoMo · Nguyễn Thị Lan</div>
-            <div style="font-size:11px;color:var(--color-slate);">0912 345 678 · Gia đình</div>
-          </div>
-          <i class="bi bi-check-circle-fill" style="color:var(--color-forest);"></i>
-        </div>
-
-        <div class="bene-preset mb-3" id="bene-preset-2" onclick="selectBene('BEN-002')">
-          <div class="bene-avatar" style="background:var(--color-lavender);color:var(--color-ultra-violet);">TB</div>
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">ZaloPay · Trần Văn Bình</div>
-            <div style="font-size:11px;color:var(--color-slate);">0933 222 111 · Bạn bè</div>
-          </div>
-          <i class="bi bi-circle" style="color:var(--color-iron);"></i>
-        </div>
-
-        <hr style="border-color:var(--color-pebble);margin:8px 0 14px;">
-
-        <!-- Manual entry -->
-        <div class="mb-3">
-          <label class="form-label-custom">Tên người thụ hưởng</label>
-          <input type="text" class="form-control" id="bene-name" placeholder="Họ và tên đầy đủ" value="Nguyễn Thị Lan"/>
-        </div>
-        <div class="mb-0">
-          <label class="form-label-custom">Số điện thoại / tài khoản</label>
-          <input type="tel" class="form-control" id="bene-account" placeholder="0912 345 678" value="0912 345 678"/>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section: Note -->
-    <div>
-      <div class="form-card">
-        <div class="section-label mb-2">Ghi chú cho nhà cung cấp</div>
-        <textarea class="form-control" id="request-note" rows="3" placeholder="Nhập ghi chú (không bắt buộc)...">Cần chuyển gấp trong hôm nay</textarea>
-      </div>
-    </div>
-
   </main>
-
-  <!-- Sticky CTA -->
-  <div class="sticky-bottom">
-    <button class="btn btn-primary w-100" style="padding:16px;font-size:16px;" onclick="findDeal()">
-      <i class="bi bi-search me-2"></i>⚡ Tìm Deal Phù Hợp
-    </button>
-  </div>
-
-  <!-- Bottom Nav -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
+    (function () {
+      const BANKS = ['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV', 'Agribank', 'VPBank', 'ACB', 'TPBank', 'Sacombank'];
+      const DEFAULT_NOTE = 'Cần chuyển gấp trong hôm nay';
 
-    // Payment methods config
-    const SEND_METHODS = [
-      { key: 'zelle',         label: 'Zelle',            icon: P2P_DATA.getMethodIcon('zelle') },
-      { key: 'venmo',         label: 'Venmo',            icon: P2P_DATA.getMethodIcon('venmo') },
-      { key: 'paypal',        label: 'PayPal',           icon: P2P_DATA.getMethodIcon('paypal') },
-      { key: 'bank-transfer', label: 'Bank Transfer',    icon: P2P_DATA.getMethodIcon('bank-transfer') },
-    ];
-    const RECV_METHODS = [
-      { key: 'momo',          label: 'MoMo',             icon: P2P_DATA.getMethodIcon('momo') },
-      { key: 'zalopay',       label: 'ZaloPay',          icon: P2P_DATA.getMethodIcon('zalopay') },
-      { key: 'bank-transfer', label: 'Chuyển khoản NH',  icon: P2P_DATA.getMethodIcon('bank-transfer') },
-    ];
+      const PREVIEW_RATES = {
+        USD: { VND: 25500, USD: 0.98, EUR: 0.92, GBP: 0.79, AUD: 1.54, SGD: 1.33 },
+        EUR: { VND: 27900, USD: 1.08, EUR: 0.97, GBP: 0.86 },
+        GBP: { VND: 32200, USD: 1.26, EUR: 1.16 },
+        SGD: { VND: 19050, USD: 0.74 },
+        AUD: { VND: 16900, USD: 0.65 },
+        JPY: { VND: 172, USD: 0.0067 },
+        KRW: { VND: 19, USD: 0.00073 },
+        THB: { VND: 730, USD: 0.028 },
+        CNY: { VND: 3520, USD: 0.138 },
+      };
 
-    let selectedSendMethod = 'zelle';
-    let selectedRecvMethod = 'momo';
-    const RATE = 25500;
+      const METHOD_RULES = {
+        'zelle':        { mode: 'phone' },
+        'venmo':        { mode: 'phone' },
+        'paypal':       { mode: 'email' },
+        'bank-transfer': { mode: 'bank' },
+        'momo':         { mode: 'phone' },
+        'zalopay':      { mode: 'phone' },
+        'pay-now':      { mode: 'phone' },
+        'pay-id':       { mode: 'phone' },
+        'apple-cash':   { mode: 'phone' },
+        'cash-app':     { mode: 'phone' },
+        'sepa':         { mode: 'bank' },
+        'kakao-pay':    { mode: 'phone' },
+        'prompt-pay':   { mode: 'phone' },
+        'wechat-pay':   { mode: 'phone' },
+        'alipay':       { mode: 'phone' },
+      };
 
-    function renderMethodChips(container, methods, selectedKey, chipClass, onSelect) {
-      container.innerHTML = methods.map(m => `
-        <button class="method-chip ${chipClass} ${m.key === selectedKey ? 'selected' : ''}"
-                onclick="(${onSelect.toString()})('${m.key}')">
-          <span>${m.icon}</span> ${m.label}
-        </button>
-      `).join('');
-    }
+      const SAVED_BENEFICIARIES = [
+        {
+          id: 'BEN-001',
+          method: 'momo',
+          title: 'Ví MoMo · Nguyễn Thị Lan',
+          sub: '0912 345 678 · Gia đình',
+          initials: 'NL',
+          name: 'Nguyễn Thị Lan',
+          phone: '0912345678',
+          bank: '',
+          account: '',
+          email: '',
+        },
+        {
+          id: 'BEN-002',
+          method: 'zalopay',
+          title: 'ZaloPay · Trần Văn Bình',
+          sub: '0933 222 111 · Bạn bè',
+          initials: 'TB',
+          name: 'Trần Văn Bình',
+          phone: '0933222111',
+          bank: '',
+          account: '',
+          email: '',
+        },
+        {
+          id: 'BEN-003',
+          method: 'bank-transfer',
+          title: 'Vietcombank · Nguyễn Văn C',
+          sub: '1234567890 · Đối tác',
+          initials: 'NC',
+          name: 'Nguyễn Văn C',
+          phone: '',
+          bank: 'Vietcombank',
+          account: '1234567890',
+          email: '',
+        },
+      ];
 
-    function setSendMethod(key) {
-      selectedSendMethod = key;
-      renderMethodChips(
-        document.getElementById('send-methods'), SEND_METHODS, key, '',
-        setSendMethod
-      );
-    }
+      const state = {
+        sendCurrency: 'USD',
+        receiveCurrency: 'VND',
+        sendAmount: '500',
+        sendMethod: 'zelle',
+        receiveMethod: 'momo',
+        recipientName: 'Nguyễn Thị Lan',
+        recipientPhone: '0912345678',
+        recipientEmail: '',
+        recipientBank: '',
+        recipientAccount: '',
+        note: DEFAULT_NOTE,
+        beneficiaryId: 'BEN-001',
+      };
 
-    function setRecvMethod(key) {
-      selectedRecvMethod = key;
-      renderMethodChips(
-        document.getElementById('recv-methods'), RECV_METHODS, key, 'receive-chip',
-        setRecvMethod
-      );
-      // Update beneficiary section title
-      const label = RECV_METHODS.find(m => m.key === key)?.label || key;
-      document.getElementById('bene-section-title').textContent = `Thông tin tài khoản nhận · ${label}`;
-    }
+      const els = {
+        sendCurrency: document.getElementById('send-currency'),
+        receiveCurrency: document.getElementById('receive-currency'),
+        sendAmount: document.getElementById('send-amount'),
+        receiveAmount: document.getElementById('receive-amount'),
+        rateDisplay: document.getElementById('rate-display'),
+        sendMethods: document.getElementById('send-methods'),
+        receiveMethods: document.getElementById('receive-methods'),
+        beneSectionTitle: document.getElementById('bene-section-title'),
+        selectedMethodPill: document.getElementById('selected-method-pill'),
+        beneList: document.getElementById('beneficiary-list'),
+        recipientName: document.getElementById('recipient-name'),
+        recipientPhone: document.getElementById('recipient-phone'),
+        recipientEmail: document.getElementById('recipient-email'),
+        recipientBank: document.getElementById('recipient-bank'),
+        recipientAccount: document.getElementById('recipient-account'),
+        phoneField: document.getElementById('phone-field'),
+        emailField: document.getElementById('email-field'),
+        bankFields: document.getElementById('bank-fields'),
+        phoneLabel: document.getElementById('phone-label'),
+        emailLabel: document.getElementById('email-label'),
+        note: document.getElementById('request-note'),
+        findDealBtn: document.getElementById('find-deal-btn'),
+      };
 
-    function calcReceive() {
-      const sendVal = parseFloat(document.getElementById('send-amount').value) || 0;
-      const recvEl = document.getElementById('recv-amount');
-      if (sendVal > 0) {
-        const recv = sendVal * RATE;
-        recvEl.value = '≈ ' + P2P_DATA.formatVND(recv);
-      } else {
-        recvEl.value = '';
+      function setText(el, text) {
+        if (el) el.textContent = text;
       }
-    }
 
-    function openCurrencyPicker(side) {
-      showToast('Chức năng chọn tiền tệ — sắp ra mắt');
-    }
-
-    let selectedBeneId = 'BEN-001';
-    function selectBene(id) {
-      selectedBeneId = id;
-      document.querySelectorAll('.bene-preset').forEach(el => el.classList.remove('selected'));
-      const icons = document.querySelectorAll('.bene-preset i');
-      icons.forEach(i => { i.className = 'bi bi-circle'; i.style.color = 'var(--color-iron)'; });
-
-      const beneEl = document.getElementById(`bene-preset-${id === 'BEN-001' ? 1 : 2}`);
-      if (beneEl) {
-        beneEl.classList.add('selected');
-        const icon = beneEl.querySelector('i');
-        if (icon) { icon.className = 'bi bi-check-circle-fill'; icon.style.color = 'var(--color-forest)'; }
+      function getCurrency(code) {
+        return window.P2P_DATA?.getCurrency ? P2P_DATA.getCurrency(code) : { code, flag: code, name: code };
       }
-    }
 
-    function findDeal() {
-      const amount = parseFloat(document.getElementById('send-amount').value) || 0;
-      if (amount <= 0) { showToast('Vui lòng nhập số tiền cần chuyển'); return; }
-      if (amount < 100) { showToast('Số tiền tối thiểu: $100'); return; }
-      // Navigate to results page
-      window.location.href = 'r-03-deal-results.html';
-    }
+      function formatAmount(amount, code) {
+        if (window.P2P_DATA?.formatAmount) return P2P_DATA.formatAmount(amount, code);
+        if (code === 'VND') return amount.toLocaleString('vi-VN') + ' ₫';
+        if (code === 'USD') return '$' + Number(amount).toFixed(2);
+        return Number(amount).toLocaleString('vi-VN') + ' ' + code;
+      }
 
-    // Init
-    document.addEventListener('DOMContentLoaded', function() {
-      renderMethodChips(
-        document.getElementById('send-methods'), SEND_METHODS, selectedSendMethod, '', setSendMethod
-      );
-      renderMethodChips(
-        document.getElementById('recv-methods'), RECV_METHODS, selectedRecvMethod, 'receive-chip', setRecvMethod
-      );
-      calcReceive();
-    });
+      function formatRate(rate, fromCode, toCode) {
+        if (toCode === 'VND') return `1 ${fromCode} ≈ ${P2P_DATA.formatVND(rate)}`;
+        return `1 ${fromCode} ≈ ${formatAmount(rate, toCode)}`;
+      }
+
+      function methodLabel(method) {
+        return window.P2P_DATA?.getMethodLabel ? P2P_DATA.getMethodLabel(method) : method;
+      }
+
+      function methodIcon(method) {
+        return window.P2P_DATA?.getMethodIcon ? P2P_DATA.getMethodIcon(method) : '';
+      }
+
+      function methodMode(method) {
+        return METHOD_RULES[method]?.mode || 'phone';
+      }
+
+      function getAvailableReceiveCurrencies(sendCurrency) {
+        return Object.keys(PREVIEW_RATES[sendCurrency] || {});
+      }
+
+      function getPreviewRate() {
+        return PREVIEW_RATES[state.sendCurrency]?.[state.receiveCurrency] || 0;
+      }
+
+      function getPreviewAmount() {
+        const amount = Number(state.sendAmount);
+        const rate = getPreviewRate();
+        return amount > 0 && rate > 0 ? amount * rate : 0;
+      }
+
+      function setError(id, show) {
+        const err = document.getElementById(id);
+        const field = document.getElementById(id.replace('err-', ''));
+        if (err) err.classList.toggle('show', !!show);
+        if (field) field.classList.toggle('err', !!show);
+      }
+
+      function clearErrors() {
+        [
+          'err-send-amount',
+          'err-recipient-name',
+          'err-recipient-phone',
+          'err-recipient-email',
+          'err-recipient-bank',
+          'err-recipient-account',
+        ].forEach(id => setError(id, false));
+      }
+
+      function renderCurrencyOptions() {
+        const fromCurrencyOptions = P2P_DATA.CURRENCIES.map(c =>
+          `<option value="${c.code}">${c.flag} ${c.code}</option>`
+        ).join('');
+        els.sendCurrency.innerHTML = fromCurrencyOptions;
+        els.receiveCurrency.innerHTML = '';
+        syncReceiveCurrencyOptions();
+      }
+
+      function syncReceiveCurrencyOptions() {
+        const available = getAvailableReceiveCurrencies(state.sendCurrency);
+        els.receiveCurrency.innerHTML = available.map(code => {
+          const c = getCurrency(code);
+          return `<option value="${code}">${c.flag} ${code}</option>`;
+        }).join('');
+        if (!available.includes(state.receiveCurrency)) {
+          state.receiveCurrency = available[0] || 'VND';
+        }
+        els.receiveCurrency.value = state.receiveCurrency;
+      }
+
+      function renderMethodChips(container, currency, selected, receive = false) {
+        const methods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[currency] || [];
+        container.innerHTML = methods.map(method => {
+          const active = method === selected ? 'selected' : '';
+          return `
+            <button type="button" class="method-chip ${receive ? 'receive' : ''} ${active}" data-method="${method}">
+              ${methodIcon(method)}
+              <span>${methodLabel(method)}</span>
+            </button>
+          `;
+        }).join('');
+
+        container.querySelectorAll('[data-method]').forEach(btn => {
+          btn.addEventListener('click', function () {
+            const method = this.getAttribute('data-method');
+            if (receive) {
+              setReceiveMethod(method);
+            } else {
+              setSendMethod(method);
+            }
+          });
+        });
+      }
+
+      function renderBeneficiaries() {
+        els.beneList.innerHTML = SAVED_BENEFICIARIES.map(b => {
+          const selected = b.id === state.beneficiaryId ? 'selected' : '';
+          return `
+            <button type="button" class="bene-card ${selected}" data-beneficiary="${b.id}">
+              <div class="bene-avatar">${b.initials}</div>
+              <div class="flex-grow-1 text-start">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <div class="bene-title">${b.title}</div>
+                  <i class="bi ${selected ? 'bi-check-circle-fill' : 'bi-circle'}" style="color:${selected ? 'var(--color-forest)' : 'var(--color-iron)'};"></i>
+                </div>
+                <div class="bene-sub">${b.sub}</div>
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        els.beneList.querySelectorAll('[data-beneficiary]').forEach(btn => {
+          btn.addEventListener('click', function () {
+            selectBeneficiary(this.getAttribute('data-beneficiary'));
+          });
+        });
+      }
+
+      function updateRecipientFieldVisibility() {
+        const mode = methodMode(state.receiveMethod);
+        const methodName = methodLabel(state.receiveMethod);
+
+        setText(els.beneSectionTitle, `Thông tin tài khoản nhận · ${methodName}`);
+        setText(els.selectedMethodPill, methodName);
+
+        els.phoneField.classList.toggle('d-none', mode !== 'phone');
+        els.emailField.classList.toggle('d-none', mode !== 'email');
+        els.bankFields.classList.toggle('d-none', mode !== 'bank');
+
+        if (mode === 'phone') {
+          setText(els.phoneLabel, `Số điện thoại ${methodName}`);
+          if (!els.recipientPhone.placeholder || els.recipientPhone.placeholder === 'ten@email.com') {
+            els.recipientPhone.placeholder = '0901234567';
+          }
+        } else if (mode === 'email') {
+          setText(els.emailLabel, `Email ${methodName}`);
+        }
+      }
+
+      function syncFormFields() {
+        els.requesterName.textContent = REQUESTER_NAME;
+        els.requesterAvatar.textContent = REQUESTER_INITIALS;
+        els.sendCurrency.value = state.sendCurrency;
+        els.receiveCurrency.value = state.receiveCurrency;
+        els.sendAmount.value = state.sendAmount;
+        els.recipientName.value = state.recipientName;
+        els.recipientPhone.value = state.recipientPhone;
+        els.recipientEmail.value = state.recipientEmail;
+        els.recipientBank.value = state.recipientBank;
+        els.recipientAccount.value = state.recipientAccount;
+        els.note.value = state.note;
+      }
+
+      function renderSummary() {
+        const senderCurrencyOptions = getAvailableReceiveCurrencies(state.sendCurrency);
+        if (!senderCurrencyOptions.includes(state.receiveCurrency)) {
+          state.receiveCurrency = senderCurrencyOptions[0] || 'VND';
+        }
+
+        syncReceiveCurrencyOptions();
+
+        const sendCurrency = getCurrency(state.sendCurrency);
+        const receiveCurrency = getCurrency(state.receiveCurrency);
+        const rate = getPreviewRate();
+        const receiveAmount = getPreviewAmount();
+
+        els.rateDisplay.textContent = rate > 0
+          ? formatRate(rate, state.sendCurrency, state.receiveCurrency)
+          : `Chưa có tỷ giá ${state.sendCurrency} → ${state.receiveCurrency}`;
+
+        els.receiveAmount.textContent = receiveAmount > 0
+          ? `≈ ${formatAmount(receiveAmount, state.receiveCurrency)}`
+          : '≈ 0';
+
+        setText(els.selectedMethodPill, methodLabel(state.receiveMethod));
+
+        const sendMethod = methodLabel(state.sendMethod);
+        const receiveMethod = methodLabel(state.receiveMethod);
+        setText(els.beneSectionTitle, `Thông tin tài khoản nhận · ${receiveMethod}`);
+
+        const previewMeta = [
+          `Bạn gửi ${formatAmount(Number(state.sendAmount || 0), state.sendCurrency)} qua ${sendMethod}`,
+          `Người nhận nhận ${receiveAmount > 0 ? formatAmount(receiveAmount, state.receiveCurrency) : '—'} qua ${receiveMethod}`,
+          `Cặp tiền: ${sendCurrency.flag} ${state.sendCurrency} → ${receiveCurrency.flag} ${state.receiveCurrency}`,
+        ];
+        els.findDealBtn.setAttribute('title', previewMeta.join(' · '));
+      }
+
+      function selectBeneficiary(id) {
+        const bene = SAVED_BENEFICIARIES.find(item => item.id === id);
+        if (!bene) return;
+
+        state.beneficiaryId = id;
+        if (bene.method && bene.method !== state.receiveMethod) {
+          setReceiveMethod(bene.method);
+        }
+        state.recipientName = bene.name || state.recipientName;
+        state.recipientPhone = bene.phone || '';
+        state.recipientEmail = bene.email || '';
+        state.recipientBank = bene.bank || '';
+        state.recipientAccount = bene.account || '';
+        render();
+      }
+
+      function setSendCurrency(code) {
+        state.sendCurrency = code;
+        const available = getAvailableReceiveCurrencies(code);
+        state.receiveCurrency = available.includes(state.receiveCurrency) ? state.receiveCurrency : (available[0] || 'VND');
+        const sendMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
+        state.sendMethod = sendMethods[0] || '';
+        const receiveMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[state.receiveCurrency] || [];
+        state.receiveMethod = receiveMethods[0] || '';
+        state.beneficiaryId = '';
+        state.recipientPhone = '';
+        state.recipientEmail = '';
+        state.recipientBank = '';
+        state.recipientAccount = '';
+        render();
+      }
+
+      function setReceiveCurrency(code) {
+        state.receiveCurrency = code;
+        const receiveMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
+        state.receiveMethod = receiveMethods[0] || '';
+        state.beneficiaryId = '';
+        state.recipientPhone = '';
+        state.recipientEmail = '';
+        state.recipientBank = '';
+        state.recipientAccount = '';
+        render();
+      }
+
+      function setSendMethod(method) {
+        state.sendMethod = method;
+        render();
+      }
+
+      function setReceiveMethod(method) {
+        state.receiveMethod = method;
+        state.beneficiaryId = '';
+        state.recipientPhone = '';
+        state.recipientEmail = '';
+        state.recipientBank = '';
+        state.recipientAccount = '';
+        render();
+      }
+
+      function validate() {
+        clearErrors();
+        const errors = [];
+        const amount = Number(state.sendAmount);
+        const mode = methodMode(state.receiveMethod);
+
+        if (!state.sendAmount || Number.isNaN(amount) || amount <= 0) {
+          setError('err-send-amount', true);
+          errors.push({ id: 'send-amount', msg: 'Nhập số tiền hợp lệ' });
+          return errors;
+        }
+        if (!state.recipientName.trim()) {
+          setError('err-recipient-name', true);
+          errors.push({ id: 'recipient-name', msg: 'Nhập tên chủ tài khoản' });
+        }
+        if (mode === 'phone' && !state.recipientPhone.trim()) {
+          setError('err-recipient-phone', true);
+          errors.push({ id: 'recipient-phone', msg: 'Nhập số điện thoại' });
+        }
+        if (mode === 'email' && !state.recipientEmail.trim()) {
+          setError('err-recipient-email', true);
+          errors.push({ id: 'recipient-email', msg: 'Nhập email' });
+        }
+        if (mode === 'bank') {
+          if (!state.recipientBank.trim()) {
+            setError('err-recipient-bank', true);
+            errors.push({ id: 'recipient-bank', msg: 'Chọn ngân hàng' });
+          }
+          if (!state.recipientAccount.trim()) {
+            setError('err-recipient-account', true);
+            errors.push({ id: 'recipient-account', msg: 'Nhập số tài khoản' });
+          }
+        }
+        const rate = getPreviewRate();
+        if (rate <= 0) {
+          errors.push({ id: 'receive-currency', msg: 'Chưa hỗ trợ cặp tiền tệ này' });
+        }
+        return errors;
+      }
+
+      function persistNeed() {
+        const payload = {
+          senderCurrency: state.sendCurrency,
+          recipientCurrency: state.receiveCurrency,
+          amount: state.sendAmount,
+          senderPaymentMethod: state.sendMethod,
+          recipientPaymentMethod: state.receiveMethod,
+          recipientName: state.recipientName,
+          recipientPhone: state.recipientPhone,
+          recipientEmail: state.recipientEmail,
+          recipientBank: state.recipientBank,
+          recipientAccount: state.recipientAccount,
+          message: state.note,
+          beneficiaryId: state.beneficiaryId,
+        };
+        try {
+          sessionStorage.setItem('p2p.requester.need', JSON.stringify(payload));
+        } catch (_) {
+          // Ignore storage failures in file:// or strict browsers.
+        }
+      }
+
+      function render() {
+        syncFormFields();
+        renderSummary();
+        renderMethodChips(els.sendMethods, state.sendCurrency, state.sendMethod, false);
+        renderMethodChips(els.receiveMethods, state.receiveCurrency, state.receiveMethod, true);
+        renderBeneficiaries();
+        updateRecipientFieldVisibility();
+      }
+
+      function findDeal() {
+        const errors = validate();
+        if (errors.length > 0) {
+          P2P_COMPONENTS.showToast(errors[0].msg);
+          return;
+        }
+
+        const rate = getPreviewRate();
+        if (rate <= 0) {
+          P2P_COMPONENTS.showToast('Chưa hỗ trợ cặp tiền tệ này');
+          return;
+        }
+
+        persistNeed();
+        window.location.href = 'r-03-deal-results.html';
+      }
+
+      function bindInputs() {
+        els.sendCurrency.addEventListener('change', function () {
+          setSendCurrency(this.value);
+        });
+        els.receiveCurrency.addEventListener('change', function () {
+          setReceiveCurrency(this.value);
+        });
+        els.sendAmount.addEventListener('input', function () {
+          state.sendAmount = this.value;
+          renderSummary();
+        });
+        els.recipientName.addEventListener('input', function () {
+          state.recipientName = this.value;
+        });
+        els.recipientPhone.addEventListener('input', function () {
+          state.recipientPhone = this.value;
+        });
+        els.recipientEmail.addEventListener('input', function () {
+          state.recipientEmail = this.value;
+        });
+        els.recipientBank.addEventListener('change', function () {
+          state.recipientBank = this.value;
+        });
+        els.recipientAccount.addEventListener('input', function () {
+          state.recipientAccount = this.value;
+        });
+        els.note.addEventListener('input', function () {
+          state.note = this.value;
+        });
+        els.findDealBtn.addEventListener('click', findDeal);
+      }
+
+      function init() {
+        try {
+          const saved = sessionStorage.getItem('p2p.requester.need');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            Object.assign(state, {
+              sendCurrency: parsed.senderCurrency || state.sendCurrency,
+              receiveCurrency: parsed.recipientCurrency || state.receiveCurrency,
+              sendAmount: parsed.amount || state.sendAmount,
+              sendMethod: parsed.senderPaymentMethod || state.sendMethod,
+              receiveMethod: parsed.recipientPaymentMethod || state.receiveMethod,
+              recipientName: parsed.recipientName || state.recipientName,
+              recipientPhone: parsed.recipientPhone || '',
+              recipientEmail: parsed.recipientEmail || '',
+              recipientBank: parsed.recipientBank || '',
+              recipientAccount: parsed.recipientAccount || '',
+              note: parsed.message || state.note,
+              beneficiaryId: parsed.beneficiaryId || state.beneficiaryId,
+            });
+          }
+        } catch (_) {
+          // Ignore malformed restore payloads.
+        }
+
+        renderCurrencyOptions();
+        bindInputs();
+        render();
+      }
+
+      init();
+      if (window.P2P_COMPONENTS && P2P_COMPONENTS.renderBottomNav) {
+        P2P_COMPONENTS.renderBottomNav('send');
+      }
+    })();
   </script>
-
-<script>P2P_COMPONENTS.renderBottomNav('send');</script>
 </body>
 </html>

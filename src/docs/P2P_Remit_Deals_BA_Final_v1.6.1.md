@@ -530,10 +530,14 @@ Provider tạo deal với:
 | Tỷ giá | Rate deal |
 | Hạn mức | Min/max amount |
 | Method | Requester trả Provider qua method nào; Provider chi người nhận qua method nào |
-| Hiệu lực | Thời hạn deal |
 | Ghi chú | Điều kiện/gợi ý nếu có |
 
-**Lưu ý:** Provider **không nhập SLA/thời gian cam kết chi trả** khi tạo hoặc sửa deal. Deadline xử lý sau từng trạng thái giao dịch do cấu hình Admin/backoffice quyết định và được hiển thị trong chi tiết request/giao dịch khi phát sinh.
+**Lưu ý:**
+
+- Provider **không nhập SLA/thời gian cam kết chi trả** khi tạo hoặc sửa deal.
+- Provider **không nhập thời hạn hiệu lực/validDays** cho deal.
+- Deadline xử lý sau từng trạng thái giao dịch do cấu hình Admin/backoffice quyết định và được hiển thị trong chi tiết request/giao dịch khi phát sinh.
+- Trạng thái visibility/expiry của deal do hệ thống quản lý theo trạng thái deal, rule USDV và cấu hình vận hành, không do Provider nhập tay ở form tạo deal.
 
 Khi tạo deal, hệ thống block nếu ví USDV Provider không đủ cover:
 
@@ -542,6 +546,14 @@ max amount của deal quy đổi USDV + phí Provider 0,5%
 ```
 
 Nếu Provider có nhiều deal active, hệ thống kiểm tra theo **deal có max amount cao nhất**, vì Provider chỉ xử lý 1 request/giao dịch tại một thời điểm.
+
+**Quy tắc UI/logic khi đổi corridor:**
+
+- `fromCurrency` và `toCurrency` không được trùng nhau; nếu trùng, UI tự đổi bên còn lại.
+- Khi đổi `fromCurrency`, danh sách method nhận tiền được cập nhật theo currency mới và tự chọn tối đa 2 method đầu tiên còn hợp lệ.
+- Khi đổi `toCurrency`, danh sách method chi trả được cập nhật theo currency mới và tự chọn tối đa 2 method đầu tiên còn hợp lệ.
+- Nút swap đổi chéo `fromCurrency`/`toCurrency` và reset cả hai danh sách method theo currency mới.
+- Deal chỉ hợp lệ để lưu nếu mỗi phía có ít nhất 1 method được chọn.
 
 ### 10.2. Deal visibility sau khi tạo
 
@@ -947,6 +959,11 @@ Corridor đã có sẵn ở hệ thống khác, P2P chỉ dùng lại và không
 | BR-161-035 | User thường không xem timeline rút gọn trong chi tiết request đang xử lý; chỉ xem trạng thái hiện tại và CTA. Timeline đầy đủ dành cho Admin. |
 | BR-161-036 | Provider không nhập SLA/thời gian xử lý khi tạo/sửa deal; deadline giao dịch lấy từ cấu hình Admin/backoffice và chỉ hiển thị theo từng request/giao dịch. |
 | BR-161-037 | Thuật ngữ hiển thị trong tài liệu và UI dùng **giao dịch đang diễn ra** thay cho các thuật ngữ cũ. |
+| BR-161-038 | Provider không nhập thời hạn hiệu lực/validDays khi tạo/sửa deal; hệ thống quản lý expiry/visibility theo trạng thái và cấu hình vận hành. |
+| BR-161-039 | Khi đổi `fromCurrency`, danh sách method nhận tiền cập nhật theo currency và auto-select tối đa 2 method đầu tiên hợp lệ. |
+| BR-161-040 | Khi đổi `toCurrency`, danh sách method chi trả cập nhật theo currency và auto-select tối đa 2 method đầu tiên hợp lệ. |
+| BR-161-041 | `fromCurrency` và `toCurrency` không được trùng nhau; nếu người dùng chọn trùng, UI tự đổi bên còn lại. |
+| BR-161-042 | Deal chỉ được lưu nếu mỗi phía có ít nhất 1 method được chọn; nếu không đủ method, form tạo deal báo lỗi. |
 
 ---
 
@@ -985,6 +1002,11 @@ Luồng gồm:
 4. Tìm deal phù hợp.
 5. Chọn deal.
 6. Xác nhận gửi request.
+
+Ghi chú UI prototype:
+
+- Màn nhập nhu cầu trong prototype HTML triển khai trực tiếp các section: amount, payment method, beneficiary, note, USDV check.
+- Khi người dùng quay lại màn nhập nhu cầu từ các bước sau, draft nhập trước đó được giữ lại trong cùng phiên.
 
 ### 19.3. Quản lý deals
 
@@ -1064,4 +1086,3 @@ Các điểm dưới đây không chặn BA v1.6.1 nhưng cần chốt khi bư�
 v1.6.1 đã điều chỉnh P2P Remit Deal thành một tính năng đúng ngữ cảnh trong VLinkPay, dùng Exchange Hub làm entry point và dùng KYC/KYB/Ví USDV của hệ sinh thái làm nền tảng niềm tin. Điểm khác biệt quan trọng nhất so với các bản trước là mô hình hold USDV **hai phía** tại thời điểm Provider accept, phí nền tảng trừ ngay khi hai bên kết nối, và rule xử lý rõ cho các trường hợp hủy/quá hạn.
 
 Bản v1.6.1 tập trung vào nghiệp vụ và đủ để Product bóc scope, Dev hiểu rule cần triển khai, QC xây test theo luồng, Ops cấu hình vận hành trong Admin Portal hiện hữu.
-

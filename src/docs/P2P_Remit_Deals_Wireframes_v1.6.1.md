@@ -197,7 +197,9 @@ Bottom/Nav:
 
 **Mục đích:** Requester nhập nhu cầu chuyển tiền trước khi hệ thống tìm deal phù hợp.
 
-**Tham chiếu mockup:** Màn “Bạn muốn gửi tiền đi đâu?” trong demo hiện có.
+**Tham chiếu mockup:** Màn nhập nhu cầu trong demo hiện có.
+
+**Ghi chú triển khai prototype:** Bản HTML hiện tại đi theo layout section trực tiếp ngay dưới topbar, không dùng hero banner; draft nhu cầu được giữ lại khi user quay về màn này trong cùng phiên.
 
 ```text
 ┌────────────────────────────────────┐
@@ -253,6 +255,7 @@ Bottom/Nav:
 - Nếu user đang có yêu cầu chờ Provider chấp nhận hoặc giao dịch đang diễn ra, CTA bị block và hiện modal/deep-link.
 - Nếu người thụ hưởng chưa có trong P2P, cho thêm nhanh tại form.
 - Người thụ hưởng là dữ liệu riêng trong P2P, không dùng danh bạ VLinkPay.
+- Khi quay lại từ màn kết quả/xác nhận, form giữ lại draft đã nhập trong phiên hiện tại.
 
 ---
 
