@@ -3,7 +3,7 @@
  * Load sau mock-data.js, trước script của từng màn hình.
  */
 
-window.P2P_COMPONENTS = {
+var P2P_COMPONENTS = window.P2P_COMPONENTS = {
   /**
    * Render bottom nav vào #bottom-nav hoặc cuối body.
    * @param {string} activeId  — 'overview' | 'send' | 'deals' | 'requests' | 'received' | 'accounts'

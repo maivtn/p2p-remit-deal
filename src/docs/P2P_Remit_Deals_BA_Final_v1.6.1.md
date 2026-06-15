@@ -964,6 +964,9 @@ Corridor đã có sẵn ở hệ thống khác, P2P chỉ dùng lại và không
 | BR-161-040 | Khi đổi `toCurrency`, danh sách method chi trả cập nhật theo currency và auto-select tối đa 2 method đầu tiên hợp lệ. |
 | BR-161-041 | `fromCurrency` và `toCurrency` không được trùng nhau; nếu người dùng chọn trùng, UI tự đổi bên còn lại. |
 | BR-161-042 | Deal chỉ được lưu nếu mỗi phía có ít nhất 1 method được chọn; nếu không đủ method, form tạo deal báo lỗi. |
+| BR-161-043 | Requester chỉ được chọn currency nhận nằm trong corridor hỗ trợ; nếu currency nhận hiện tại không hợp lệ sau khi đổi currency gửi, UI tự chuyển sang currency hợp lệ đầu tiên. |
+| BR-161-044 | Method nhận quyết định các field người thụ hưởng cần nhập; nếu Requester đổi method sau khi đã chọn beneficiary preset, form phải reset phần dữ liệu người thụ hưởng để tránh sai ngữ cảnh. |
+| BR-161-045 | Beneficiary preset là dữ liệu P2P riêng theo user/method/currency, có thể chọn nhanh trong form và được lưu trong draft request hiện tại. |
 
 ---
 
@@ -1007,6 +1010,9 @@ Ghi chú UI prototype:
 
 - Màn nhập nhu cầu trong prototype HTML triển khai trực tiếp các section: amount, payment method, beneficiary, note, USDV check.
 - Khi người dùng quay lại màn nhập nhu cầu từ các bước sau, draft nhập trước đó được giữ lại trong cùng phiên.
+- Currency nhận chỉ được phép nằm trong corridor đang hỗ trợ; nếu currency nhận hiện tại không còn hợp lệ sau khi đổi currency gửi, UI tự chuyển sang currency hợp lệ đầu tiên.
+- Method nhận và các field người thụ hưởng là động theo method; beneficiary preset là dữ liệu riêng trong P2P và phải khớp ngữ cảnh method/currency hiện tại.
+- Nếu người dùng đổi method sau khi đã chọn beneficiary preset, form phải reset phần dữ liệu người thụ hưởng để tránh sai ngữ cảnh.
 
 ### 19.3. Quản lý deals
 

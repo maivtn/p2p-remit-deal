@@ -257,7 +257,7 @@
 <body>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      if (window.P2P_DATA && P2P_DATA.DEMO && P2P_DATA.DEMO.requester) {
+      if (window.P2P_DATA && window.P2P_DATA.DEMO && window.P2P_DATA.DEMO.requester) {
         document.title = 'R-02 · Gửi yêu cầu — P2P Remit Deals';
       }
     });
@@ -442,6 +442,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
     (function () {
+      const DATA = window.P2P_DATA || {};
+      const COMPONENTS = window.P2P_COMPONENTS || {};
       const BANKS = ['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV', 'Agribank', 'VPBank', 'ACB', 'TPBank', 'Sacombank'];
       const DEFAULT_NOTE = 'Cần chuyển gấp trong hôm nay';
 
@@ -559,27 +561,27 @@
       }
 
       function getCurrency(code) {
-        return window.P2P_DATA?.getCurrency ? P2P_DATA.getCurrency(code) : { code, flag: code, name: code };
+        return DATA.getCurrency ? DATA.getCurrency(code) : { code, flag: code, name: code };
       }
 
       function formatAmount(amount, code) {
-        if (window.P2P_DATA?.formatAmount) return P2P_DATA.formatAmount(amount, code);
+        if (DATA.formatAmount) return DATA.formatAmount(amount, code);
         if (code === 'VND') return amount.toLocaleString('vi-VN') + ' ₫';
         if (code === 'USD') return '$' + Number(amount).toFixed(2);
         return Number(amount).toLocaleString('vi-VN') + ' ' + code;
       }
 
       function formatRate(rate, fromCode, toCode) {
-        if (toCode === 'VND') return `1 ${fromCode} ≈ ${P2P_DATA.formatVND(rate)}`;
+        if (toCode === 'VND') return `1 ${fromCode} ≈ ${DATA.formatVND(rate)}`;
         return `1 ${fromCode} ≈ ${formatAmount(rate, toCode)}`;
       }
 
       function methodLabel(method) {
-        return window.P2P_DATA?.getMethodLabel ? P2P_DATA.getMethodLabel(method) : method;
+        return DATA.getMethodLabel ? DATA.getMethodLabel(method) : method;
       }
 
       function methodIcon(method) {
-        return window.P2P_DATA?.getMethodIcon ? P2P_DATA.getMethodIcon(method) : '';
+        return DATA.getMethodIcon ? DATA.getMethodIcon(method) : '';
       }
 
       function methodMode(method) {
@@ -619,7 +621,7 @@
       }
 
       function renderCurrencyOptions() {
-        const fromCurrencyOptions = P2P_DATA.CURRENCIES.map(c =>
+        const fromCurrencyOptions = DATA.CURRENCIES.map(c =>
           `<option value="${c.code}">${c.flag} ${c.code}</option>`
         ).join('');
         els.sendCurrency.innerHTML = fromCurrencyOptions;
@@ -640,7 +642,7 @@
       }
 
       function renderMethodChips(container, currency, selected, receive = false) {
-        const methods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[currency] || [];
+        const methods = DATA.PAYMENT_METHODS_BY_CURRENCY[currency] || [];
         container.innerHTML = methods.map(method => {
           const active = method === selected ? 'selected' : '';
           return `
@@ -709,8 +711,6 @@
       }
 
       function syncFormFields() {
-        els.requesterName.textContent = REQUESTER_NAME;
-        els.requesterAvatar.textContent = REQUESTER_INITIALS;
         els.sendCurrency.value = state.sendCurrency;
         els.receiveCurrency.value = state.receiveCurrency;
         els.sendAmount.value = state.sendAmount;
@@ -777,9 +777,9 @@
         state.sendCurrency = code;
         const available = getAvailableReceiveCurrencies(code);
         state.receiveCurrency = available.includes(state.receiveCurrency) ? state.receiveCurrency : (available[0] || 'VND');
-        const sendMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
+        const sendMethods = DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
         state.sendMethod = sendMethods[0] || '';
-        const receiveMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[state.receiveCurrency] || [];
+        const receiveMethods = DATA.PAYMENT_METHODS_BY_CURRENCY[state.receiveCurrency] || [];
         state.receiveMethod = receiveMethods[0] || '';
         state.beneficiaryId = '';
         state.recipientPhone = '';
@@ -791,7 +791,7 @@
 
       function setReceiveCurrency(code) {
         state.receiveCurrency = code;
-        const receiveMethods = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
+        const receiveMethods = DATA.PAYMENT_METHODS_BY_CURRENCY[code] || [];
         state.receiveMethod = receiveMethods[0] || '';
         state.beneficiaryId = '';
         state.recipientPhone = '';
@@ -890,13 +890,13 @@
       function findDeal() {
         const errors = validate();
         if (errors.length > 0) {
-          P2P_COMPONENTS.showToast(errors[0].msg);
+          COMPONENTS.showToast(errors[0].msg);
           return;
         }
 
         const rate = getPreviewRate();
         if (rate <= 0) {
-          P2P_COMPONENTS.showToast('Chưa hỗ trợ cặp tiền tệ này');
+          COMPONENTS.showToast('Chưa hỗ trợ cặp tiền tệ này');
           return;
         }
 
@@ -966,8 +966,8 @@
       }
 
       init();
-      if (window.P2P_COMPONENTS && P2P_COMPONENTS.renderBottomNav) {
-        P2P_COMPONENTS.renderBottomNav('send');
+      if (COMPONENTS.renderBottomNav) {
+        COMPONENTS.renderBottomNav('send');
       }
     })();
   </script>

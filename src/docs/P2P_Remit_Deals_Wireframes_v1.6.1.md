@@ -256,6 +256,10 @@ Bottom/Nav:
 - Nếu người thụ hưởng chưa có trong P2P, cho thêm nhanh tại form.
 - Người thụ hưởng là dữ liệu riêng trong P2P, không dùng danh bạ VLinkPay.
 - Khi quay lại từ màn kết quả/xác nhận, form giữ lại draft đã nhập trong phiên hiện tại.
+- Khi đổi tiền gửi, hệ thống chỉ cho chọn các currency nhận được corridor hỗ trợ; nếu currency nhận hiện tại không còn hợp lệ, UI tự chuyển sang currency đầu tiên còn hợp lệ.
+- Khi đổi method nhận, các field nhận tiền động theo method và chỉ hiển thị những field cần thiết cho method đó.
+- Beneficiary preset là dữ liệu P2P riêng theo ngữ cảnh method; chọn preset hợp lệ sẽ đổ lại vào form và giữ thông tin trong draft.
+- Nếu người dùng đổi method sau khi chọn beneficiary preset, dữ liệu người thụ hưởng được làm mới theo method mới để tránh lệch ngữ cảnh.
 
 ---
 
