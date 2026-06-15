@@ -12,9 +12,15 @@
   <style>
     body { background: var(--color-cloud); }
 
-    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
-    .topbar-inner { display:flex; align-items:center; gap:12px; }
-
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 12px; }
 
     .section-label {
       font-size: 11px;
@@ -25,308 +31,570 @@
       margin-bottom: 10px;
     }
 
-    .method-checkbox {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px;
+    /* ── Currency selector ── */
+    .currency-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .currency-select-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .currency-select-wrap select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--color-cloud);
       border: 1.5px solid var(--color-pebble);
-      border-radius: 8px; cursor: pointer; background: #fff;
-      margin-bottom: 8px; transition: all 0.15s;
+      border-radius: 10px;
+      padding: 10px 32px 10px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-ink);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
     }
-    .method-checkbox.checked {
-      border-color: var(--color-monday-violet);
+    .currency-select-wrap select:focus { border-color: var(--color-monday-violet); }
+    .currency-select-wrap::after {
+      content: '\F282';
+      font-family: 'bootstrap-icons';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-slate);
+      pointer-events: none;
+      font-size: 11px;
+    }
+    .currency-swap-btn {
       background: var(--color-periwinkle);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-monday-violet);
+      font-size: 16px;
+      transition: background 0.15s;
     }
-    .method-checkbox input[type="checkbox"] { accent-color: var(--color-monday-violet); width:18px; height:18px; }
-    .method-checkbox .method-label { font-size:14px; font-weight:500; color:var(--color-ink); }
+    .currency-swap-btn:hover { background: var(--color-mist); }
 
-    .expiry-pill {
-      border: 1.5px solid var(--color-pebble); border-radius: 160px;
-      padding: 8px 20px; font-size: 14px; font-weight: 500;
-      color: var(--color-slate); cursor: pointer; background: #fff;
-      transition: all 0.15s;
+    /* ── Form inputs ── */
+    .field-wrap { margin-bottom: 0; }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-slate);
+      margin-bottom: 4px;
     }
-    .expiry-pill.selected {
-      border-color: var(--color-monday-violet);
+    .input-box {
+      display: flex;
+      align-items: stretch;
+    }
+    .input-box input,
+    .input-box select {
+      flex: 1;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      color: var(--color-ink);
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+    .input-box input:focus,
+    .input-box select:focus { border-color: var(--color-monday-violet); background: #fff; }
+    .input-box.with-addon input { border-radius: 10px 0 0 10px; border-right: none; }
+    .input-box .addon {
+      background: var(--color-pebble);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: 0 10px 10px 0;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-slate);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .field-err {
+      font-size: 12px;
+      color: #dc3545;
+      margin-top: 4px;
+      display: none;
+    }
+    .field-err.show { display: block; }
+    .input-box input.err { border-color: #dc3545; }
+
+    /* ── Method checkboxes ── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 480px) { .method-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .mchk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-ink);
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .mchk.on { border-color: var(--color-monday-violet); background: var(--color-periwinkle); color: var(--color-monday-violet); }
+    .mchk .mchk-tick { margin-left: auto; font-size: 13px; color: var(--color-monday-violet); display: none; }
+    .mchk.on .mchk-tick { display: block; }
+
+    /* ── Textarea ── */
+    textarea.input-box-ta {
+      width: 100%;
+      background: var(--color-cloud);
+      border: 1.5px solid var(--color-pebble);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--color-ink);
+      outline: none;
+      resize: vertical;
+      min-height: 76px;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    textarea.input-box-ta:focus { border-color: var(--color-monday-violet); background: #fff; }
+
+    /* ── Sticky CTA ── */
+    .cta-bar {
+      position: sticky;
+      bottom: 0;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--color-pebble);
+      padding: 12px 16px;
+      z-index: 90;
+    }
+    .btn-create {
+      background: var(--color-monday-violet);
+      color: #fff;
+      border: none;
+      border-radius: 160px;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-create:hover { opacity: 0.9; }
+
+    .market-rate-btn {
       background: var(--color-periwinkle);
       color: var(--color-monday-violet);
+      border: none;
+      border-radius: 160px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s;
+      flex-shrink: 0;
     }
-
-    .collateral-banner {
-      background: var(--color-periwinkle);
-      border-radius: 12px;
-      border-left: 4px solid var(--color-monday-violet);
-      padding: 14px 16px;
-    }
-
-    .sticky-bottom {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #fff; border-top: 1px solid var(--color-pebble);
-      padding: 12px 16px;
-      z-index: 200;
-    }
-
-    .form-label { font-size:13px; font-weight:600; color:var(--color-ink); margin-bottom:6px; }
-    .form-control, .form-select {
-      border-color: var(--color-pebble);
-      border-radius: 8px !important;
-      font-size: 14px;
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--color-monday-violet) !important;
-      box-shadow: 0 0 0 3px rgba(97,97,255,0.12) !important;
-    }
-    .input-group-text { font-size:12px; }
+    .market-rate-btn:hover { background: var(--color-mist); }
   </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
+<!-- Topbar -->
 <nav class="topbar">
   <div class="container-sm">
     <div class="topbar-inner">
-      <a href="p-16-deal-list.html" class="btn p-0 me-1" style="background:none;border:none;color:var(--color-ink);font-size:22px;">
-        <i class="bi bi-x-lg"></i>
+      <a href="p-16-deal-list.html" class="btn btn-link p-0 text-secondary" aria-label="Huỷ">
+        <i class="bi bi-x-lg fs-5"></i>
       </a>
       <div>
-        <div style="font-size:16px;font-weight:700;color:var(--color-ink);">Tạo Deal Mới</div>
-        <div style="font-size:11px;color:var(--color-slate);">Provider: Hùng Mạnh Lê</div>
+        <div style="font-size:16px; font-weight:700; color:var(--color-ink);">Tạo Deal Mới</div>
+        <div style="font-size:12px; color:var(--color-slate);" id="providerName">Provider: Hùng Mạnh Lê</div>
       </div>
     </div>
   </div>
 </nav>
 
-<!-- MAIN CONTENT -->
-<div class="container-sm py-3">
+<!-- Form -->
+<div class="container-sm py-3" style="padding-bottom:100px;">
   <div class="d-flex flex-column gap-3">
 
-    <!-- 1. CẶP TIỀN TỆ -->
+    <!-- 1. Cặp tiền tệ -->
     <div class="p2p-card">
       <div class="section-label">1 · Cặp tiền tệ</div>
-      <div class="row g-2 align-items-center">
-        <div class="col">
-          <label class="form-label">Requester trả bằng</label>
-          <select class="form-select" id="sendCurrency">
-            <option value="USD" selected>🇺🇸 USD — Đô la Mỹ</option>
-            <option value="VND">🇻🇳 VND — Việt Nam Đồng</option>
-            <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
-            <option value="EUR">🇪🇺 EUR — Euro</option>
-          </select>
+      <div class="currency-row">
+        <div class="currency-select-wrap">
+          <select id="fromCurrency" onchange="onCurrencyChange('from')"></select>
         </div>
-        <div class="col-auto text-center" style="color:var(--color-slate);font-size:20px;padding-top:24px;">
-          <i class="bi bi-arrow-right"></i>
+        <button class="currency-swap-btn" onclick="swapCurrencies()" title="Đổi chiều" type="button">
+          <i class="bi bi-arrow-left-right"></i>
+        </button>
+        <div class="currency-select-wrap">
+          <select id="toCurrency" onchange="onCurrencyChange('to')"></select>
         </div>
-        <div class="col">
-          <label class="form-label">Người thụ hưởng nhận</label>
-          <select class="form-select" id="receiveCurrency">
-            <option value="VND" selected>🇻🇳 VND — Việt Nam Đồng</option>
-            <option value="USD">🇺🇸 USD — Đô la Mỹ</option>
-            <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
-          </select>
-        </div>
+      </div>
+      <div class="mt-2" style="font-size:12px; color:var(--color-slate);">
+        Hành lang: <span id="corridorText" class="fw-semibold" style="color:var(--color-ink);">USD → VND</span>
       </div>
     </div>
 
-    <!-- 2. TỶ GIÁ -->
+    <!-- 2. Tỷ giá -->
     <div class="p2p-card">
-      <div class="section-label">2 · Tỷ giá</div>
-      <label class="form-label">1 USD = ? VND</label>
-      <div class="input-group mb-2">
-        <input type="number" class="form-control" id="rate" placeholder="Ví dụ: 25500" value="25500" min="1"/>
-        <span class="input-group-text" style="background:var(--color-periwinkle);color:var(--color-monday-violet);font-size:12px;border-color:var(--color-pebble);">
-          <i class="bi bi-lightning-fill me-1"></i> ~25.500
-        </span>
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="section-label mb-0" id="rateLabel">2 · Tỷ giá (1 USD = ? VND)</div>
+        <button class="market-rate-btn" onclick="applyMarketRate()" type="button">
+          ⚡ TG thị trường
+        </button>
       </div>
-      <small style="font-size:12px;color:var(--color-slate);">Tỷ giá thị trường tham khảo: <strong>25.500 ₫/USD</strong> · Bạn có thể đặt cao hơn để bù phí</small>
+      <div class="input-box">
+        <input id="rate" type="number" min="0" step="any" placeholder="Ví dụ: 25500" oninput="clearFieldErr('rateErr')"/>
+      </div>
+      <div class="field-err" id="rateErr">Nhập tỷ giá hợp lệ (số dương)</div>
     </div>
 
-    <!-- 3. GIỚI HẠN -->
+    <!-- 3. Giới hạn giao dịch -->
     <div class="p2p-card">
-      <div class="section-label">3 · Giới hạn giao dịch</div>
-      <div class="row g-3">
+      <div class="section-label">3 · Giới hạn giao dịch (<span id="amountCurLabel">USD</span>)</div>
+      <div class="row g-2">
         <div class="col-6">
-          <label class="form-label">Tối thiểu ($)</label>
-          <input type="number" class="form-control" id="minAmount" value="100" min="1" placeholder="100"/>
+          <div class="field-label">Tối thiểu</div>
+          <div class="input-box with-addon">
+            <input id="minAmount" type="number" min="0" step="any" placeholder="100" oninput="clearFieldErr('minAmountErr')"/>
+            <span class="addon" id="minAmountCur">USD</span>
+          </div>
+          <div class="field-err" id="minAmountErr">Nhập số dương</div>
         </div>
         <div class="col-6">
-          <label class="form-label">Tối đa ($)</label>
-          <input type="number" class="form-control" id="maxAmount" value="5000" min="1" placeholder="5000"/>
+          <div class="field-label">Tối đa</div>
+          <div class="input-box with-addon">
+            <input id="maxAmount" type="number" min="0" step="any" placeholder="5,000" oninput="clearFieldErr('maxAmountErr')"/>
+            <span class="addon" id="maxAmountCur">USD</span>
+          </div>
+          <div class="field-err" id="maxAmountErr">Phải lớn hơn tối thiểu</div>
         </div>
       </div>
     </div>
 
-    <!-- 4. PHƯƠNG THỨC NHẬN TIỀN -->
+    <!-- 4. Phương thức nhận tiền -->
+    <div class="p2p-card" style="background:#eff6ff; border:1.5px solid #bfdbfe;">
+      <div class="section-label" style="color:#1e40af;">4 · Phương thức nhận tiền</div>
+      <div id="senderMethodLabel" style="font-size:12px; font-weight:700; color:#1e40af; margin-bottom:10px;">
+        💳 Người gửi 🇺🇸 thanh toán cho tôi qua
+      </div>
+      <div id="senderMethodGrid" class="method-grid"></div>
+      <div class="field-err" id="senderMethodErr">Chọn ít nhất 1 phương thức</div>
+    </div>
+
+    <!-- 5. Phương thức chi trả -->
+    <div class="p2p-card" style="background:#ecfdf5; border:1.5px solid #6ee7b7;">
+      <div class="section-label" style="color:#065f46;">5 · Phương thức chi trả</div>
+      <div id="recipientMethodLabel" style="font-size:12px; font-weight:700; color:#065f46; margin-bottom:10px;">
+        📤 Tôi gửi tiền 🇻🇳 qua
+      </div>
+      <div id="recipientMethodGrid" class="method-grid"></div>
+      <div class="field-err" id="recipientMethodErr">Chọn ít nhất 1 phương thức</div>
+    </div>
+
+    <!-- 6. Ghi chú -->
     <div class="p2p-card">
-      <div class="section-label">4 · Phương thức nhận tiền</div>
-      <div style="font-size:12px;color:var(--color-slate);margin-bottom:12px;">Requester trả cho tôi qua:</div>
-
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'receive-zelle')">
-        <input type="checkbox" id="receive-zelle" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/zelle.png" alt="Zelle"> Zelle</span>
-      </div>
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'receive-venmo')">
-        <input type="checkbox" id="receive-venmo" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/venmo.png" alt="Venmo"> Venmo</span>
-      </div>
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'receive-paypal')">
-        <input type="checkbox" id="receive-paypal" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/paypal.png" alt="PayPal"> PayPal</span>
-      </div>
-      <div class="method-checkbox" onclick="toggleMethod(this,'receive-apple')">
-        <input type="checkbox" id="receive-apple"/>
-        <span class="method-label"><img class="method-icon" src="../images/apple_cash.png" alt="Apple Cash"> Apple Cash</span>
-      </div>
-      <div class="method-checkbox" onclick="toggleMethod(this,'receive-bank-us')">
-        <input type="checkbox" id="receive-bank-us"/>
-        <span class="method-label"><img class="method-icon" src="../images/bank-transfer.png" alt="Bank Transfer"> Bank Transfer (US)</span>
+      <div class="section-label">6 · Ghi chú (tuỳ chọn)</div>
+      <textarea id="notes" class="input-box-ta" maxlength="300"
+        placeholder="Điều kiện, lưu ý thêm cho Requester..."></textarea>
+      <div class="text-end mt-1" style="font-size:11px; color:var(--color-iron);">
+        <span id="notesCount">0</span>/300
       </div>
     </div>
 
-    <!-- 5. PHƯƠNG THỨC CHI TRẢ -->
-    <div class="p2p-card">
-      <div class="section-label">5 · Phương thức chi trả</div>
-      <div style="font-size:12px;color:var(--color-slate);margin-bottom:12px;">Tôi gửi tiền VND đến người thụ hưởng qua:</div>
-
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'pay-momo')">
-        <input type="checkbox" id="pay-momo" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/momo.png" alt="MoMo"> MoMo</span>
-      </div>
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'pay-zalopay')">
-        <input type="checkbox" id="pay-zalopay" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/zalopay.png" alt="ZaloPay"> ZaloPay</span>
-      </div>
-      <div class="method-checkbox checked" onclick="toggleMethod(this,'pay-bank')">
-        <input type="checkbox" id="pay-bank" checked/>
-        <span class="method-label"><img class="method-icon" src="../images/bank-transfer.png" alt="Bank Transfer"> Chuyển khoản Ngân hàng</span>
-      </div>
-      <div class="method-checkbox" onclick="toggleMethod(this,'pay-viettel')">
-        <input type="checkbox" id="pay-viettel"/>
-        <span class="method-label">📱 Viettel Money</span>
-      </div>
-    </div>
-
-    <!-- 6. HIỆU LỰC DEAL -->
-    <div class="p2p-card">
-      <div class="section-label">6 · Thời hạn hiệu lực</div>
-      <div class="d-flex gap-2 flex-wrap">
-        <button type="button" class="expiry-pill" onclick="selectExpiry(this, 7)">7 ngày</button>
-        <button type="button" class="expiry-pill selected" onclick="selectExpiry(this, 14)">14 ngày</button>
-        <button type="button" class="expiry-pill" onclick="selectExpiry(this, 30)">30 ngày</button>
-      </div>
-      <div id="expiryDateDisplay" style="font-size:12px;color:var(--color-slate);margin-top:8px;">
-        Hết hạn: <strong>26/06/2026</strong>
-      </div>
-    </div>
-
-    <!-- 7. GHI CHÚ -->
-    <div class="p2p-card">
-      <div class="section-label">7 · Ghi chú (tuỳ chọn)</div>
-      <textarea class="form-control" id="dealNote" rows="3" placeholder="Điều kiện, lưu ý thêm cho Requester..." style="border-radius:8px;font-size:14px;"></textarea>
-    </div>
-
-    <!-- 8. KÝ QUỸ ƯỚC TÍNH -->
-    <div class="collateral-banner">
-      <div style="font-size:12px;font-weight:700;color:var(--color-monday-violet);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
-        <i class="bi bi-shield-fill-check me-1"></i> Ký quỹ ước tính
-      </div>
-      <div style="font-size:15px;font-weight:600;color:var(--color-ink);" id="collateralEstimate">
-        127.575.000 ₫
-      </div>
-      <div style="font-size:12px;color:var(--color-slate);margin-top:2px;">
-        max $5.000 × 25.500 × 1,005 · Bị giữ khi deal active
-      </div>
-      <div style="font-size:12px;font-weight:500;color:var(--color-forest);margin-top:8px;">
-        <i class="bi bi-wallet2 me-1"></i> Số dư USDV khả dụng: <strong>85.000.000 ₫</strong>
-        <span class="ms-1 badge" style="background:var(--color-mint);color:var(--color-forest);font-size:11px;border-radius:6px;">✅ Đủ điều kiện</span>
-      </div>
-      <div style="font-size:11px;color:var(--color-slate);margin-top:6px;">
-        Ký quỹ sẽ được trừ từ ví USDV khi deal được đăng thành công.
-      </div>
-    </div>
-
-  </div><!-- end flex column -->
+  </div>
 </div>
 
-<!-- STICKY CTA -->
-<div class="sticky-bottom">
+<!-- Sticky CTA -->
+<div class="cta-bar">
   <div class="container-sm">
-    <button type="button" class="btn btn-primary w-100" onclick="submitDeal()" style="font-size:16px;font-weight:600;padding:14px;">
-      <i class="bi bi-check2-circle me-2"></i>Đăng Deal
+    <button class="btn-create" onclick="submitDeal()" type="button">
+      Đăng Deal
     </button>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- Success modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px; border:none;">
+      <div class="modal-body text-center p-4">
+        <div style="font-size:48px; margin-bottom:16px;">✅</div>
+        <h5 style="font-weight:700; margin-bottom:8px;">Deal đã được tạo!</h5>
+        <p style="color:var(--color-slate); font-size:14px; margin-bottom:24px;" id="successDesc">
+          Deal đang hoạt động. Requester có thể tìm thấy deal của bạn ngay bây giờ.
+        </p>
+        <a href="p-16-deal-list.html" class="btn-create d-block text-decoration-none text-center" style="font-size:15px; padding:12px;">
+          Xem danh sách Deals
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<div id="bottom-nav"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
-  let selectedExpiryDays = 14;
+// ─── Shared data from mock-data.js ───────────────────────────────────────────
 
-  function toggleMethod(el, checkboxId) {
-    const cb = document.getElementById(checkboxId);
-    cb.checked = !cb.checked;
-    el.classList.toggle('checked', cb.checked);
-    updateCollateral();
+var CURRENCIES   = P2P_DATA.CURRENCIES;
+var RATES_TO_VND = P2P_DATA.RATES_TO_VND;
+var METHODS_BY_CUR = P2P_DATA.PAYMENT_METHODS_BY_CURRENCY;
+
+// ─── State ───────────────────────────────────────────────────────────────────
+
+var senderSelected    = new Set();
+var recipientSelected = new Set();
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+  P2P_COMPONENTS.renderBottomNav('deals');
+
+  var provider = P2P_DATA && P2P_DATA.DEMO && P2P_DATA.DEMO.provider;
+  if (provider) document.getElementById('providerName').textContent = 'Provider: ' + provider.name;
+
+  buildCurrencySelects();
+  onCurrencyChange('init');
+
+  document.getElementById('notes').addEventListener('input', function() {
+    document.getElementById('notesCount').textContent = this.value.length;
+  });
+});
+
+function buildCurrencySelects() {
+  var fromEl = document.getElementById('fromCurrency');
+  var toEl   = document.getElementById('toCurrency');
+  CURRENCIES.forEach(function(c) {
+    var fromOpt = new Option(c.flag + ' ' + c.code + ' - ' + c.name, c.code);
+    var toOpt   = new Option(c.flag + ' ' + c.code, c.code);
+    if (c.code === 'USD') fromOpt.selected = true;
+    if (c.code === 'VND') toOpt.selected   = true;
+    fromEl.appendChild(fromOpt);
+    toEl.appendChild(toOpt);
+  });
+}
+
+// ─── Currency change ─────────────────────────────────────────────────────────
+
+function onCurrencyChange(changedSide) {
+  var fromEl = document.getElementById('fromCurrency');
+  var toEl   = document.getElementById('toCurrency');
+  var from   = fromEl.value;
+  var to     = toEl.value;
+
+  // Prevent same currency on both sides
+  if (from === to) {
+    if (changedSide === 'to') {
+      var fallback = CURRENCIES.find(function(c) { return c.code !== to; });
+      if (fallback) { fromEl.value = fallback.code; from = fallback.code; }
+    } else {
+      toEl.value = from === 'VND' ? 'USD' : 'VND';
+      to = toEl.value;
+    }
   }
 
-  function selectExpiry(el, days) {
-    document.querySelectorAll('.expiry-pill').forEach(p => p.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedExpiryDays = days;
-    const now = new Date('2026-06-12T09:00:00Z');
-    const exp = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-    const d = exp.getDate().toString().padStart(2,'0');
-    const m = (exp.getMonth()+1).toString().padStart(2,'0');
-    const y = exp.getFullYear();
-    document.getElementById('expiryDateDisplay').innerHTML = `Hết hạn: <strong>${d}/${m}/${y}</strong>`;
-    updateCollateral();
+  var fromCur  = CURRENCIES.find(function(c) { return c.code === from; });
+  var toCur    = CURRENCIES.find(function(c) { return c.code === to;   });
+  var fromFlag = fromCur ? fromCur.flag : '';
+  var toFlag   = toCur   ? toCur.flag   : '';
+
+  document.getElementById('corridorText').textContent = from + ' → ' + to;
+  document.getElementById('rateLabel').textContent    = '2 · Tỷ giá (1 ' + from + ' = ? ' + to + ')';
+  document.getElementById('amountCurLabel').textContent = from;
+  document.getElementById('minAmountCur').textContent   = from;
+  document.getElementById('maxAmountCur').textContent   = from;
+
+  document.getElementById('senderMethodLabel').innerHTML    = '💳 Người gửi ' + fromFlag + ' thanh toán cho tôi qua';
+  document.getElementById('recipientMethodLabel').innerHTML = '📤 Tôi gửi tiền ' + toFlag + ' qua';
+
+  var resetFrom = changedSide === 'from' || changedSide === 'init';
+  var resetTo   = changedSide === 'to'   || changedSide === 'init';
+  changeMethodCurrency('senderMethodGrid',    from, senderSelected,    'senderMethodErr',    resetFrom);
+  changeMethodCurrency('recipientMethodGrid', to,   recipientSelected, 'recipientMethodErr', resetTo);
+}
+
+function getSuggestedRate(from, to) {
+  if (from === to) return 1;
+  return (RATES_TO_VND[from] || 1) / (RATES_TO_VND[to] || 1);
+}
+
+function applyMarketRate() {
+  var from = document.getElementById('fromCurrency').value;
+  var to   = document.getElementById('toCurrency').value;
+  var r    = getSuggestedRate(from, to);
+  document.getElementById('rate').value = r >= 100 ? Math.round(r) : parseFloat(r.toFixed(4));
+  clearFieldErr('rateErr');
+}
+
+function swapCurrencies() {
+  var fromEl = document.getElementById('fromCurrency');
+  var toEl   = document.getElementById('toCurrency');
+  var tmp    = fromEl.value;
+  fromEl.value = toEl.value;
+  toEl.value   = tmp;
+  senderSelected.clear();
+  recipientSelected.clear();
+  onCurrencyChange('init');
+}
+
+// ─── Method grid ─────────────────────────────────────────────────────────────
+
+function changeMethodCurrency(gridId, currency, selectedSet, errId, resetAndAutoSelect) {
+  var methods = METHODS_BY_CUR[currency] || [];
+  if (resetAndAutoSelect) {
+    selectedSet.clear();
+    methods.slice(0, 2).forEach(function(m) { selectedSet.add(m); });
+  } else {
+    var valid = new Set(methods);
+    selectedSet.forEach(function(m) { if (!valid.has(m)) selectedSet.delete(m); });
+  }
+  renderMethodGrid(gridId, currency, selectedSet, errId);
+}
+
+function renderMethodGrid(gridId, currency, selectedSet, errId) {
+  var grid    = document.getElementById(gridId);
+  var methods = METHODS_BY_CUR[currency] || [];
+
+  if (!methods.length) {
+    grid.innerHTML = '<p style="font-size:13px;color:var(--color-iron);font-style:italic;">Chưa có phương thức cho ' + currency + '</p>';
+    return;
   }
 
-  function updateCollateral() {
-    const rate = parseFloat(document.getElementById('rate').value) || 0;
-    const maxAmt = parseFloat(document.getElementById('maxAmount').value) || 0;
-    const collateral = maxAmt * rate * 1.005;
-    document.getElementById('collateralEstimate').textContent =
-      P2P_DATA.formatVND(Math.round(collateral));
+  grid.innerHTML = methods.map(function(m) {
+    var label    = P2P_DATA.getMethodLabel(m);
+    var iconHtml = P2P_DATA.getMethodIcon(m);
+    var on       = selectedSet.has(m);
+    return '<div class="mchk' + (on ? ' on' : '') + '" onclick="toggleMethod(\'' + gridId + '\',\'' + m + '\')" data-id="' + m + '">'
+         + iconHtml + '<span>' + label + '</span>'
+         + '<i class="bi bi-check-circle-fill mchk-tick"></i>'
+         + '</div>';
+  }).join('');
+
+  clearFieldErr(errId);
+}
+
+function toggleMethod(gridId, method) {
+  var isSender = gridId === 'senderMethodGrid';
+  var sel      = isSender ? senderSelected : recipientSelected;
+  var errId    = isSender ? 'senderMethodErr' : 'recipientMethodErr';
+  if (sel.has(method)) sel.delete(method); else sel.add(method);
+  var el = document.querySelector('#' + gridId + ' [data-id="' + method + '"]');
+  if (el) el.classList.toggle('on', sel.has(method));
+  clearFieldErr(errId);
+}
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+
+function clearFieldErr(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+
+function showFieldErr(id, msg) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (msg) el.textContent = msg;
+  el.classList.add('show');
+}
+
+function markInputErr(inputId, hasErr) {
+  var el = document.getElementById(inputId);
+  if (el) el.classList.toggle('err', hasErr);
+}
+
+function validateForm() {
+  var ok = true;
+
+  var rate = parseFloat(document.getElementById('rate').value);
+  if (!rate || rate <= 0 || isNaN(rate)) {
+    showFieldErr('rateErr', 'Vui lòng nhập tỷ giá hợp lệ (số dương)');
+    markInputErr('rate', true); ok = false;
+  } else { markInputErr('rate', false); }
+
+  var minAmt = parseFloat(document.getElementById('minAmount').value);
+  if (!minAmt || minAmt <= 0 || isNaN(minAmt)) {
+    showFieldErr('minAmountErr', 'Nhập số tiền tối thiểu (số dương)');
+    markInputErr('minAmount', true); ok = false;
+  } else { markInputErr('minAmount', false); }
+
+  var maxAmt = parseFloat(document.getElementById('maxAmount').value);
+  if (!maxAmt || maxAmt <= 0 || isNaN(maxAmt)) {
+    showFieldErr('maxAmountErr', 'Nhập số tiền tối đa (số dương)');
+    markInputErr('maxAmount', true); ok = false;
+  } else if (minAmt > 0 && maxAmt <= minAmt) {
+    showFieldErr('maxAmountErr', 'Tối đa phải lớn hơn tối thiểu');
+    markInputErr('maxAmount', true); ok = false;
+  } else { markInputErr('maxAmount', false); }
+
+  if (senderSelected.size === 0) {
+    showFieldErr('senderMethodErr', 'Chọn ít nhất 1 phương thức nhận tiền');
+    ok = false;
+  }
+  if (recipientSelected.size === 0) {
+    showFieldErr('recipientMethodErr', 'Chọn ít nhất 1 phương thức chi trả');
+    ok = false;
   }
 
-  document.getElementById('rate').addEventListener('input', updateCollateral);
-  document.getElementById('maxAmount').addEventListener('input', updateCollateral);
+  return ok;
+}
 
-  function getChecked(prefix) {
-    return Array.from(document.querySelectorAll(`input[id^="${prefix}"]`))
-      .filter(cb => cb.checked).length;
+// ─── Submit ───────────────────────────────────────────────────────────────────
+
+function submitDeal() {
+  if (!validateForm()) {
+    var firstErr = document.querySelector('.field-err.show');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
 
-  function submitDeal() {
-    const rate = parseFloat(document.getElementById('rate').value);
-    const minAmt = parseFloat(document.getElementById('minAmount').value);
-    const maxAmt = parseFloat(document.getElementById('maxAmount').value);
+  var from = document.getElementById('fromCurrency').value;
+  var to   = document.getElementById('toCurrency').value;
 
-    if (!rate || rate <= 0) {
-      showToast('Vui lòng nhập tỷ giá hợp lệ.', 'danger'); return;
-    }
-    if (!minAmt || minAmt <= 0) {
-      showToast('Vui lòng nhập giới hạn tối thiểu.', 'danger'); return;
-    }
-    if (!maxAmt || maxAmt <= minAmt) {
-      showToast('Giới hạn tối đa phải lớn hơn tối thiểu.', 'danger'); return;
-    }
-    if (getChecked('receive-') === 0) {
-      showToast('Chọn ít nhất 1 phương thức nhận tiền.', 'danger'); return;
-    }
-    if (getChecked('pay-') === 0) {
-      showToast('Chọn ít nhất 1 phương thức chi trả.', 'danger'); return;
-    }
+  var deal = {
+    fromCurrency:            from,
+    toCurrency:              to,
+    rate:                    parseFloat(document.getElementById('rate').value),
+    minAmount:               parseFloat(document.getElementById('minAmount').value),
+    maxAmount:               parseFloat(document.getElementById('maxAmount').value),
+    senderPaymentMethods:    Array.from(senderSelected),
+    recipientPaymentMethods: Array.from(recipientSelected),
+    notes:                   document.getElementById('notes').value.trim(),
+    status:                  'active',
+    createdAt:               P2P_DATA ? P2P_DATA.NOW : new Date().toISOString(),
+  };
 
-    showToast('Deal đã được đăng thành công! 🎉', 'success');
-    setTimeout(() => { window.location.href = 'p-16-deal-list.html'; }, 1500);
-  }
+  console.log('[P-17] Deal created:', JSON.stringify(deal, null, 2));
 
+  document.getElementById('successDesc').textContent =
+    'Deal ' + from + ' → ' + to + ' đang hoạt động. Requester có thể tìm thấy deal của bạn ngay bây giờ.';
 
-  // Init
-  selectExpiry(document.querySelector('.expiry-pill.selected'), 14);
+  new bootstrap.Modal(document.getElementById('successModal')).show();
+}
 </script>
-
-<script>P2P_COMPONENTS.renderBottomNav('deals');</script>
 </body>
 </html>

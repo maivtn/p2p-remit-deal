@@ -15,12 +15,46 @@
   // CURRENCIES
   // ─────────────────────────────────────────────
   const CURRENCIES = [
-    { code: 'USD', symbol: '$',  name: 'US Dollar',         flag: '🇺🇸', decimals: 2 },
-    { code: 'VND', symbol: '₫',  name: 'Vietnamese Dong',   flag: '🇻🇳', decimals: 0 },
-    { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar',  flag: '🇸🇬', decimals: 2 },
-    { code: 'JPY', symbol: '¥',  name: 'Japanese Yen',      flag: '🇯🇵', decimals: 0 },
-    { code: 'EUR', symbol: '€',  name: 'Euro',              flag: '🇪🇺', decimals: 2 },
+    { code: 'USD', symbol: '$',   name: 'US Dollar',          flag: '🇺🇸', decimals: 2 },
+    { code: 'EUR', symbol: '€',   name: 'Euro',               flag: '🇪🇺', decimals: 2 },
+    { code: 'GBP', symbol: '£',   name: 'British Pound',      flag: '🇬🇧', decimals: 2 },
+    { code: 'SGD', symbol: 'S$',  name: 'Singapore Dollar',   flag: '🇸🇬', decimals: 2 },
+    { code: 'AUD', symbol: 'A$',  name: 'Australian Dollar',  flag: '🇦🇺', decimals: 2 },
+    { code: 'JPY', symbol: '¥',   name: 'Japanese Yen',       flag: '🇯🇵', decimals: 0 },
+    { code: 'KRW', symbol: '₩',   name: 'Korean Won',         flag: '🇰🇷', decimals: 0 },
+    { code: 'THB', symbol: '฿',   name: 'Thai Baht',          flag: '🇹🇭', decimals: 2 },
+    { code: 'CNY', symbol: '¥',   name: 'Chinese Yuan',       flag: '🇨🇳', decimals: 2 },
+    { code: 'VND', symbol: '₫',   name: 'Vietnamese Dong',    flag: '🇻🇳', decimals: 0 },
   ];
+
+  // ─────────────────────────────────────────────
+  // RATES_TO_VND  (how many VND per 1 unit of each currency)
+  // ─────────────────────────────────────────────
+  const RATES_TO_VND = {
+    USD: 25500, EUR: 27900, GBP: 32200, SGD: 19100, AUD: 16900,
+    JPY: 172,   KRW: 19,    THB: 730,   CNY: 3520,  VND: 1,
+  };
+
+  // ─────────────────────────────────────────────
+  // TRANSFER_TIMES  (options for deal transferTime field)
+  // ─────────────────────────────────────────────
+  const TRANSFER_TIMES = ['30-60 phút', '1-2 giờ', '2-4 giờ', 'Trong ngày', 'Trong 24 giờ'];
+
+  // ─────────────────────────────────────────────
+  // PAYMENT_METHODS_BY_CURRENCY
+  // ─────────────────────────────────────────────
+  const PAYMENT_METHODS_BY_CURRENCY = {
+    USD: ['zelle', 'venmo', 'paypal', 'bank-transfer'],
+    EUR: ['paypal', 'sepa', 'bank-transfer'],
+    GBP: ['paypal', 'bank-transfer'],
+    SGD: ['pay-now', 'bank-transfer'],
+    AUD: ['pay-id', 'paypal', 'bank-transfer'],
+    JPY: ['bank-transfer'],
+    KRW: ['kakao-pay', 'bank-transfer'],
+    THB: ['prompt-pay', 'bank-transfer'],
+    CNY: ['wechat-pay', 'alipay', 'bank-transfer'],
+    VND: ['momo', 'zalopay', 'bank-transfer'],
+  };
 
   // ─────────────────────────────────────────────
   // USERS
@@ -719,9 +753,10 @@
     }
   }
 
-  function getUser(id)    { return USERS[id] || null; }
-  function getDeal(id)    { return DEALS.find(function (d) { return d.id === id; }) || null; }
-  function getRequest(id) { return REQUESTS.find(function (r) { return r.id === id; }) || null; }
+  function getUser(id)     { return USERS[id] || null; }
+  function getDeal(id)     { return DEALS.find(function (d) { return d.id === id; }) || null; }
+  function getRequest(id)  { return REQUESTS.find(function (r) { return r.id === id; }) || null; }
+  function getCurrency(code) { return CURRENCIES.find(function (c) { return c.code === code; }) || null; }
 
   function getRequestsByStatus(status) {
     return REQUESTS.filter(function (r) { return r.status === status; });
@@ -815,7 +850,14 @@
   }
 
   function getMethodLabel(method) {
-    var labels = { zelle: 'Zelle', venmo: 'Venmo', paypal: 'PayPal', momo: 'MoMo', zalopay: 'ZaloPay', 'bank-transfer': 'Bank Transfer' };
+    var labels = {
+      'zelle': 'Zelle', 'venmo': 'Venmo', 'paypal': 'PayPal',
+      'momo': 'MoMo', 'zalopay': 'ZaloPay', 'bank-transfer': 'Bank Transfer',
+      'apple-cash': 'Apple Cash', 'cash-app': 'Cash App', 'cash': 'Cash',
+      'sepa': 'SEPA', 'alipay': 'Alipay', 'wechat-pay': 'WeChat Pay',
+      'pay-now': 'PayNow', 'pay-id': 'PayID',
+      'kakao-pay': 'KakaoPay', 'prompt-pay': 'PromptPay',
+    };
     return labels[method] || method;
   }
 
@@ -856,7 +898,10 @@
   // ─────────────────────────────────────────────
   global.P2P_DATA = {
     // Raw data
-    CURRENCIES:       CURRENCIES,
+    CURRENCIES:                  CURRENCIES,
+    RATES_TO_VND:                RATES_TO_VND,
+    TRANSFER_TIMES:              TRANSFER_TIMES,
+    PAYMENT_METHODS_BY_CURRENCY: PAYMENT_METHODS_BY_CURRENCY,
     USERS:            USERS,
     DEALS:            DEALS,
     BENEFICIARIES:    BENEFICIARIES,
@@ -869,6 +914,7 @@
     getUser:               getUser,
     getDeal:               getDeal,
     getRequest:            getRequest,
+    getCurrency:           getCurrency,
     getRequestsByStatus:   getRequestsByStatus,
     getRequestsByUser:     getRequestsByUser,
     getWallet:             getWallet,

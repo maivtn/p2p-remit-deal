@@ -679,35 +679,33 @@ Thử đổi số tiền, hình thức thanh toán hoặc quay lại sau.
 
 ### M17 — Tạo/Sửa deal
 
-**Mục đích:** Provider tạo hoặc sửa deal. Form phải loại bỏ field SLA/thời gian chuyển.
-
-**Tham chiếu mockup:** Màn “Tạo Deal Mới” demo cũ có field “Thời gian chuyển”; v1.6.1 **không dùng field này**.
+**Mục đích:** Provider tạo hoặc sửa deal.
 
 ```text
 ┌────────────────────────────────────┐
-│ Tạo Deal Mới                       │
-│ [X]                                │
+│ [X]  Tạo Deal Mới                  │
+│      Provider: Hùng Mạnh Lê        │
 ├────────────────────────────────────┤
-│ Cặp tiền tệ                        │
-│ [🇺🇸 USD - Đô la Mỹ ▼] → [🇻🇳 VND ▼]│
+│ 1 · Cặp tiền tệ                    │
+│ [🇺🇸 USD ▼] [⇄] [🇻🇳 VND ▼]        │
+│ Hành lang: USD → VND               │
 ├────────────────────────────────────┤
-│ Tỷ giá (1 USD = ? VND)             │
-│ [Ví dụ: 25500]     [⚡ Tỷ giá thị trường]│
+│ 2 · Tỷ giá (1 USD = ? VND)  [⚡ TG]│
+│ [Ví dụ: 25500              ]       │
 ├────────────────────────────────────┤
-│ Tối thiểu ($)       Tối đa ($)     │
-│ [100]               [5000]         │
+│ 3 · Giới hạn giao dịch (USD)       │
+│ Tối thiểu     │   Tối đa           │
+│ [100  ] [USD] │ [5000  ] [USD]     │
 ├────────────────────────────────────┤
-│ Người gửi USD thanh toán cho tôi qua│
-│ [Zelle] [Venmo] [Apple Cash]       │
-│ [PayPal] [Bank Transfer]           │
+│ 4 · Phương thức nhận tiền          │
+│ 💳 Người gửi 🇺🇸 thanh toán tôi qua│
+│ [✓Zelle] [✓Venmo] [PayPal] [Bank]  │
 ├────────────────────────────────────┤
-│ Tôi gửi tiền VND qua               │
-│ [MoMo] [ZaloPay] [Chuyển khoản NH] │
+│ 5 · Phương thức chi trả            │
+│ 📤 Tôi gửi tiền 🇻🇳 qua            │
+│ [✓MoMo] [✓ZaloPay] [Bank]          │
 ├────────────────────────────────────┤
-│ Hiệu lực                           │
-│ [7 ngày] [14 ngày] [30 ngày]       │
-├────────────────────────────────────┤
-│ Ghi chú                            │
+│ 6 · Ghi chú (tuỳ chọn)             │
 │ [Điều kiện, lưu ý thêm...]         │
 └────────────────────────────────────┘
 [Sticky CTA] Đăng Deal
@@ -715,20 +713,26 @@ Thử đổi số tiền, hình thức thanh toán hoặc quay lại sau.
 
 **Không có field:**
 
-- Không có “Thời gian chuyển”.
-- Không có SLA do Provider nhập.
-- Deadline xử lý/chi trả sẽ lấy từ Admin/backoffice config khi request phát sinh.
+- Không có “Thời gian chuyển” — Provider không nhập SLA; thời gian xử lý lấy từ Admin/backoffice config.
+- Không có “Thời hạn hiệu lực” (validDays) — hệ thống quản lý visibility theo trạng thái và USDV.
+- Không có “Ký quỹ ước tính” — **collateral chỉ bị hold khi Provider accept request**, không phải khi tạo deal.
+
+**Dynamic UI:**
+
+- Khi thay đổi `fromCurrency`: danh sách phương thức nhận tiền cập nhật theo currency; tỷ giá tham khảo cập nhật; tự động chọn 2 method đầu tiên.
+- Khi thay đổi `toCurrency`: danh sách phương thức chi trả cập nhật; tự động chọn 2 method đầu tiên.
+- `fromCurrency` ≠ `toCurrency` — nếu chọn trùng, hệ thống tự đổi bên còn lại.
+- Nút [⇄] swap fromCurrency ↔ toCurrency và reset cả hai danh sách phương thức.
 
 **Validation:**
 
 | Field | Rule |
 |---|---|
-| Corridor | Bắt buộc |
+| Corridor | Bắt buộc; from ≠ to |
 | Rate | > 0 |
 | Min/Max | Min > 0, Max > Min |
-| Receive methods | Ít nhất 1 method; mỗi method phải có tài khoản Provider tương ứng |
-| Payout methods | Ít nhất 1 method |
-| USDV Provider | Ví USDV Provider phải đủ cover deal có max amount cao nhất + phí Provider, do Provider chỉ xử lý 1 request tại một thời điểm |
+| Phương thức nhận tiền | Ít nhất 1 method |
+| Phương thức chi trả | Ít nhất 1 method |
 | Deal đang sửa | Không được sửa nếu deal đang có request/giao dịch liên quan |
 
 ---
@@ -1268,7 +1272,7 @@ Thử đổi số tiền, hình thức thanh toán hoặc quay lại sau.
 | Yêu cầu của tôi | Card request và filter | Filter đóng tách Hoàn tất/Đã hủy/Hết hạn/Đã phân xử; lý do ngắn cho hủy/hết hạn |
 | Chi tiết chờ Provider | Status + beneficiary + hủy | Chuẩn thuật ngữ: yêu cầu chờ Provider chấp nhận; không timeline rút gọn |
 | Chi tiết Provider accept | Phí/escrow/accept modal | Đổi escrow thành hold USDV hai phía; phí trừ ngay accept; Provider không hủy sau accept |
-| Tạo Deal Mới | Corridor/rate/min-max/method/expiry/note | **Bỏ field Thời gian chuyển/SLA**; thêm Apple Cash nếu currency USD hỗ trợ; validate USDV cover deal max cao nhất |
+| Tạo Deal Mới | Corridor/rate/min-max/senderMethods/recipientMethods/note | Methods dynamic theo currency; bỏ transferTime, validDays, collateral banner — ký quỹ chỉ hold khi accept request |
 | Deals của tôi | Tabs active/paused/expired, card deal | Thêm Đã xóa; deal có request liên quan được tạm dừng nhưng không sửa/xóa |
 | Tài khoản thanh toán | Group theo currency và method | Đổi nhãn thành **Tài khoản nhận tiền Provider**; mỗi currency/method tối đa 1 tài khoản active |
 | Yêu cầu giao dịch Provider | List chờ/đang xử lý/hoàn thành/đã đóng | Đổi thành Lịch sử nhận yêu cầu; hiển thị tất cả request từng gửi tới Provider |

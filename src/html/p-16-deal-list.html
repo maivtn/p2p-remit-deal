@@ -261,17 +261,9 @@
 
   // ── Helpers ──────────────────────────────────────────────
   function getCorridorLabel(deal) {
-    const s = P2P_DATA.CURRENCIES ? P2P_DATA.CURRENCIES.find(c => c.code === deal.corridor.sendCurrency) : null;
-    const r = P2P_DATA.CURRENCIES ? P2P_DATA.CURRENCIES.find(c => c.code === deal.corridor.receiveCurrency) : null;
-    const CURRENCIES = [
-      { code: 'USD', flag: '🇺🇸' },
-      { code: 'VND', flag: '🇻🇳' },
-      { code: 'SGD', flag: '🇸🇬' },
-      { code: 'JPY', flag: '🇯🇵' },
-      { code: 'EUR', flag: '🇪🇺' },
-    ];
-    const sf = CURRENCIES.find(c => c.code === deal.corridor.sendCurrency);
-    const rf = CURRENCIES.find(c => c.code === deal.corridor.receiveCurrency);
+    const currencies = P2P_DATA.CURRENCIES || [];
+    const sf = currencies.find(c => c.code === deal.corridor.sendCurrency);
+    const rf = currencies.find(c => c.code === deal.corridor.receiveCurrency);
     return {
       from: deal.corridor.sendCurrency,
       to: deal.corridor.receiveCurrency,
