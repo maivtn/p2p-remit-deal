@@ -13,6 +13,8 @@ import {
   Play,
   ChevronLeft,
   ChevronRight,
+  Camera,
+  FolderOpen,
 } from "lucide-react";
 import { type ProofData, type ProofMediaFile } from "../../data/mockData";
 
@@ -550,6 +552,7 @@ export function ProofModal({
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const accentColor = isDispute ? "#D97706" : "#059669";
   const bgLight = isDispute ? "#FEF3C7" : "#ECFDF5";
@@ -557,7 +560,8 @@ export function ProofModal({
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
-      const arr = Array.from(files).slice(0, 10 - mediaFiles.length);
+      const valid = Array.from(files).filter((f) => f.size <= 5 * 1024 * 1024);
+      const arr = valid.slice(0, 10 - mediaFiles.length);
       const newFiles: ProofMediaFile[] = arr.map((f) => ({
         url: URL.createObjectURL(f),
         type: detectMediaType(f),
@@ -657,55 +661,80 @@ export function ProofModal({
             className="overflow-y-auto px-5 py-4 space-y-4"
             style={{ maxHeight: "calc(92vh - 140px)" }}
           >
-            {/* Drop zone */}
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(true);
-              }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
-              style={{
-                padding: "20px 12px",
-                border: `2px dashed ${dragOver ? accentColor : borderColor}`,
-                background: dragOver ? bgLight : "#FAFAFA",
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: bgLight }}
-                >
-                  <Image size={18} color={accentColor} />
-                </div>
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: bgLight }}
-                >
-                  <Video size={18} color={accentColor} />
-                </div>
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: bgLight }}
-                >
-                  <Music size={18} color={accentColor} />
-                </div>
-              </div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: accentColor }}>
-                Chọn hoặc kéo thả tệp vào đây
+            {/* Upload receipt */}
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#6161ff", marginBottom: 10 }}>
+                Tải ảnh biên lai{" "}
+                <span style={{ color: "#6161ff" }}>(bắt buộc)</span>
               </p>
-              <p
-                style={{ fontSize: 11, color: "#9CA3AF", textAlign: "center" }}
+              <div
+                className="w-full flex gap-3"
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
               >
-                Hỗ trợ ảnh, video, audio · Tối đa 10 tệp
+                {/* Take Photo */}
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="flex-1 flex flex-col items-center justify-center gap-2 transition-all"
+                  style={{
+                    border: `1.5px dashed ${dragOver ? "#6161ff" : "#d0d4e4"}`,
+                    borderRadius: 12,
+                    background: dragOver ? "#e7ecff" : "#fafafa",
+                    padding: "20px 12px",
+                    cursor: "pointer",
+                    minHeight: 88,
+                  }}
+                >
+                  <Camera size={24} color="#535768" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#333333" }}>
+                    Chụp ảnh
+                  </span>
+                </button>
+
+                {/* Choose File */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 flex flex-col items-center justify-center gap-2 transition-all"
+                  style={{
+                    border: `1.5px dashed ${dragOver ? "#6161ff" : "#d0d4e4"}`,
+                    borderRadius: 12,
+                    background: dragOver ? "#e7ecff" : "#fafafa",
+                    padding: "20px 12px",
+                    cursor: "pointer",
+                    minHeight: 88,
+                  }}
+                >
+                  <FolderOpen size={24} color="#535768" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#333333" }}>
+                    Chọn file
+                  </span>
+                </button>
+              </div>
+
+              <p style={{ fontSize: 12, color: "#535768", marginTop: 8 }}>
+                Chụp ảnh hoặc tải lên từ thiết bị của bạn.
               </p>
+              <p style={{ fontSize: 12, color: "#808080" }}>
+                Dung lượng tối đa 5 MB. Định dạng: .jpg, .jpeg, hoặc .png.
+              </p>
+
+              {/* Hidden inputs */}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{ display: "none" }}
+                onChange={(e) => e.target.files && addFiles(e.target.files)}
+              />
               <input
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept="image/*,video/*,audio/*"
+                accept="image/jpeg,image/jpg,image/png"
                 style={{ display: "none" }}
                 onChange={(e) => e.target.files && addFiles(e.target.files)}
               />
