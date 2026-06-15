@@ -820,8 +820,28 @@
   }
 
   function getMethodIcon(method) {
-    var icons = { zelle: '💱', venmo: '💙', paypal: '🅿️', momo: '🍑', zalopay: '🔵', 'bank-transfer': '🏦' };
-    return icons[method] || '💸';
+    var imgs = {
+      'zelle':        'zelle.png',
+      'venmo':        'venmo.png',
+      'paypal':       'paypal.png',
+      'momo':         'momo.png',
+      'zalopay':      'zalopay.png',
+      'bank-transfer':'bank-transfer.png',
+      'apple-cash':   'apple_cash.png',
+      'sepa':         'sepa.png',
+      'alipay':       'alipay.png',
+      'cash':         'cash.png',
+      'cash-app':     'cash_app.png',
+      'kakao-pay':    'kakao-pay.png',
+      'pay-id':       'pay-id.png',
+      'pay-now':      'pay-now.png',
+      'wechat-pay':   'wechat-pay.png',
+      'prompt-pay':   'promt-pay.png',
+    };
+    var file = imgs[method];
+    if (!file) return '<span style="font-size:18px;">💸</span>';
+    var label = getMethodLabel(method);
+    return '<img class="method-icon" src="../images/' + file + '" alt="' + label + '">';
   }
 
   // collateralRequired = max(payoutVND, refundExposure) × (1 + bufferRate)

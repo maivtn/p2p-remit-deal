@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-06 · Chi tiết yêu cầu — Chờ Provider chấp nhận — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+
+  <style>
+    body { background: var(--color-cloud); }
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+
+    .detail-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 0; border-bottom:1px solid var(--color-pebble); gap:8px;
+    }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-label { font-size:13px; color:var(--color-slate); flex-shrink:0; }
+    .detail-value { font-size:14px; font-weight:500; color:var(--color-ink); text-align:right; }
+
+    /* Corridor display */
+    .corridor-card {
+      background: linear-gradient(135deg, var(--color-periwinkle) 0%, #f0f4ff 100%);
+      border-radius: var(--radius-cards);
+      padding: 20px 24px;
+      border: 1px solid var(--color-mist);
+    }
+
+    /* Countdown banner */
+    .countdown-banner {
+      background: #fff8e1;
+      border-radius: var(--radius-cards);
+      border: 1px solid #fde68a;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .countdown-banner.urgent { background: var(--color-danger-bg); border-color: #fca5a5; }
+
+    /* Beneficiary card */
+    .bene-card {
+      background: #fff;
+      border-radius: var(--radius-cards);
+      border: 1px solid var(--color-mist);
+      box-shadow: var(--shadow-xl);
+      padding: 16px 20px;
+    }
+
+    /* Cancel button (text button style) */
+    .btn-cancel {
+      border: 1.5px solid var(--color-danger);
+      color: var(--color-danger);
+      background: transparent;
+      border-radius: var(--radius-buttons);
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-cancel:hover:not(:disabled) { background: var(--color-danger-bg); }
+    .btn-cancel:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Modal */
+    .cancel-modal-backdrop {
+      position:fixed; inset:0; background:rgba(0,0,0,0.45);
+      z-index:1000; display:none; align-items:flex-end; justify-content:center;
+    }
+    .cancel-modal-backdrop.show { display:flex; }
+    .cancel-modal {
+      background:#fff; border-radius:24px 24px 0 0; padding:24px; width:100%;
+      max-width:520px; animation:slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { transform:translateY(60px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+    /* Status history */
+    .timeline-item { display:flex; gap:12px; padding:8px 0; }
+    .timeline-dot {
+      width:10px; height:10px; border-radius:50%; background:var(--color-pebble);
+      flex-shrink:0; margin-top:5px;
+    }
+    .timeline-dot.done { background:var(--color-monday-violet); }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-md">
+    <div class="topbar-inner">
+      <a href="r-05-request-list.html" class="btn-cancel" style="width:auto; padding:8px 14px; font-size:14px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; border:none; color:var(--color-ink); background:var(--color-cloud); border-radius:50%;">
+        <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+      </a>
+      <div style="flex:1;">
+        <div style="font-size:16px; font-weight:700; color:var(--color-ink);">Chi tiết giao dịch</div>
+        <div style="font-size:12px; color:var(--color-slate);" id="req-id-badge"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container-md py-3 d-flex flex-column gap-3" id="page-content">
+
+  <!-- Status header card -->
+  <div class="p2p-card">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <span class="badge-status badge-pending" id="status-badge"></span>
+      <span style="font-size:12px; color:var(--color-iron);" id="created-ago"></span>
+    </div>
+
+    <!-- Provider info -->
+    <div class="d-flex align-items-center gap-3" id="provider-info"></div>
+  </div>
+
+  <!-- Corridor & amounts -->
+  <div class="corridor-card">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <span style="font-size:22px;" id="send-flag">🇺🇸</span>
+      <span style="font-size:13px; color:var(--color-slate);" id="send-cur-name">Đô la Mỹ</span>
+      <i class="bi bi-arrow-right mx-1" style="color:var(--color-iron);"></i>
+      <span style="font-size:22px;" id="recv-flag">🇻🇳</span>
+      <span style="font-size:13px; color:var(--color-slate);" id="recv-cur-name">Việt Nam Đồng</span>
+    </div>
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <span style="font-size:13px; color:var(--color-slate);">Bạn gửi</span>
+      <span class="money money-lg" id="amount-send"></span>
+    </div>
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <span style="font-size:13px; color:var(--color-slate);">Người nhận</span>
+      <span class="money money-receive" id="amount-recv"></span>
+    </div>
+    <hr style="border-color:var(--color-mist); margin:10px 0;">
+    <div class="d-flex align-items-center justify-content-between">
+      <span style="font-size:13px; color:var(--color-slate);" id="method-label"></span>
+      <span style="font-size:13px; font-weight:500; color:var(--color-ink);" id="rate-label"></span>
+    </div>
+  </div>
+
+  <!-- Countdown banner -->
+  <div class="countdown-banner" id="countdown-banner">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-hourglass-split" style="font-size:22px; color:#d97706;"></i>
+      <div>
+        <div style="font-size:14px; font-weight:600; color:#92400e;">Chờ nhà cung cấp chấp nhận</div>
+        <div style="font-size:12px; color:#78350f;">Provider cần phản hồi trước khi T1 hết hạn</div>
+      </div>
+    </div>
+    <div class="text-end" style="flex-shrink:0;">
+      <div style="font-size:11px; color:var(--color-iron); margin-bottom:2px;">Còn lại</div>
+      <span class="countdown" id="countdown-pill">--:--</span>
+    </div>
+  </div>
+
+  <!-- Fee breakdown -->
+  <div class="p2p-card">
+    <div class="section-label">Chi phí giao dịch</div>
+    <div class="detail-row">
+      <span class="detail-label">Khoản chuyển cho Provider</span>
+      <span class="detail-value" id="fee-send"></span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Phí nền tảng (0,5%)</span>
+      <span class="detail-value money-fee" id="fee-platform"></span>
+    </div>
+    <div class="detail-row" style="border-bottom:none;">
+      <span class="detail-label" style="font-weight:600; color:var(--color-ink);">Tổng chi phí của bạn</span>
+      <span class="detail-value" style="font-size:16px; color:var(--color-monday-violet); font-weight:700;" id="fee-total"></span>
+    </div>
+  </div>
+
+  <!-- Beneficiary -->
+  <div>
+    <div class="section-label mb-2">Người thụ hưởng</div>
+    <div class="bene-card" id="bene-card"></div>
+  </div>
+
+  <!-- Notes -->
+  <div class="p2p-card" id="notes-card" style="display:none;">
+    <div class="section-label">Ghi chú</div>
+    <p id="notes-text" style="font-size:14px; color:var(--color-slate); margin:0;"></p>
+  </div>
+
+  <!-- Status history -->
+  <div class="p2p-card">
+    <div class="section-label">Lịch sử trạng thái</div>
+    <div id="status-history"></div>
+  </div>
+
+  <!-- Cancel section -->
+  <div>
+    <p style="font-size:12px; color:var(--color-iron); text-align:center; margin-bottom:10px;">
+      Bạn có thể hủy miễn phí khi Provider chưa chấp nhận.
+    </p>
+    <button class="btn-cancel" id="cancel-btn" onclick="openCancelModal()">
+      <i class="bi bi-x-circle me-2"></i>Hủy yêu cầu
+    </button>
+  </div>
+
+</div>
+
+<!-- Cancel confirm modal -->
+<div class="cancel-modal-backdrop" id="cancel-modal-backdrop">
+  <div class="cancel-modal">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--color-danger-bg);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-exclamation-triangle-fill" style="color:var(--color-danger);font-size:18px;"></i>
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--color-ink);">Xác nhận hủy yêu cầu?</div>
+        <div style="font-size:13px;color:var(--color-slate);">Yêu cầu sẽ bị hủy ngay lập tức</div>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--color-slate);margin-bottom:20px;line-height:1.6;">
+      Hủy yêu cầu <strong id="modal-req-id"></strong> trước khi Provider chấp nhận sẽ <strong>không mất phí</strong>.
+      Bạn có thể tạo yêu cầu mới bất cứ lúc nào.
+    </p>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary flex-fill" onclick="closeCancelModal()" style="padding:12px;">
+        Giữ lại
+      </button>
+      <button class="btn btn-danger flex-fill" onclick="confirmCancel()" style="padding:12px;" id="confirm-cancel-btn">
+        Hủy yêu cầu
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+
+<!-- Toast -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  const req = P2P_DATA.getRequest('RQ-7K2M9');
+  const provider = P2P_DATA.getUser(req.providerId);
+  const deal = P2P_DATA.getDeal(req.dealId);
+
+  // ── Toast ──
+
+  // ── Populate page ──
+  function populate() {
+    // Request ID badge
+    document.getElementById('req-id-badge').textContent = req.id;
+
+    // Status badge
+    document.getElementById('status-badge').innerHTML =
+      `<i class="bi bi-clock me-1"></i>${P2P_DATA.getStatusLabel(req.status)}`;
+
+    // Created ago
+    document.getElementById('created-ago').textContent = P2P_DATA.timeAgo(req.createdAt);
+
+    // Provider info (masked: first name + last initial before completion)
+    const parts = provider.name.split(' ');
+    const maskedName = parts.slice(0, parts.length - 1).join(' ') + ' ' + parts[parts.length - 1].charAt(0) + '.';
+    document.getElementById('provider-info').innerHTML = `
+      <div style="width:48px;height:48px;border-radius:50%;background:${provider.avatarBg};color:${provider.avatarColor};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;">${provider.initials}</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--color-ink);">${maskedName}</div>
+        <div style="font-size:12px;color:var(--color-slate);">
+          <i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${provider.rating}
+          &nbsp;·&nbsp; ${provider.completedCount} đánh giá
+        </div>
+      </div>`;
+
+    // Corridor
+    const sendCur = P2P_DATA.CURRENCIES.find(c => c.code === req.sendCurrency) || {};
+    const recvCur = P2P_DATA.CURRENCIES.find(c => c.code === req.receiveCurrency) || {};
+    document.getElementById('send-flag').textContent = sendCur.flag || '🌐';
+    document.getElementById('recv-flag').textContent = recvCur.flag || '🌐';
+    document.getElementById('send-cur-name').textContent = sendCur.name || req.sendCurrency;
+    document.getElementById('recv-cur-name').textContent = recvCur.name || req.receiveCurrency;
+
+    // Amounts
+    document.getElementById('amount-send').textContent = P2P_DATA.formatAmount(req.amountSend, req.sendCurrency);
+    document.getElementById('amount-recv').textContent = P2P_DATA.formatAmount(req.amountReceive, req.receiveCurrency);
+
+    // Method & rate
+    const methods = deal ? deal.methods : [];
+    const methodStr = methods.length >= 2
+      ? `${P2P_DATA.getMethodIcon(methods[0])} ${P2P_DATA.getMethodLabel(methods[0])} → ${P2P_DATA.getMethodLabel(methods[methods.length - 1])}`
+      : methods.length === 1 ? `${P2P_DATA.getMethodIcon(methods[0])} ${P2P_DATA.getMethodLabel(methods[0])}` : '';
+    document.getElementById('method-label').textContent = methodStr;
+    document.getElementById('rate-label').textContent = deal ? `Tỷ giá: ${deal.rate.toLocaleString('vi-VN')}đ/USD` : '';
+
+    // Countdown
+    const cd = P2P_DATA.getCountdown(req.t1Deadline);
+    const pill = document.getElementById('countdown-pill');
+    const banner = document.getElementById('countdown-banner');
+    if (cd && !cd.isExpired) {
+      pill.textContent = P2P_DATA.formatCountdown(req.t1Deadline);
+      if (cd.isUrgent) { pill.classList.add('urgent'); banner.classList.add('urgent'); }
+    } else {
+      pill.textContent = 'Hết hạn';
+      pill.classList.add('urgent');
+    }
+
+    // Fee breakdown
+    document.getElementById('fee-send').textContent = P2P_DATA.formatAmount(req.amountSend, req.sendCurrency);
+    document.getElementById('fee-platform').textContent = P2P_DATA.formatAmount(req.requesterFee, req.sendCurrency);
+    document.getElementById('fee-total').textContent = P2P_DATA.formatAmount(req.amountSend + req.requesterFee, req.sendCurrency);
+
+    // Beneficiary
+    const b = req.beneficiary;
+    document.getElementById('bene-card').innerHTML = `
+      <div class="d-flex align-items-center gap-3">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--color-mint);display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-person-fill" style="font-size:18px;color:var(--color-forest);"></i>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--color-ink);">${b.name}</div>
+          <div style="font-size:13px;color:var(--color-slate);">${b.bankName} · ${b.accountNumberMasked}</div>
+        </div>
+      </div>`;
+
+    // Modal req ID
+    document.getElementById('modal-req-id').textContent = req.id;
+
+    // Status history
+    const hist = (req.statusHistory || []);
+    document.getElementById('status-history').innerHTML = hist.map((h, i) => `
+      <div class="timeline-item">
+        <div class="timeline-dot ${i === hist.length - 1 ? 'done' : ''}"></div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-ink);">${P2P_DATA.getStatusLabel(h.status)}</div>
+          <div style="font-size:12px;color:var(--color-iron);">${P2P_DATA.timeAgo(h.at)}${h.note ? ' · ' + h.note : ''}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Cancel modal ──
+  function openCancelModal() {
+    document.getElementById('cancel-modal-backdrop').classList.add('show');
+  }
+  function closeCancelModal() {
+    document.getElementById('cancel-modal-backdrop').classList.remove('show');
+  }
+  function confirmCancel() {
+    const btn = document.getElementById('confirm-cancel-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+    setTimeout(() => {
+      closeCancelModal();
+      document.getElementById('cancel-btn').disabled = true;
+      document.getElementById('cancel-btn').textContent = '✓ Đã gửi yêu cầu hủy';
+      document.getElementById('status-badge').innerHTML = '<i class="bi bi-x-circle me-1"></i>Đang hủy...';
+      showToast('Đã gửi yêu cầu hủy · RQ-7K2M9');
+    }, 900);
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('cancel-modal-backdrop').addEventListener('click', function(e) {
+    if (e.target === this) closeCancelModal();
+  });
+
+  populate();
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('requests');</script>
+</body>
+</html>

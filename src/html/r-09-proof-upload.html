@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-09 · Upload bằng chứng thanh toán — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+
+  <style>
+    body { background: var(--color-cloud); }
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--color-mist);
+      border-radius: 24px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--color-slate);
+      background: #fff;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .upload-area:hover { border-color: var(--color-monday-violet); background: var(--color-periwinkle); }
+    .upload-area.has-file { border-color: var(--color-forest); background: #f0fff8; }
+
+    /* Section card */
+    .section-card { background:#fff; border-radius:24px; border:1px solid var(--color-mist); box-shadow:var(--shadow-xl); padding:20px; }
+
+    /* Ticket detail rows */
+    .ticket-row-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-pebble);
+      gap: 8px;
+    }
+    .ticket-row-inline:last-child { border-bottom: none; }
+    .ticket-row-label { font-size: 13px; color: var(--color-slate); flex-shrink: 0; }
+    .ticket-row-value { font-size: 14px; font-weight: 500; color: var(--color-ink); text-align: right; }
+
+    /* File preview */
+    .file-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-periwinkle);
+      border-radius: 12px;
+      padding: 10px 14px;
+      gap: 10px;
+    }
+    .file-preview-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-monday-violet);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Sticky CTA */
+    .sticky-cta-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, #fff 70%, transparent);
+      padding: 12px 16px 28px;
+      z-index: 50;
+    }
+
+    /* Form input */
+    .form-control {
+      border-radius: var(--radius-inputs) !important;
+      border: 1.5px solid var(--color-mist) !important;
+      padding: 12px 16px !important;
+      font-size: 14px !important;
+      color: var(--color-ink) !important;
+    }
+    .form-control:focus {
+      border-color: var(--color-monday-violet) !important;
+      box-shadow: 0 0 0 3px rgba(97,97,255,0.12) !important;
+    }
+
+    /* Upload buttons */
+    .upload-action-btn {
+      flex: 1;
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+      border: 1.5px solid var(--color-monday-violet);
+      border-radius: 160px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-align: center;
+    }
+    .upload-action-btn:hover { background: var(--color-periwinkle-wash); }
+
+    /* Memo display */
+    .memo-display {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      background: var(--color-cloud);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--color-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Cancel link */
+    .cancel-link {
+      display: block;
+      text-align: center;
+      font-size: 14px;
+      color: var(--color-slate);
+      text-decoration: none;
+      padding: 8px;
+    }
+    .cancel-link:hover { color: var(--color-ink); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-md">
+    <div class="topbar-inner">
+      <a href="r-08-payment-instruction.html" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--color-ink);flex-shrink:0;">
+        <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+      </a>
+      <div style="flex:1;">
+        <div style="font-size:16px; font-weight:700; color:var(--color-ink);">Xác nhận đã gửi tiền</div>
+        <div style="font-size:12px; color:var(--color-slate);">Upload bằng chứng thanh toán</div>
+      </div>
+      <div style="width:36px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container-md py-3 d-flex flex-column gap-3">
+
+  <!-- Transaction summary card -->
+  <div>
+    <div class="section-label mb-2">THÔNG TIN GIAO DỊCH</div>
+    <div class="section-card">
+      <div class="ticket-row-inline">
+        <span class="ticket-row-label">Giao dịch</span>
+        <span class="ticket-row-value" id="req-id">RQ-4F8N1</span>
+      </div>
+      <div class="ticket-row-inline">
+        <span class="ticket-row-label">Số tiền</span>
+        <span class="ticket-row-value" id="amount-display" style="color:var(--color-monday-violet);font-weight:700;">$500.00</span>
+      </div>
+      <div class="ticket-row-inline">
+        <span class="ticket-row-label">Phương thức</span>
+        <span class="ticket-row-value"><img class="method-icon" src="../images/zelle.png" alt="Zelle"> Zelle</span>
+      </div>
+      <div class="ticket-row-inline" style="border-bottom:none;">
+        <span class="ticket-row-label">Memo</span>
+        <div style="flex:1;min-width:0;text-align:right;">
+          <div class="d-flex align-items-center justify-content-end gap-2">
+            <span class="memo-display" id="memo-display">P2P-4F8N1-XFER</span>
+            <button class="btn-copy" onclick="copyMemo()">Sao chép</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload section -->
+  <div>
+    <div class="section-label mb-2">BẰNG CHỨNG THANH TOÁN</div>
+
+    <!-- Upload area -->
+    <div class="upload-area" id="upload-area" onclick="triggerFileInput()">
+      <i class="bi bi-cloud-upload" style="font-size:48px;color:var(--color-iron);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:15px;font-weight:600;color:var(--color-ink);margin-bottom:6px;">
+        Kéo thả ảnh/PDF vào đây hoặc bấm để chọn
+      </div>
+      <div style="font-size:13px;color:var(--color-iron);">
+        Định dạng: JPG, PNG, PDF · Tối đa 10MB
+      </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleFileSelected(this)">
+
+    <!-- Camera and Upload action buttons -->
+    <div class="d-flex gap-2 mt-3">
+      <button class="upload-action-btn" onclick="triggerCamera()">
+        <i class="bi bi-camera me-1"></i>Chụp ảnh
+      </button>
+      <button class="upload-action-btn" onclick="triggerFileInput()">
+        <i class="bi bi-paperclip me-1"></i>Tải file lên
+      </button>
+    </div>
+
+    <!-- File preview (hidden initially) -->
+    <div id="file-preview" style="display:none;margin-top:12px;">
+      <div class="file-preview-row">
+        <i class="bi bi-file-earmark-check" style="font-size:20px;color:var(--color-monday-violet);flex-shrink:0;"></i>
+        <span class="file-preview-name" id="file-name">file.jpg</span>
+        <button onclick="removeFile()" style="background:none;border:none;color:var(--color-danger);font-size:18px;padding:0;cursor:pointer;flex-shrink:0;">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reference input -->
+  <div>
+    <div class="section-label mb-2">GHI CHÚ / MÃ THAM CHIẾU</div>
+    <input
+      type="text"
+      id="ref-input"
+      class="form-control"
+      placeholder="Ví dụ: ZELLE-20260615-123456"
+      oninput="onRefInput()"
+    />
+    <div style="font-size:12px;color:var(--color-iron);margin-top:6px;padding:0 4px;">
+      Nhập mã tham chiếu từ ứng dụng thanh toán để dễ đối soát sau này.
+    </div>
+  </div>
+
+  <!-- Immutability warning -->
+  <div class="banner-warning" style="border-radius:16px;">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill" style="font-size:18px;color:#d97706;flex-shrink:0;margin-top:1px;"></i>
+      <div>
+        <strong>Bằng chứng sau khi nộp KHÔNG thể sửa hay xóa.</strong>
+        Vui lòng kiểm tra kỹ ảnh/file và mã tham chiếu trước khi gửi.
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer for sticky area -->
+  <div style="height:16px;"></div>
+
+</div>
+
+<!-- Sticky CTA -->
+<div class="sticky-cta-area">
+  <div class="container-md d-flex flex-column gap-2">
+    <button class="btn btn-primary w-100" id="submit-btn" disabled onclick="submitProof()">
+      <i class="bi bi-cloud-upload me-2"></i>Gửi bằng chứng
+    </button>
+    <a href="r-08-payment-instruction.html" class="cancel-link">Hủy</a>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+
+<!-- Toast -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  const req = P2P_DATA.getRequest('RQ-4F8N1');
+  let hasFile = false;
+
+
+  function populate() {
+    document.getElementById('req-id').textContent = req.id;
+    document.getElementById('amount-display').textContent = P2P_DATA.formatUSD(req.amountSend);
+    document.getElementById('memo-display').textContent = req.memo;
+  }
+
+  // ── File handling ──
+  function triggerFileInput() {
+    const input = document.getElementById('file-input');
+    input.removeAttribute('capture');
+    input.click();
+  }
+
+  function triggerCamera() {
+    const input = document.getElementById('file-input');
+    input.setAttribute('capture', 'environment');
+    input.click();
+  }
+
+  function handleFileSelected(input) {
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+
+    // Validate size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('File quá lớn. Vui lòng chọn file dưới 10MB.');
+      return;
+    }
+
+    hasFile = true;
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-preview').style.display = 'block';
+    document.getElementById('upload-area').classList.add('has-file');
+    document.getElementById('upload-area').innerHTML = `
+      <i class="bi bi-check-circle-fill" style="font-size:48px;color:var(--color-forest);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:15px;font-weight:600;color:var(--color-forest);margin-bottom:4px;">Đã chọn file</div>
+      <div style="font-size:13px;color:var(--color-slate);">${file.name}</div>
+    `;
+    updateSubmitBtn();
+  }
+
+  function removeFile() {
+    hasFile = false;
+    document.getElementById('file-preview').style.display = 'none';
+    document.getElementById('file-input').value = '';
+    const uploadArea = document.getElementById('upload-area');
+    uploadArea.classList.remove('has-file');
+    uploadArea.innerHTML = `
+      <i class="bi bi-cloud-upload" style="font-size:48px;color:var(--color-iron);display:block;margin-bottom:12px;"></i>
+      <div style="font-size:15px;font-weight:600;color:var(--color-ink);margin-bottom:6px;">
+        Kéo thả ảnh/PDF vào đây hoặc bấm để chọn
+      </div>
+      <div style="font-size:13px;color:var(--color-iron);">
+        Định dạng: JPG, PNG, PDF · Tối đa 10MB
+      </div>
+    `;
+    updateSubmitBtn();
+  }
+
+  function onRefInput() {
+    updateSubmitBtn();
+  }
+
+  function updateSubmitBtn() {
+    const ref = document.getElementById('ref-input').value.trim();
+    const canSubmit = hasFile || ref.length > 0;
+    document.getElementById('submit-btn').disabled = !canSubmit;
+  }
+
+  // ── Copy memo ──
+  function copyMemo() {
+    const memo = req.memo;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(memo).then(() => showToast('Đã sao chép memo: ' + memo));
+    } else {
+      // fallback
+      const el = document.createElement('textarea');
+      el.value = memo;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast('Đã sao chép memo: ' + memo);
+    }
+  }
+
+  // ── Submit ──
+  function submitProof() {
+    const ref = document.getElementById('ref-input').value.trim();
+
+    if (!hasFile && !ref) {
+      showToast('Vui lòng upload ảnh hoặc nhập mã tham chiếu.');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang nộp...';
+
+    setTimeout(() => {
+      showToast('Đã nộp bằng chứng! Chờ Provider xác nhận.');
+      setTimeout(() => {
+        window.location.href = 'r-10-detail-payment-sent.html';
+      }, 1200);
+    }, 900);
+  }
+
+  // ── Drag and drop support ──
+  const uploadArea = document.getElementById('upload-area');
+
+  uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.borderColor = 'var(--color-monday-violet)';
+    this.style.background = 'var(--color-periwinkle)';
+  });
+
+  uploadArea.addEventListener('dragleave', function() {
+    if (!hasFile) {
+      this.style.borderColor = '';
+      this.style.background = '';
+    }
+  });
+
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const fakeInput = { files: files };
+      handleFileSelected(fakeInput);
+    }
+  });
+
+  populate();
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('requests');</script>
+</body>
+</html>

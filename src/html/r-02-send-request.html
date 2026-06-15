@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>R-02 · Gửi yêu cầu — P2P Remit Deals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 12px; }
+
+    .bottom-nav { background: #fff; border-top: 1px solid var(--color-pebble); }
+
+    /* Method chips */
+    .method-chip {
+      border: 1.5px solid var(--color-pebble);
+      border-radius: var(--radius-buttons);
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-slate);
+      cursor: pointer;
+      background: #fff;
+      white-space: nowrap;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .method-chip.selected {
+      border-color: var(--color-monday-violet);
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+    }
+    .method-chip.receive-chip.selected {
+      border-color: var(--color-forest);
+      background: var(--color-mint);
+      color: var(--color-forest);
+    }
+
+    /* Amount input block */
+    .amount-block {
+      background: #fff;
+      border-radius: var(--radius-cards);
+      border: 1.5px solid var(--color-mist);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+    }
+    .amount-row-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+    }
+    .amount-row-inner + .amount-row-inner {
+      border-top: 1px solid var(--color-pebble);
+      background: #f9fafb;
+    }
+
+    .currency-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-cloud);
+      border-radius: var(--radius-inputs);
+      padding: 8px 12px;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-ink);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .amount-input {
+      border: none;
+      outline: none;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-ink);
+      text-align: right;
+      background: transparent;
+      width: 100%;
+      font-variant-numeric: tabular-nums;
+    }
+    .amount-input::placeholder { color: var(--color-fog); }
+    .amount-input-receive {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-forest);
+      text-align: right;
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 100%;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .exchange-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-top: 1px solid var(--color-pebble);
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 6px 0;
+      background: #f0f1f8;
+    }
+    .exchange-divider-badge {
+      background: var(--color-monday-violet);
+      color: #fff;
+      border-radius: 30px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Form card */
+    .form-card {
+      background: #fff;
+      border-radius: var(--radius-cards);
+      border: 1px solid var(--color-mist);
+      box-shadow: var(--shadow-xl);
+      padding: 20px;
+    }
+    .form-label-custom {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .form-control {
+      border: 1.5px solid var(--color-pebble) !important;
+      border-radius: var(--radius-inputs) !important;
+      font-size: 14px;
+      color: var(--color-ink);
+      padding: 10px 14px;
+    }
+    .form-control:focus {
+      border-color: var(--color-monday-violet) !important;
+      box-shadow: 0 0 0 3px rgba(97,97,255,0.12) !important;
+    }
+    .form-control::placeholder { color: var(--color-iron); }
+
+    /* Beneficiary preset */
+    .bene-preset {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-cloud);
+      border-radius: var(--radius-inputs);
+      padding: 10px 14px;
+      cursor: pointer;
+      border: 1.5px solid var(--color-pebble);
+      transition: border-color 0.15s;
+    }
+    .bene-preset.selected {
+      border-color: var(--color-forest);
+      background: var(--color-mint);
+    }
+    .bene-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+
+  <!-- Topbar -->
+  <nav class="topbar">
+    <div class="container-sm topbar-inner">
+      <button class="btn p-0 border-0" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;" onclick="history.back()">
+        <i class="bi bi-arrow-left" style="color:var(--color-ink);font-size:16px;"></i>
+      </button>
+      <div style="flex:1;">
+        <div style="font-size:15px;font-weight:700;color:var(--color-ink);">Gửi yêu cầu</div>
+        <div style="font-size:12px;color:var(--color-slate);">Nhập nhu cầu — hệ thống tìm deal tốt nhất</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="container-sm py-3 d-flex flex-column gap-3">
+
+    <!-- Section: Amount -->
+    <div>
+      <div class="section-label">Số tiền chuyển</div>
+      <div class="amount-block">
+        <!-- Send row -->
+        <div class="amount-row-inner">
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--color-slate);font-weight:500;margin-bottom:6px;">Bạn gửi</div>
+            <button class="currency-selector" id="send-currency-btn" onclick="openCurrencyPicker('send')">
+              <span id="send-flag">🇺🇸</span>
+              <span id="send-code">USD</span>
+              <i class="bi bi-chevron-down" style="font-size:10px;color:var(--color-slate);"></i>
+            </button>
+          </div>
+          <input type="number" class="amount-input" id="send-amount" placeholder="0" value="500" oninput="calcReceive()" min="0"/>
+        </div>
+
+        <!-- Exchange rate divider -->
+        <div class="exchange-divider">
+          <div class="exchange-divider-badge">
+            <i class="bi bi-arrow-down-up"></i>
+            <span id="rate-display">1 USD ≈ 25.500đ</span>
+          </div>
+        </div>
+
+        <!-- Receive row -->
+        <div class="amount-row-inner" style="background:#f9fafb;">
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--color-slate);font-weight:500;margin-bottom:6px;">Người nhận sẽ nhận bằng</div>
+            <button class="currency-selector" id="recv-currency-btn" onclick="openCurrencyPicker('recv')">
+              <span id="recv-flag">🇻🇳</span>
+              <span id="recv-code">VND</span>
+              <i class="bi bi-chevron-down" style="font-size:10px;color:var(--color-slate);"></i>
+            </button>
+          </div>
+          <input type="text" class="amount-input-receive" id="recv-amount" readonly placeholder="≈ 0"/>
+        </div>
+
+        <!-- Rate note -->
+        <div style="padding:10px 18px;border-top:1px solid var(--color-pebble);background:#f9fafb;">
+          <p style="font-size:11px;color:var(--color-iron);margin:0;">
+            <i class="bi bi-info-circle me-1"></i>
+            Tỷ giá ước tính. Tỷ giá thực theo nhà cung cấp được chọn.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Payment Method (send side) -->
+    <div>
+      <div class="form-card">
+        <div class="section-label mb-2">Hình thức thanh toán</div>
+
+        <div style="font-size:13px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Bạn trả nhà cung cấp qua</div>
+        <div class="d-flex flex-wrap gap-2 mb-3" id="send-methods">
+          <!-- Injected by JS -->
+        </div>
+
+        <div style="font-size:13px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Người nhận sẽ nhận qua</div>
+        <div class="d-flex flex-wrap gap-2" id="recv-methods">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Beneficiary info -->
+    <div id="beneficiary-section">
+      <div class="form-card">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="section-label mb-0" id="bene-section-title">Thông tin tài khoản nhận · MoMo</div>
+          <a href="s-27-beneficiaries.html" style="font-size:12px;color:var(--color-monday-violet);text-decoration:none;font-weight:600;">
+            <i class="bi bi-gear me-1"></i>Cài đặt
+          </a>
+        </div>
+
+        <!-- Saved beneficiary preset -->
+        <div style="font-size:12px;color:var(--color-slate);font-weight:500;margin-bottom:8px;">Chọn tài khoản đã lưu:</div>
+        <div class="bene-preset selected mb-3" id="bene-preset-1" onclick="selectBene('BEN-001')">
+          <div class="bene-avatar">NL</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">Ví MoMo · Nguyễn Thị Lan</div>
+            <div style="font-size:11px;color:var(--color-slate);">0912 345 678 · Gia đình</div>
+          </div>
+          <i class="bi bi-check-circle-fill" style="color:var(--color-forest);"></i>
+        </div>
+
+        <div class="bene-preset mb-3" id="bene-preset-2" onclick="selectBene('BEN-002')">
+          <div class="bene-avatar" style="background:var(--color-lavender);color:var(--color-ultra-violet);">TB</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">ZaloPay · Trần Văn Bình</div>
+            <div style="font-size:11px;color:var(--color-slate);">0933 222 111 · Bạn bè</div>
+          </div>
+          <i class="bi bi-circle" style="color:var(--color-iron);"></i>
+        </div>
+
+        <hr style="border-color:var(--color-pebble);margin:8px 0 14px;">
+
+        <!-- Manual entry -->
+        <div class="mb-3">
+          <label class="form-label-custom">Tên người thụ hưởng</label>
+          <input type="text" class="form-control" id="bene-name" placeholder="Họ và tên đầy đủ" value="Nguyễn Thị Lan"/>
+        </div>
+        <div class="mb-0">
+          <label class="form-label-custom">Số điện thoại / tài khoản</label>
+          <input type="tel" class="form-control" id="bene-account" placeholder="0912 345 678" value="0912 345 678"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Note -->
+    <div>
+      <div class="form-card">
+        <div class="section-label mb-2">Ghi chú cho nhà cung cấp</div>
+        <textarea class="form-control" id="request-note" rows="3" placeholder="Nhập ghi chú (không bắt buộc)...">Cần chuyển gấp trong hôm nay</textarea>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Sticky CTA -->
+  <div class="sticky-bottom">
+    <button class="btn btn-primary w-100" style="padding:16px;font-size:16px;" onclick="findDeal()">
+      <i class="bi bi-search me-2"></i>⚡ Tìm Deal Phù Hợp
+    </button>
+  </div>
+
+  <!-- Bottom Nav -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+
+    // Payment methods config
+    const SEND_METHODS = [
+      { key: 'zelle',         label: 'Zelle',            icon: P2P_DATA.getMethodIcon('zelle') },
+      { key: 'venmo',         label: 'Venmo',            icon: P2P_DATA.getMethodIcon('venmo') },
+      { key: 'paypal',        label: 'PayPal',           icon: P2P_DATA.getMethodIcon('paypal') },
+      { key: 'bank-transfer', label: 'Bank Transfer',    icon: P2P_DATA.getMethodIcon('bank-transfer') },
+    ];
+    const RECV_METHODS = [
+      { key: 'momo',          label: 'MoMo',             icon: P2P_DATA.getMethodIcon('momo') },
+      { key: 'zalopay',       label: 'ZaloPay',          icon: P2P_DATA.getMethodIcon('zalopay') },
+      { key: 'bank-transfer', label: 'Chuyển khoản NH',  icon: P2P_DATA.getMethodIcon('bank-transfer') },
+    ];
+
+    let selectedSendMethod = 'zelle';
+    let selectedRecvMethod = 'momo';
+    const RATE = 25500;
+
+    function renderMethodChips(container, methods, selectedKey, chipClass, onSelect) {
+      container.innerHTML = methods.map(m => `
+        <button class="method-chip ${chipClass} ${m.key === selectedKey ? 'selected' : ''}"
+                onclick="(${onSelect.toString()})('${m.key}')">
+          <span>${m.icon}</span> ${m.label}
+        </button>
+      `).join('');
+    }
+
+    function setSendMethod(key) {
+      selectedSendMethod = key;
+      renderMethodChips(
+        document.getElementById('send-methods'), SEND_METHODS, key, '',
+        setSendMethod
+      );
+    }
+
+    function setRecvMethod(key) {
+      selectedRecvMethod = key;
+      renderMethodChips(
+        document.getElementById('recv-methods'), RECV_METHODS, key, 'receive-chip',
+        setRecvMethod
+      );
+      // Update beneficiary section title
+      const label = RECV_METHODS.find(m => m.key === key)?.label || key;
+      document.getElementById('bene-section-title').textContent = `Thông tin tài khoản nhận · ${label}`;
+    }
+
+    function calcReceive() {
+      const sendVal = parseFloat(document.getElementById('send-amount').value) || 0;
+      const recvEl = document.getElementById('recv-amount');
+      if (sendVal > 0) {
+        const recv = sendVal * RATE;
+        recvEl.value = '≈ ' + P2P_DATA.formatVND(recv);
+      } else {
+        recvEl.value = '';
+      }
+    }
+
+    function openCurrencyPicker(side) {
+      showToast('Chức năng chọn tiền tệ — sắp ra mắt');
+    }
+
+    let selectedBeneId = 'BEN-001';
+    function selectBene(id) {
+      selectedBeneId = id;
+      document.querySelectorAll('.bene-preset').forEach(el => el.classList.remove('selected'));
+      const icons = document.querySelectorAll('.bene-preset i');
+      icons.forEach(i => { i.className = 'bi bi-circle'; i.style.color = 'var(--color-iron)'; });
+
+      const beneEl = document.getElementById(`bene-preset-${id === 'BEN-001' ? 1 : 2}`);
+      if (beneEl) {
+        beneEl.classList.add('selected');
+        const icon = beneEl.querySelector('i');
+        if (icon) { icon.className = 'bi bi-check-circle-fill'; icon.style.color = 'var(--color-forest)'; }
+      }
+    }
+
+    function findDeal() {
+      const amount = parseFloat(document.getElementById('send-amount').value) || 0;
+      if (amount <= 0) { showToast('Vui lòng nhập số tiền cần chuyển'); return; }
+      if (amount < 100) { showToast('Số tiền tối thiểu: $100'); return; }
+      // Navigate to results page
+      window.location.href = 'r-03-deal-results.html';
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMethodChips(
+        document.getElementById('send-methods'), SEND_METHODS, selectedSendMethod, '', setSendMethod
+      );
+      renderMethodChips(
+        document.getElementById('recv-methods'), RECV_METHODS, selectedRecvMethod, 'receive-chip', setRecvMethod
+      );
+      calcReceive();
+    });
+  </script>
+
+<script>P2P_COMPONENTS.renderBottomNav('send');</script>
+</body>
+</html>

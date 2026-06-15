@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>S-31 · Mở khiếu nại — P2P Remit Deals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 12px; }
+
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-slate);
+      margin-bottom: 10px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-slate);
+      margin-bottom: 6px;
+    }
+    .form-control, .form-select {
+      border: 1.5px solid var(--color-pebble) !important;
+      border-radius: 12px !important;
+      font-size: 15px;
+      padding: 12px 14px;
+      color: var(--color-ink);
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--color-monday-violet) !important;
+      box-shadow: 0 0 0 3px rgba(97,97,255,0.12) !important;
+    }
+
+    /* Radio group */
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border: 1.5px solid var(--color-pebble);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .radio-option:hover {
+      border-color: var(--color-monday-violet);
+      background: var(--color-periwinkle);
+    }
+    .radio-option input[type="radio"] {
+      width: 18px; height: 18px;
+      accent-color: var(--color-monday-violet);
+      cursor: pointer;
+    }
+    .radio-option.selected {
+      border-color: var(--color-monday-violet);
+      background: var(--color-periwinkle);
+    }
+    .radio-option label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-ink);
+      cursor: pointer;
+      flex: 1;
+      margin: 0;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--color-mist);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--color-slate);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .upload-area:hover {
+      border-color: var(--color-monday-violet);
+      background: var(--color-periwinkle);
+    }
+
+    .sticky-bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-top: 1px solid var(--color-pebble);
+      padding: 12px 16px;
+      z-index: 200;
+    }
+
+    .info-box {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--color-mist);
+      padding: 14px 16px;
+    }
+
+    .toast-container { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 9999; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <div class="container-sm">
+      <div class="topbar-inner">
+        <a href="r-05-request-list.html" class="btn btn-link p-0 text-decoration-none" style="color:var(--color-ink);">
+          <i class="bi bi-arrow-left" style="font-size:20px;"></i>
+        </a>
+        <span style="font-weight:600; font-size:16px; color:var(--color-ink);">Mở khiếu nại</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="container-sm py-3" style="max-width:480px;">
+
+    <!-- TRANSACTION INFO -->
+    <div class="p2p-card mb-3">
+      <div class="section-label">Thông tin giao dịch</div>
+      <div class="d-flex flex-column gap-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <span style="font-size:14px; color:var(--color-slate);">Mã giao dịch</span>
+          <span style="font-size:14px; font-weight:600; font-family:monospace;" id="req-id">RQ-3H7V0</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span style="font-size:14px; color:var(--color-slate);">Số tiền</span>
+          <span style="font-size:15px; font-weight:600; color:var(--color-ink);" id="amount-display">$400.00 USD → 10.192.000 ₫ VND</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span style="font-size:14px; color:var(--color-slate);">Trạng thái</span>
+          <span class="badge-status badge-payment-sent" id="status-badge">Đang xử lý</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <!-- 1. VẤN ĐỀ -->
+    <div class="mb-3">
+      <div class="section-label">Vấn đề</div>
+      <div class="d-flex flex-column gap-2" id="radio-group">
+        <div class="radio-option" onclick="selectReason(this, 'not_received')">
+          <input type="radio" name="reason" id="r1" value="not_received"/>
+          <label for="r1">Chưa nhận tiền</label>
+        </div>
+        <div class="radio-option" onclick="selectReason(this, 'insufficient')">
+          <input type="radio" name="reason" id="r2" value="insufficient"/>
+          <label for="r2">Nhận thiếu</label>
+        </div>
+        <div class="radio-option" onclick="selectReason(this, 'invalid_proof')">
+          <input type="radio" name="reason" id="r3" value="invalid_proof"/>
+          <label for="r3">Sai memo / proof không hợp lệ</label>
+        </div>
+        <div class="radio-option" onclick="selectReason(this, 'provider_no_transfer')">
+          <input type="radio" name="reason" id="r4" value="provider_no_transfer"/>
+          <label for="r4">Provider không chuyển tiền cho người thụ hưởng</label>
+        </div>
+        <div class="radio-option" onclick="selectReason(this, 'beneficiary_not_received')">
+          <input type="radio" name="reason" id="r5" value="beneficiary_not_received"/>
+          <label for="r5">Người thụ hưởng chưa nhận được tiền</label>
+        </div>
+        <div class="radio-option" onclick="selectReason(this, 'other')">
+          <input type="radio" name="reason" id="r6" value="other"/>
+          <label for="r6">Khác</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MÔ TẢ CHI TIẾT -->
+    <div class="mb-3">
+      <div class="section-label">Mô tả chi tiết</div>
+      <textarea class="form-control" id="description" rows="5"
+                placeholder="Mô tả chi tiết vấn đề bạn gặp phải..."
+                oninput="checkForm()"
+                style="resize:none; border-radius:16px !important;"></textarea>
+      <div style="font-size:12px; color:var(--color-iron); margin-top:4px; text-align:right;">
+        <span id="char-count">0</span> ký tự
+      </div>
+    </div>
+
+    <!-- 3. BỔ SUNG BẰNG CHỨNG -->
+    <div class="mb-3">
+      <div class="section-label">Bổ sung bằng chứng (tùy chọn)</div>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('evidence-input').click();">
+        <i class="bi bi-cloud-upload" style="font-size:36px; color:var(--color-monday-violet); display:block; margin-bottom:8px;"></i>
+        <div style="font-size:14px; font-weight:500; color:var(--color-ink); margin-bottom:4px;">Kéo thả file hoặc bấm để chọn</div>
+        <div style="font-size:12px; color:var(--color-iron);">Hình ảnh, PDF · Tối đa 10MB</div>
+        <input type="file" id="evidence-input" accept="image/*,.pdf" hidden onchange="handleEvidenceFile(event)"/>
+      </div>
+      <div id="evidence-preview" style="display:none;" class="d-flex align-items-center gap-2 mt-2 p-2 rounded-3" style="background:var(--color-periwinkle);">
+        <i class="bi bi-file-earmark-check" style="color:var(--color-monday-violet);"></i>
+        <span id="evidence-name" style="font-size:13px; color:var(--color-monday-violet); flex:1;"></span>
+        <button onclick="removeEvidence()" style="background:none; border:none; color:var(--color-slate); cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+      </div>
+    </div>
+
+    <!-- INFO BOX -->
+    <div class="info-box mb-3">
+      <div class="section-label mb-2" style="margin-top:0;">Thông tin xử lý</div>
+      <div class="d-flex flex-column gap-2">
+        <div class="d-flex gap-2 align-items-start">
+          <i class="bi bi-clock mt-1 flex-shrink-0" style="color:var(--color-monday-violet);"></i>
+          <span style="font-size:13px; color:var(--color-slate);">Admin xử lý trong <strong>48 giờ</strong>. Deadline: <strong id="dispute-deadline">13/06/2026 22:00</strong></span>
+        </div>
+        <div class="d-flex gap-2 align-items-start">
+          <i class="bi bi-arrow-repeat mt-1 flex-shrink-0" style="color:var(--color-warning);"></i>
+          <span style="font-size:13px; color:var(--color-slate);">Khi mở khiếu nại, giao dịch sẽ chuyển sang trạng thái <strong>"Đang tranh chấp"</strong>.</span>
+        </div>
+        <div class="d-flex gap-2 align-items-start">
+          <i class="bi bi-lock mt-1 flex-shrink-0" style="color:var(--color-danger);"></i>
+          <span style="font-size:13px; color:var(--color-slate);">Tiền ký quỹ hai bên bị <strong>tạm giữ</strong> cho đến khi Admin phân xử.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WARNING -->
+    <div class="banner-warning mb-3">
+      <div class="d-flex gap-2 align-items-start">
+        <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0" style="color:var(--color-warning);"></i>
+        <div>
+          <strong>Cảnh báo:</strong> Chỉ mở khiếu nại khi thực sự cần thiết. Khiếu nại sai sự thật có thể dẫn đến phạt theo chính sách nền tảng.
+        </div>
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+  </div>
+
+  <!-- STICKY BOTTOM CTA -->
+  <div class="sticky-bottom">
+    <div class="container-sm" style="max-width:480px;">
+      <button class="btn btn-danger w-100" id="submit-btn" disabled onclick="submitDispute()" style="padding:14px;">
+        <i class="bi bi-shield-exclamation me-2"></i>Gửi khiếu nại
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    var selectedReason = null;
+
+    // Load request data
+    var req = P2P_DATA.getRequest('RQ-3H7V0');
+    if (req) {
+      document.getElementById('req-id').textContent = req.id;
+      document.getElementById('amount-display').textContent =
+        P2P_DATA.formatUSD(req.amountSend) + ' ' + req.sendCurrency + ' → ' +
+        P2P_DATA.formatVND(req.amountReceive) + ' ' + req.receiveCurrency;
+
+      var badge = document.getElementById('status-badge');
+      badge.className = 'badge-status ' + P2P_DATA.getStatusBadgeClass(req.status);
+      badge.textContent = 'Đang xử lý';
+
+      if (req.dispute && req.dispute.t6Deadline) {
+        var d = new Date(req.dispute.t6Deadline);
+        var dd = d.getUTCDate().toString().padStart(2,'0');
+        var mo = (d.getUTCMonth()+1).toString().padStart(2,'0');
+        var yy = d.getUTCFullYear();
+        var hh = d.getUTCHours().toString().padStart(2,'0');
+        var mm = d.getUTCMinutes().toString().padStart(2,'0');
+        document.getElementById('dispute-deadline').textContent = dd + '/' + mo + '/' + yy + ' ' + hh + ':' + mm;
+      }
+    }
+
+    function selectReason(el, value) {
+      // Remove selected from all
+      document.querySelectorAll('.radio-option').forEach(function(opt) {
+        opt.classList.remove('selected');
+      });
+      // Select this one
+      el.classList.add('selected');
+      var radio = el.querySelector('input[type="radio"]');
+      radio.checked = true;
+      selectedReason = value;
+      checkForm();
+    }
+
+    var textarea = document.getElementById('description');
+    textarea.addEventListener('input', function() {
+      document.getElementById('char-count').textContent = this.value.length;
+      checkForm();
+    });
+
+    function checkForm() {
+      var desc = document.getElementById('description').value.trim();
+      var isValid = selectedReason !== null && desc.length > 0;
+      document.getElementById('submit-btn').disabled = !isValid;
+    }
+
+    function handleEvidenceFile(event) {
+      var file = event.target.files[0];
+      if (file) {
+        document.getElementById('evidence-name').textContent = file.name;
+        document.getElementById('evidence-preview').style.display = 'flex';
+        document.getElementById('upload-area').style.display = 'none';
+      }
+    }
+
+    function removeEvidence() {
+      document.getElementById('evidence-input').value = '';
+      document.getElementById('evidence-preview').style.display = 'none';
+      document.getElementById('upload-area').style.display = 'block';
+    }
+
+    function submitDispute() {
+      showToast('Đã gửi khiếu nại. Admin sẽ xử lý trong 48 giờ.', 'success');
+      setTimeout(function() {
+        window.location.href = 'r-05-request-list.html';
+      }, 1800);
+    }
+
+  </script>
+
+<script>P2P_COMPONENTS.renderBottomNav('requests');</script>
+</body>
+</html>

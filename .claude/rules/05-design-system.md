@@ -9,7 +9,7 @@ paths:
 
 **Theme:** light · white canvas · pastel accent surfaces · pill-shaped components  
 **Source tokens:** [.claude/rules/DESIGN.md](DESIGN.md)  
-**UX spec:** [src/docs/P2P_Remit_Deals_UX_UI_Spec_v4.0.md](../../src/docs/P2P_Remit_Deals_UX_UI_Spec_v4.0.md)
+**UX spec:** [src/docs/P2P_Remit_Deals_Wireframes_v1.6.1.md](../../src/docs/P2P_Remit_Deals_Wireframes_v1.6.1.md)
 
 ---
 

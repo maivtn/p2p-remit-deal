@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>P-18 · Chi tiết deal — P2P Remit Deals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--color-slate); margin-bottom: 10px;
+    }
+
+    .detail-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 0; border-bottom:1px solid var(--color-pebble); gap:8px;
+    }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-label { font-size:13px; color:var(--color-slate); flex-shrink:0; }
+    .detail-value { font-size:14px; font-weight:500; color:var(--color-ink); text-align:right; }
+
+    .method-chip {
+      display:inline-flex; align-items:center; gap:5px;
+      background: var(--color-cloud); border:1.5px solid var(--color-pebble);
+      border-radius:160px; padding:5px 12px;
+      font-size:13px; font-weight:500; color:var(--color-ink);
+    }
+
+    .badge-active {
+      background: var(--color-mint); color: var(--color-forest);
+      border-radius: 6px; padding: 3px 10px;
+      font-size: 12px; font-weight: 600;
+    }
+    .badge-paused {
+      background: #fff8e1; color: #92400e;
+      border-radius: 6px; padding: 3px 10px;
+      font-size: 12px; font-weight: 600;
+    }
+
+    .request-mini-card {
+      background: #fff; border-radius: 12px;
+      border: 1px solid var(--color-mist);
+      padding: 12px 14px; margin-bottom: 8px;
+      cursor: pointer; transition: box-shadow 0.15s;
+    }
+    .request-mini-card:hover { box-shadow: var(--shadow-xl); }
+    .request-mini-card:last-child { margin-bottom:0; }
+
+    .version-item {
+      padding: 10px 0; border-bottom: 1px solid var(--color-pebble);
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .version-item:last-child { border-bottom:none; }
+    .version-dot {
+      width:8px; height:8px; border-radius:50%;
+      background: var(--color-monday-violet); flex-shrink:0; margin-top:5px;
+    }
+
+    .corridor-hero {
+      background: linear-gradient(135deg, var(--color-periwinkle) 0%, #f0f4ff 100%);
+      border-radius: var(--radius-cards);
+      padding: 20px 24px;
+      border: 1px solid var(--color-mist);
+    }
+
+    .action-btn-row {
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .action-btn-row .btn {
+      flex:1; min-width:100px; font-size:14px; padding:11px 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="container-sm">
+    <div class="topbar-inner">
+      <a href="p-16-deal-list.html" style="color:var(--color-ink);font-size:22px;text-decoration:none;">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="flex-grow-1">
+        <div style="font-size:16px;font-weight:700;color:var(--color-ink);">Chi tiết deal</div>
+        <div style="font-size:11px;color:var(--color-slate);">DEAL-001 · USD → VND</div>
+      </div>
+      <a href="p-17-create-deal.html" class="btn btn-outline-secondary" style="font-size:13px;padding:7px 14px;">
+        <i class="bi bi-pencil me-1"></i>Sửa
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="container-sm py-3">
+  <div class="d-flex flex-column gap-3">
+
+    <!-- HEADER CARD -->
+    <div class="corridor-hero">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div style="font-size:22px;font-weight:700;color:var(--color-ink);">🇺🇸 USD → 🇻🇳 VND</div>
+        <span class="badge-active"><i class="bi bi-circle-fill me-1" style="font-size:8px;"></i>Hoạt động</span>
+      </div>
+      <div class="row g-2 mt-1">
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Tỷ giá</div>
+          <div style="font-size:18px;font-weight:700;color:var(--color-ink);">25.500 ₫/USD</div>
+        </div>
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Giới hạn</div>
+          <div style="font-size:15px;font-weight:600;color:var(--color-ink);">$100 – $5.000</div>
+        </div>
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Hết hạn</div>
+          <div style="font-size:14px;font-weight:500;color:var(--color-ink);">30/06/2026</div>
+        </div>
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Phiên bản</div>
+          <div style="font-size:14px;font-weight:500;color:var(--color-monday-violet);">v3</div>
+        </div>
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Giao dịch hoàn tất</div>
+          <div style="font-size:14px;font-weight:600;color:var(--color-forest);">247 lần</div>
+        </div>
+        <div class="col-6">
+          <div style="font-size:11px;color:var(--color-slate);">Deal ID</div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-slate);">DEAL-001</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHƯƠNG THỨC NHẬN TIỀN -->
+    <div class="p2p-card">
+      <div class="section-label"><i class="bi bi-arrow-down-circle me-1"></i>Nhận tiền từ Requester qua</div>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="method-chip"><img class="method-icon" src="../images/zelle.png" alt="Zelle"> Zelle</span>
+        <span class="method-chip"><img class="method-icon" src="../images/venmo.png" alt="Venmo"> Venmo</span>
+        <span class="method-chip"><img class="method-icon" src="../images/paypal.png" alt="PayPal"> PayPal</span>
+      </div>
+    </div>
+
+    <!-- PHƯƠNG THỨC CHI TRẢ -->
+    <div class="p2p-card">
+      <div class="section-label"><i class="bi bi-arrow-up-circle me-1"></i>Chi trả người thụ hưởng qua</div>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="method-chip"><img class="method-icon" src="../images/momo.png" alt="MoMo"> MoMo</span>
+        <span class="method-chip"><img class="method-icon" src="../images/zalopay.png" alt="ZaloPay"> ZaloPay</span>
+        <span class="method-chip"><img class="method-icon" src="../images/bank-transfer.png" alt="Bank Transfer"> Bank Transfer</span>
+      </div>
+    </div>
+
+    <!-- CONTEXT WARNING -->
+    <div class="banner-warning">
+      <div style="font-weight:600;margin-bottom:3px;">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>Deal đang tạm không xuất hiện trong kết quả tìm kiếm
+      </div>
+      <div>Provider đang có giao dịch đang diễn ra. Deal sẽ tự động hiển thị trở lại sau khi giao dịch kết thúc.</div>
+    </div>
+
+    <!-- REQUEST PHÁT SINH -->
+    <div class="p2p-card">
+      <div class="section-label"><i class="bi bi-list-ul me-1"></i>Request phát sinh</div>
+
+      <div class="request-mini-card" onclick="window.location.href='p-23-detail-payment-sent.html'">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <div style="font-size:12px;font-weight:600;color:var(--color-slate);">RQ-4F8N1</div>
+          <span class="badge-status badge-payment-sent">Chờ bạn chuyển tiền</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div style="font-size:14px;font-weight:600;color:var(--color-ink);">$500.00 → <span style="color:var(--color-forest);">12.750.000 ₫</span></div>
+          <div style="font-size:12px;color:var(--color-iron);">30 phút trước <i class="bi bi-chevron-right" style="font-size:11px;"></i></div>
+        </div>
+      </div>
+
+      <div class="request-mini-card" onclick="window.location.href='#'">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <div style="font-size:12px;font-weight:600;color:var(--color-slate);">RQ-5A9P2</div>
+          <span class="badge-status badge-completed">Hoàn tất</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div style="font-size:14px;font-weight:600;color:var(--color-ink);">$200.00 → <span style="color:var(--color-forest);">5.100.000 ₫</span></div>
+          <div style="font-size:12px;color:var(--color-iron);">2 ngày trước <i class="bi bi-chevron-right" style="font-size:11px;"></i></div>
+        </div>
+      </div>
+
+      <div class="mt-2 text-center">
+        <a href="#" style="font-size:13px;color:var(--color-monday-violet);text-decoration:none;font-weight:500;">
+          Xem tất cả request <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- LỊCH SỬ PHIÊN BẢN -->
+    <div class="p2p-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="section-label mb-0"><i class="bi bi-clock-history me-1"></i>Lịch sử phiên bản</div>
+        <button class="btn p-0" style="font-size:13px;color:var(--color-monday-violet);background:none;border:none;font-weight:500;"
+          data-bs-toggle="collapse" data-bs-target="#versionHistory">
+          <span id="versionToggleLabel">Thu gọn</span> <i class="bi bi-chevron-up" id="versionChevron"></i>
+        </button>
+      </div>
+      <div id="versionHistory">
+        <div class="version-item">
+          <div class="version-dot"></div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">v3 · 15/06/2026</div>
+            <div style="font-size:12px;color:var(--color-slate);">Sửa tỷ giá: 25.400 → <strong>25.500</strong> ₫/USD</div>
+          </div>
+        </div>
+        <div class="version-item">
+          <div class="version-dot" style="background:var(--color-slate);"></div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">v2 · 01/06/2026</div>
+            <div style="font-size:12px;color:var(--color-slate);">Sửa giới hạn: max $3.000 → <strong>$5.000</strong></div>
+          </div>
+        </div>
+        <div class="version-item">
+          <div class="version-dot" style="background:var(--color-iron);"></div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--color-ink);">v1 · 15/05/2026</div>
+            <div style="font-size:12px;color:var(--color-slate);">Tạo deal ban đầu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-btn-row">
+      <button type="button" class="btn btn-outline-secondary" onclick="togglePause(this)">
+        <i class="bi bi-pause-circle me-1"></i>Tạm dừng
+      </button>
+      <a href="p-17-create-deal.html" class="btn btn-outline-secondary">
+        <i class="bi bi-pencil me-1"></i>Sửa deal
+      </a>
+      <button type="button" class="btn btn-outline-secondary" style="color:var(--color-danger);border-color:var(--color-danger);"
+        data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <i class="bi bi-trash me-1"></i>Xóa
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:24px;overflow:hidden;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="deleteModalLabel" style="color:var(--color-ink);">
+          <i class="bi bi-trash text-danger me-2"></i>Xóa deal?
+        </h5>
+      </div>
+      <div class="modal-body" style="font-size:14px;color:var(--color-slate);">
+        <p>Deal <strong>USD → VND</strong> sẽ bị xóa vĩnh viễn.</p>
+        <p class="mb-0">Các request đã phát sinh sẽ <strong>không bị ảnh hưởng</strong>. Collateral đang lock sẽ được giải phóng.</p>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger flex-fill" onclick="deleteDeal()">
+          <i class="bi bi-trash me-1"></i>Xóa
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  // Version history toggle label
+  const vhEl = document.getElementById('versionHistory');
+  vhEl.addEventListener('hide.bs.collapse', function() {
+    document.getElementById('versionToggleLabel').textContent = 'Mở rộng';
+    document.getElementById('versionChevron').className = 'bi bi-chevron-down';
+  });
+  vhEl.addEventListener('show.bs.collapse', function() {
+    document.getElementById('versionToggleLabel').textContent = 'Thu gọn';
+    document.getElementById('versionChevron').className = 'bi bi-chevron-up';
+  });
+
+  function togglePause(btn) {
+    const isPaused = btn.querySelector('i').classList.contains('bi-play-circle');
+    if (isPaused) {
+      btn.innerHTML = '<i class="bi bi-pause-circle me-1"></i>Tạm dừng';
+      showToast('Deal đã được kích hoạt trở lại.', 'success');
+    } else {
+      btn.innerHTML = '<i class="bi bi-play-circle me-1"></i>Kích hoạt';
+      showToast('Deal đã tạm dừng. Requester không thể chọn deal này.', 'warning');
+    }
+  }
+
+  function deleteDeal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+    modal.hide();
+    showToast('Deal đã xóa.', 'success');
+    setTimeout(() => { window.location.href = 'p-16-deal-list.html'; }, 1500);
+  }
+
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('deals');</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-03 · Kết quả deal phù hợp — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+
+  <style>
+    body { background: var(--color-cloud); }
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+    .deal-card { background:#fff; border-radius:24px; border:1px solid var(--color-mist); box-shadow:var(--shadow-xl); padding:20px; }
+    .method-chip { border:1.5px solid var(--color-pebble); border-radius:160px; padding:5px 12px; font-size:13px; font-weight:500; color:var(--color-slate); background:#fff; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+
+    /* Summary sticky bar */
+    .summary-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--color-mist);
+      padding: 10px 0;
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+    }
+    .summary-bar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .summary-amounts {
+      flex: 1;
+      min-width: 0;
+    }
+    .summary-top {
+      font-size: 13px;
+      color: var(--color-slate);
+      margin-bottom: 1px;
+    }
+    .summary-main {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summary-sub {
+      font-size: 12px;
+      color: var(--color-iron);
+    }
+
+    /* Best match banner */
+    .best-match-banner {
+      background: var(--color-mint);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-forest);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* Provider avatar */
+    .provider-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Rate box */
+    .rate-box {
+      background: var(--color-periwinkle);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 12px 0;
+    }
+
+    /* Methods row */
+    .methods-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Deal card divider */
+    .deal-divider {
+      border: none;
+      border-top: 1px solid var(--color-pebble);
+      margin: 12px 0;
+    }
+
+    /* Sort bar */
+    .sort-bar {
+      font-size: 13px;
+      color: var(--color-slate);
+      padding: 4px 0 2px;
+    }
+
+    /* Choose button */
+    .btn-choose {
+      width: 100%;
+      background: var(--color-monday-violet);
+      color: #fff;
+      border: none;
+      border-radius: 160px;
+      padding: 13px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      transition: opacity 0.15s;
+      margin-top: 14px;
+    }
+    .btn-choose:hover { opacity: 0.88; color: #fff; }
+
+    /* Rating stars */
+    .star { color: #f59e0b; font-size: 13px; }
+
+    /* Privacy note */
+    .privacy-note {
+      background: var(--color-cloud);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--color-iron);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-md">
+    <div class="topbar-inner">
+      <a href="r-02-send-request.html" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--color-ink);flex-shrink:0;">
+        <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+      </a>
+      <div style="flex:1;">
+        <div style="font-size:16px; font-weight:700; color:var(--color-ink);">Kết quả tìm kiếm</div>
+        <div style="font-size:12px; color:var(--color-slate);">Deals phù hợp với yêu cầu của bạn</div>
+      </div>
+      <div style="width:36px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Summary sticky bar -->
+<div class="summary-bar">
+  <div class="container-md">
+    <div class="summary-bar-inner">
+      <div class="summary-amounts">
+        <div class="summary-top">Bạn thanh toán qua <strong>Zelle</strong></div>
+        <div class="summary-main">$500.00 <span style="color:var(--color-iron);font-weight:400;">→</span> 12.750.000 ₫ qua <strong>MoMo</strong></div>
+        <div class="summary-sub">Người thụ hưởng: Nguyễn Thị Lan</div>
+      </div>
+      <a href="r-02-send-request.html" class="btn btn-outline-secondary" style="padding:6px 14px;font-size:13px;white-space:nowrap;">Thay đổi</a>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="container-md py-3">
+
+  <!-- Sort / count -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="sort-bar" id="result-count">Đang tải...</div>
+    <div style="font-size:12px;color:var(--color-slate);">Sắp xếp: hình thức + tỷ giá</div>
+  </div>
+
+  <!-- Deal cards will be injected here -->
+  <div class="d-flex flex-column gap-3" id="deal-list"></div>
+
+  <!-- Privacy note -->
+  <div class="privacy-note mt-3">
+    <i class="bi bi-shield-lock" style="font-size:16px; color:var(--color-monday-violet);"></i>
+    Tên Provider được ẩn một phần trước khi bạn chọn deal (quy tắc bảo mật).
+  </div>
+
+</div>
+
+<!-- Bottom Nav -->
+
+<!-- Toast -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+
+  // Requester's send method (Zelle) and receive method (MoMo) from r-02
+  const REQUESTER_SEND_METHOD = 'zelle';
+  const REQUESTER_RECV_METHOD = 'momo';
+  const REQUESTER_AMOUNT = 500;
+
+  function maskProviderName(fullName) {
+    // "Hùng Mạnh Lê" → "Hùng M. L."
+    const parts = fullName.trim().split(' ');
+    if (parts.length < 2) return fullName;
+    const first = parts[0];
+    // middle parts: first letter + dot
+    const middle = parts.slice(1, parts.length - 1).map(p => p.charAt(0) + '.').join(' ');
+    const last = parts[parts.length - 1].charAt(0) + '.';
+    return [first, middle, last].filter(Boolean).join(' ');
+  }
+
+  function renderStars(rating) {
+    const full = Math.floor(rating);
+    return '★'.repeat(full) + (rating % 1 >= 0.5 ? '½' : '');
+  }
+
+  function methodMatchesSend(deal) {
+    // Check if deal accepts requester's send method (Zelle)
+    return deal.methods.includes(REQUESTER_SEND_METHOD);
+  }
+
+  function renderDealCard(deal, isBestMatch) {
+    const provider = P2P_DATA.getUser(deal.providerId);
+    if (!provider) return '';
+
+    const maskedName = maskProviderName(provider.name);
+    const receiveAmount = REQUESTER_AMOUNT * deal.rate;
+    const formattedReceive = P2P_DATA.formatVND(receiveAmount);
+    const rateFormatted = deal.rate.toLocaleString('vi-VN');
+
+    const methodChips = deal.methods.map(m =>
+      `<span class="method-chip">${P2P_DATA.getMethodIcon(m)} ${P2P_DATA.getMethodLabel(m)}</span>`
+    ).join('');
+
+    const bestMatchBanner = isBestMatch ? `
+      <div class="best-match-banner">
+        <i class="bi bi-check-circle-fill"></i>
+        Khớp hoàn toàn hình thức · Tỷ giá tốt nhất
+      </div>` : '';
+
+    const cardBorder = isBestMatch
+      ? 'border:2px solid var(--color-monday-violet);'
+      : '';
+
+    return `
+      <div class="deal-card" style="${cardBorder}">
+        ${bestMatchBanner}
+
+        <!-- Provider header -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="provider-avatar" style="background:${provider.avatarBg};color:${provider.avatarColor};">
+            ${provider.initials}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:600;color:var(--color-ink);">
+              ${maskedName}
+              <span class="badge-status badge-accepted" style="font-size:11px;margin-left:6px;vertical-align:middle;">✓ KYC T2</span>
+            </div>
+            <div style="font-size:13px;color:var(--color-slate);margin-top:2px;">
+              <span class="star">★</span> ${deal.rating}
+              &nbsp;·&nbsp; ${deal.completedCount} đánh giá
+              &nbsp;·&nbsp; ${deal.onTimeRate}% đúng hạn
+            </div>
+          </div>
+        </div>
+
+        <!-- Rate box -->
+        <div class="rate-box">
+          <div>
+            <div style="font-size:12px;color:var(--color-slate);">Tỷ giá</div>
+            <div style="font-size:18px;font-weight:700;color:var(--color-ink);">${rateFormatted}đ<span style="font-size:13px;font-weight:500;color:var(--color-slate);">/USD</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--color-slate);">Người nhận</div>
+            <div class="money money-receive">${formattedReceive}</div>
+          </div>
+        </div>
+
+        <hr class="deal-divider">
+
+        <!-- Payment methods -->
+        <div class="mb-2">
+          <div style="font-size:12px;color:var(--color-iron);margin-bottom:6px;font-weight:500;">NHẬN TIỀN TỪ BẠN QUA</div>
+          <div class="methods-row">${methodChips}</div>
+        </div>
+        <div class="mb-2">
+          <div style="font-size:12px;color:var(--color-iron);margin-bottom:6px;font-weight:500;">GỬI TIỀN ĐẾN NGƯỜI THỤ HƯỞNG QUA</div>
+          <div class="methods-row">
+            <span class="method-chip"><img class="method-icon" src="../images/momo.png" alt="MoMo"> MoMo</span>
+            <span class="method-chip"><img class="method-icon" src="../images/zalopay.png" alt="ZaloPay"> ZaloPay</span>
+            ${deal.id === 'DEAL-002' ? '<span class="method-chip"><img class="method-icon" src="../images/bank-transfer.png" alt="Bank Transfer"> Bank Transfer</span>' : ''}
+          </div>
+        </div>
+
+        <!-- Min/Max -->
+        <div style="font-size:12px;color:var(--color-iron);margin-top:8px;">
+          <i class="bi bi-info-circle me-1"></i>
+          Hạn mức: $${deal.minAmount.toLocaleString()} – $${deal.maxAmount.toLocaleString()} · SLA ${deal.slaHours}h
+        </div>
+
+        <!-- CTA -->
+        <a href="r-04-confirm-request.html" class="btn-choose">
+          Chọn deal này <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>`;
+  }
+
+  function renderPage() {
+    const activeDeals = P2P_DATA.DEALS.filter(d =>
+      d.status === 'active' &&
+      d.corridor.sendCurrency === 'USD' &&
+      d.corridor.receiveCurrency === 'VND'
+    );
+
+    // Sort: exact method match first, then by rate descending
+    activeDeals.sort((a, b) => {
+      const aMatch = methodMatchesSend(a) ? 1 : 0;
+      const bMatch = methodMatchesSend(b) ? 1 : 0;
+      if (bMatch !== aMatch) return bMatch - aMatch;
+      return b.rate - a.rate;
+    });
+
+    document.getElementById('result-count').textContent =
+      `${activeDeals.length} deal phù hợp`;
+
+    const html = activeDeals.map((deal, idx) =>
+      renderDealCard(deal, idx === 0)
+    ).join('');
+
+    document.getElementById('deal-list').innerHTML = html;
+  }
+
+  renderPage();
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('send');</script>
+</body>
+</html>

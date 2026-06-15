@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-10 · Chờ Provider xác nhận — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+
+    /* Proof block */
+    .proof-block { background:var(--color-periwinkle); border-radius:var(--radius-nav); padding:12px 16px; }
+    .proof-ref { font-family:'Courier New',monospace; font-size:13px; color:var(--color-monday-violet); font-weight:600; }
+
+    /* Banner expired */
+    .banner-expired {
+      background: var(--color-danger-bg);
+      border-radius: var(--radius-nav);
+      padding: var(--spacing-12) var(--spacing-16);
+      border-left: 4px solid var(--color-danger);
+      font-size: var(--text-body-sm);
+      color: #7f1d1d;
+    }
+
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--color-pebble); font-size:14px; }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { color:var(--color-slate); }
+    .info-value { font-weight:500; color:var(--color-ink); text-align:right; }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-sm">
+    <div class="topbar-inner">
+      <a href="r-05-request-list.html" class="btn-icon d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:var(--color-cloud);border-radius:50%;border:none;text-decoration:none;color:var(--color-ink);flex-shrink:0;">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="flex-grow-1">
+        <div style="font-size:16px;font-weight:600;color:var(--color-ink);">Chi tiết giao dịch</div>
+      </div>
+      <a href="#" class="d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:var(--color-cloud);border-radius:50%;text-decoration:none;color:var(--color-ink);">
+        <i class="bi bi-three-dots-vertical"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-sm py-3">
+
+  <!-- Header card -->
+  <div class="p2p-card mb-3">
+    <div class="d-flex align-items-center justify-content-between mb-1">
+      <span style="font-size:13px;font-weight:600;color:var(--color-slate);font-family:'Courier New',monospace;" id="req-id">RQ-2B5R7</span>
+      <span class="badge-status badge-payment-sent" id="status-badge">Chờ Provider xác nhận</span>
+    </div>
+    <div class="d-flex align-items-baseline gap-2 mt-2">
+      <span class="money money-lg" id="amount-send">$300.00</span>
+      <i class="bi bi-arrow-right" style="color:var(--color-iron);"></i>
+      <span class="money money-receive" id="amount-receive">7.650.000 ₫</span>
+    </div>
+    <div style="font-size:12px;color:var(--color-slate);margin-top:4px;" id="created-at">Tạo lúc 04:00 · 12/06/2026</div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="p2p-card mb-3">
+    <div class="stepper">
+      <div class="step done">
+        <div class="step-dot"><i class="bi bi-check"></i></div>
+        <div class="step-label">Ghép nối</div>
+      </div>
+      <div class="step done">
+        <div class="step-dot"><i class="bi bi-check"></i></div>
+        <div class="step-label">Bạn chuyển</div>
+      </div>
+      <div class="step active">
+        <div class="step-dot"><i class="bi bi-hourglass-split"></i></div>
+        <div class="step-label">Xác nhận</div>
+      </div>
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="step-label">Prov. chuyển</div>
+      </div>
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="step-label">Hoàn tất</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deadline expired banner -->
+  <div class="banner-expired mb-3" id="expired-banner">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
+      <div>
+        <div style="font-weight:600;margin-bottom:2px;">Deadline đã qua</div>
+        <div>Deadline xác nhận <strong id="t3-expired-time">08:00 · 12/06/2026</strong>. Provider có 24h để xác nhận muộn. Nếu quá hạn thêm, bạn có thể mở khiếu nại.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proof block -->
+  <div class="p2p-card mb-3">
+    <div class="section-label mb-2">Bằng chứng thanh toán của bạn</div>
+
+    <div class="proof-block mb-2">
+      <div style="font-size:12px;color:var(--color-slate);margin-bottom:4px;">Mã tham chiếu</div>
+      <div class="proof-ref" id="proof-ref">ZLL-2026-0612-98732</div>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Thời gian upload</span>
+      <span class="info-value" id="proof-time">07:00 · 12/06/2026</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Ghi chú</span>
+      <span class="info-value" id="proof-note">Đã chuyển qua Zelle, ref code trong ảnh</span>
+    </div>
+
+    <!-- Collapsible proof details -->
+    <div class="mt-3">
+      <button class="btn btn-sm w-100" style="background:var(--color-periwinkle);color:var(--color-monday-violet);border-radius:var(--radius-buttons);font-size:13px;font-weight:600;padding:8px 16px;" type="button" data-bs-toggle="collapse" data-bs-target="#proofDetails" aria-expanded="false" aria-controls="proofDetails">
+        <i class="bi bi-eye me-1"></i> Xem chi tiết proof
+      </button>
+      <div class="collapse mt-2" id="proofDetails">
+        <div style="background:var(--color-cloud);border-radius:var(--radius-nav);padding:14px 16px;font-size:13px;">
+          <div class="d-flex justify-content-between mb-2">
+            <span style="color:var(--color-slate);">Proof ID</span>
+            <span style="font-weight:500;">PRF-001</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span style="color:var(--color-slate);">Loại</span>
+            <span style="font-weight:500;">Bằng chứng thanh toán</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span style="color:var(--color-slate);">Phương thức</span>
+            <span style="font-weight:500;"><img class="method-icon" src="../images/zelle.png" alt="Zelle"> Zelle</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span style="color:var(--color-slate);">Số tiền</span>
+            <span style="font-weight:500;">$300.00 USD</span>
+          </div>
+          <div style="border-top:1px solid var(--color-pebble);margin-top:8px;padding-top:8px;">
+            <div style="color:var(--color-slate);margin-bottom:4px;">File đính kèm</div>
+            <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:6px;padding:8px 12px;border:1px solid var(--color-mist);">
+              <i class="bi bi-image" style="color:var(--color-monday-violet);"></i>
+              <span style="font-size:12px;color:var(--color-ink);">rq-2b5r7-payment.jpg</span>
+              <span style="font-size:11px;color:var(--color-iron);margin-left:auto;">[Ảnh minh họa]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bước tiếp theo -->
+  <div class="p2p-card mb-3">
+    <div class="section-label mb-2">Bước tiếp theo</div>
+    <p style="font-size:14px;color:var(--color-slate);margin-bottom:12px;">Provider đang đối soát tiền vào tài khoản. Sau khi xác nhận nhận tiền, Provider sẽ tiến hành chuyển khoản cho người thụ hưởng.</p>
+    <p style="font-size:14px;color:var(--color-slate);margin:0;">Nếu có vấn đề phát sinh, hai bên có thể mở khiếu nại theo quy định nền tảng.</p>
+  </div>
+
+  <!-- Thông tin giao dịch -->
+  <div class="p2p-card mb-3">
+    <div class="section-label mb-2">Thông tin giao dịch</div>
+    <div class="info-row">
+      <span class="info-label">Người thụ hưởng</span>
+      <span class="info-value">Nguyễn Thị Lan</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Ngân hàng</span>
+      <span class="info-value">Vietcombank</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Số tài khoản</span>
+      <span class="info-value masked">••• ••• 4321</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Tỷ giá</span>
+      <span class="info-value">1 USD = 25.500 ₫</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Phí nền tảng</span>
+      <span class="info-value money-fee">$1.50</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Memo chuyển khoản</span>
+      <span class="info-value" style="font-family:'Courier New',monospace;font-size:12px;">P2P-2B5R7-XFER</span>
+    </div>
+  </div>
+
+  <!-- Provider info -->
+  <div class="p2p-card mb-3">
+    <div class="section-label mb-2">Provider</div>
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:44px;height:44px;border-radius:50%;background:#bcfe90;display:flex;align-items:center;justify-content:center;font-weight:700;color:#2a5c4e;font-size:16px;flex-shrink:0;">HM</div>
+      <div>
+        <div style="font-weight:600;color:var(--color-ink);">Hùng Mạnh Lê</div>
+        <div style="font-size:12px;color:var(--color-slate);">⭐ 4.9 · 247 giao dịch · 98.4% đúng hạn</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="d-flex gap-2 mb-3">
+    <a href="#" class="btn btn-outline-secondary flex-fill d-flex align-items-center justify-content-center gap-2" style="font-size:14px;padding:11px 16px;">
+      <i class="bi bi-chat-dots"></i> Chat
+    </a>
+    <a href="#" class="btn btn-danger flex-fill d-flex align-items-center justify-content-center gap-2" style="font-size:14px;padding:11px 16px;">
+      <i class="bi bi-flag"></i> Khiếu nại
+    </a>
+  </div>
+
+</div>
+
+<!-- Bottom Nav -->
+
+<script src="mock-data.js"></script>
+  <script src="components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  (function () {
+    var req = P2P_DATA.getRequest('RQ-2B5R7');
+    if (!req) return;
+
+    // Header amounts
+    document.getElementById('req-id').textContent = req.id;
+    document.getElementById('amount-send').textContent = P2P_DATA.formatUSD(req.amountSend);
+    document.getElementById('amount-receive').textContent = P2P_DATA.formatVND(req.amountReceive);
+
+    // Created at
+    var createdDate = new Date(req.createdAt);
+    document.getElementById('created-at').textContent = 'Tạo lúc ' + pad2(createdDate.getUTCHours()) + ':' + pad2(createdDate.getUTCMinutes()) + ' · ' + formatDate(createdDate);
+
+    // Proof
+    if (req.paymentProof) {
+      document.getElementById('proof-ref').textContent = req.paymentProof.refCode;
+      var subAt = new Date(req.paymentProof.submittedAt);
+      document.getElementById('proof-time').textContent = pad2(subAt.getUTCHours()) + ':' + pad2(subAt.getUTCMinutes()) + ' · ' + formatDate(subAt);
+      document.getElementById('proof-note').textContent = req.paymentProof.note;
+    }
+
+    // Expired banner
+    if (req.t3Deadline) {
+      var t3 = new Date(req.t3Deadline);
+      document.getElementById('t3-expired-time').textContent = pad2(t3.getUTCHours()) + ':' + pad2(t3.getUTCMinutes()) + ' · ' + formatDate(t3);
+      var cd = P2P_DATA.getCountdown(req.t3Deadline);
+      // t3Deadline is in the past — banner is shown by default
+    }
+
+    function formatDate(d) {
+      return pad2(d.getUTCDate()) + '/' + pad2(d.getUTCMonth() + 1) + '/' + d.getUTCFullYear();
+    }
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  })();
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('requests');</script>
+</body>
+</html>

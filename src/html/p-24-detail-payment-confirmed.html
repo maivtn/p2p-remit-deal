@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>P-24 · Chuyển tiền cho người thụ hưởng — P2P Remit Deals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--color-pebble);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 12px; }
+
+    /* Deadline card */
+    .deadline-card {
+      background: #fff8e1;
+      border-radius: var(--radius-cards);
+      border: 1.5px solid var(--color-warning);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* Sticky CTA area */
+    .sticky-cta-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, #fff 70%, transparent);
+      padding: 10px 16px 28px;
+      z-index: 50;
+    }
+
+    /* Copy all button */
+    .copy-all-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+      border: 1.5px solid var(--color-monday-violet);
+      border-radius: var(--radius-buttons);
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .copy-all-btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-sm">
+    <div class="topbar-inner">
+      <a href="p-19-received-requests.html"
+         style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--color-ink);flex-shrink:0;">
+        <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+      </a>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:16px;font-weight:700;color:var(--color-ink);">Chuyển tiền</div>
+        <div style="font-size:12px;color:var(--color-slate);">RQ-9C3T6</div>
+      </div>
+      <!-- Countdown -->
+      <span class="countdown" id="topbar-countdown" style="flex-shrink:0;font-size:13px;font-weight:700;">01:30:00</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container-sm py-3 d-flex flex-column gap-3">
+
+  <!-- Status badge -->
+  <div>
+    <span class="badge-status badge-accepted" style="font-size:13px;padding:6px 14px;">
+      <i class="bi bi-send me-1"></i>Cần chuyển tiền
+    </span>
+  </div>
+
+  <!-- Stepper -->
+  <div class="p2p-card py-3 px-3">
+    <div class="stepper">
+      <div class="step done">
+        <div class="step-dot"><i class="bi bi-check" style="font-size:14px;"></i></div>
+        <span class="step-label">Chấp nhận</span>
+      </div>
+      <div class="step done">
+        <div class="step-dot"><i class="bi bi-check" style="font-size:14px;"></i></div>
+        <span class="step-label">Chờ proof</span>
+      </div>
+      <div class="step done">
+        <div class="step-dot"><i class="bi bi-check" style="font-size:14px;"></i></div>
+        <span class="step-label">Đối soát</span>
+      </div>
+      <div class="step active">
+        <div class="step-dot"><i class="bi bi-send-fill" style="font-size:11px;"></i></div>
+        <span class="step-label">Chuyển tiền</span>
+      </div>
+      <div class="step">
+        <div class="step-dot">5</div>
+        <span class="step-label">Hoàn tất</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beneficiary transfer ticket -->
+  <div>
+    <div class="section-label mb-2">THÔNG TIN CHUYỂN TIỀN</div>
+    <div class="ticket-card">
+      <div class="ticket-header">
+        <i class="bi bi-send-fill me-2"></i>THÔNG TIN CHUYỂN TIỀN
+      </div>
+
+      <!-- Người thụ hưởng -->
+      <div class="ticket-row">
+        <span class="ticket-label">Người thụ hưởng</span>
+        <span class="ticket-value" id="bene-name">Nguyễn Thị Lan</span>
+      </div>
+
+      <!-- Method -->
+      <div class="ticket-row">
+        <span class="ticket-label">Phương thức</span>
+        <span class="ticket-value">🏦 Vietcombank</span>
+      </div>
+
+      <!-- Phone with copy -->
+      <div class="ticket-row">
+        <span class="ticket-label">SĐT</span>
+        <div class="d-flex align-items-center gap-2 justify-content-end flex-wrap" style="flex:1;">
+          <span class="ticket-value" style="flex:unset;" id="phone-value">+84 912 345 678</span>
+          <button class="btn-copy" onclick="copyField('phone-value', 'Đã sao chép SĐT')">Copy</button>
+        </div>
+      </div>
+
+      <!-- Account number with unmask/copy -->
+      <div class="ticket-row">
+        <span class="ticket-label">STK</span>
+        <div class="d-flex align-items-center gap-2 justify-content-end flex-wrap" style="flex:1;">
+          <span class="ticket-value masked" style="flex:unset;" id="account-value">••• ••• 4321</span>
+          <button class="btn-copy" id="btn-unmask" onclick="handleUnmask(event)">Hiện &amp; Copy</button>
+        </div>
+      </div>
+
+      <!-- Amount -->
+      <div class="ticket-row">
+        <span class="ticket-label">Số tiền</span>
+        <span class="ticket-value money money-receive" style="font-size:20px;" id="amount-receive">25.500.000 ₫</span>
+      </div>
+
+      <!-- Memo -->
+      <div class="ticket-row" style="flex-wrap:wrap;gap:8px;">
+        <span class="ticket-label">Memo</span>
+        <div class="d-flex align-items-center gap-2 justify-content-end flex-wrap" style="flex:1;">
+          <span class="memo-box" style="font-size:14px;padding:6px 12px;" id="memo-value">P2P-9C3T6-XFER</span>
+          <button class="btn-copy" onclick="copyField('memo-value', 'Đã sao chép Memo')">Copy</button>
+        </div>
+      </div>
+
+      <!-- Copy all -->
+      <div style="padding:12px 20px 16px;">
+        <button class="copy-all-btn" onclick="copyAll()">
+          <i class="bi bi-clipboard2-check"></i>Sao chép tất cả
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deadline countdown card -->
+  <div class="deadline-card">
+    <div>
+      <div style="font-size:12px;font-weight:600;color:#92400e;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">
+        <i class="bi bi-alarm me-1"></i>Thời hạn chuyển tiền
+      </div>
+      <div style="font-size:13px;color:#92400e;line-height:1.5;">
+        Hoàn thành chuyển tiền trước thời hạn để tránh vi phạm SLA.
+      </div>
+    </div>
+    <div>
+      <span class="countdown" id="deadline-countdown" style="font-size:15px;font-weight:700;padding:7px 16px;white-space:nowrap;">01:30:00</span>
+    </div>
+  </div>
+
+  <!-- Payment proof from requester (reference) -->
+  <div>
+    <div class="section-label mb-2">PROOF NHẬN TIỀN ĐÃ XÁC NHẬN</div>
+    <div class="p2p-card p-0" style="overflow:hidden;opacity:0.85;">
+      <div style="background:var(--color-mint);padding:10px 20px;border-bottom:1px solid var(--color-mist);">
+        <span style="font-size:11px;font-weight:700;color:var(--color-forest);text-transform:uppercase;letter-spacing:0.05em;">
+          <i class="bi bi-check-circle-fill me-1"></i>Đã xác nhận nhận tiền
+        </span>
+      </div>
+      <div style="padding:12px 20px;">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:11px;color:var(--color-slate);margin-bottom:3px;">Ref Code</div>
+            <span style="font-family:monospace;font-size:13px;font-weight:600;color:var(--color-monday-violet);background:var(--color-periwinkle);border-radius:4px;padding:2px 8px;" id="ref-code">ZLL-2026-0611-45621</span>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--color-slate);margin-bottom:3px;">Ghi chú Requester</div>
+            <div style="font-size:13px;color:var(--color-ink);" id="proof-note">Transfer via Zelle — $1000</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--color-slate);margin-bottom:3px;">Submitted</div>
+            <div style="font-size:13px;color:var(--color-slate);" id="proof-submitted">03:00 12/06/2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer for sticky CTA -->
+  <div style="height:20px;"></div>
+
+</div>
+
+<!-- Sticky CTA -->
+<div class="sticky-cta-area">
+  <div class="container-sm d-flex flex-column gap-2">
+    <a href="p-25-modal-transfer-proof.html"
+       class="btn btn-primary w-100" style="font-size:15px;padding:14px 24px;text-decoration:none;">
+      <i class="bi bi-upload me-2"></i>Đã chuyển tiền &amp; tải proof
+      <i class="bi bi-arrow-right ms-2"></i>
+    </a>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary flex-fill" style="font-size:13px;padding:10px 12px;"
+              onclick="showToast('Mở chat với Requester...')">
+        <i class="bi bi-chat-dots me-1"></i>Chat
+      </button>
+      <button class="btn flex-fill"
+              style="border:1.5px solid var(--color-warning);color:#92400e;background:#fff8e1;border-radius:160px;font-size:13px;font-weight:500;padding:10px 12px;"
+              onclick="window.location.href='s-31-dispute.html'">
+        <i class="bi bi-exclamation-triangle me-1"></i>Khiếu nại nếu cần
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+
+<!-- Toast -->
+
+<script src="mock-data.js"></script>
+  <script src="components.js"></script>
+<script>
+  const req = P2P_DATA.getRequest('RQ-9C3T6');
+
+  // ── Unmask state (INV-09 audit log) ──────────────────────
+  let unmasked = false;
+
+  function handleUnmask(e) {
+    const el  = document.getElementById('account-value');
+    const btn = document.getElementById('btn-unmask');
+    if (!unmasked) {
+      el.textContent = '102 000 123 4321';
+      el.classList.remove('masked');
+      btn.textContent = 'Copy';
+      unmasked = true;
+      // INV-09 — audit log whenever account is unmasked
+      console.info('[AUDIT] Account unmasked for RQ-9C3T6 at', new Date().toISOString());
+    }
+    navigator.clipboard.writeText('102 000 123 4321')
+      .then(() => showToast('Đã sao chép STK'))
+      .catch(() => showToast('Đã sao chép STK'));
+  }
+
+  function copyField(id, successMsg) {
+    const val = document.getElementById(id).textContent.trim();
+    navigator.clipboard.writeText(val)
+      .then(() => showToast(successMsg))
+      .catch(() => showToast(successMsg));
+  }
+
+  function copyAll() {
+    const bene   = document.getElementById('bene-name').textContent.trim();
+    const phone  = document.getElementById('phone-value').textContent.trim();
+    const stk    = unmasked ? '102 000 123 4321' : '(chưa hiện STK)';
+    const amount = document.getElementById('amount-receive').textContent.trim();
+    const memo   = document.getElementById('memo-value').textContent.trim();
+
+    const text = [
+      'Người thụ hưởng: ' + bene,
+      'Ngân hàng: Vietcombank',
+      'SĐT: ' + phone,
+      'STK: ' + stk,
+      'Số tiền: ' + amount,
+      'Memo: ' + memo,
+    ].join('\n');
+
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Đã sao chép tất cả thông tin'))
+      .catch(() => showToast('Đã sao chép tất cả thông tin'));
+  }
+
+
+  function formatDateTime(iso) {
+    const d = new Date(iso);
+    const hh = String(d.getUTCHours()).padStart(2, '0');
+    const mm = String(d.getUTCMinutes()).padStart(2, '0');
+    const dd = String(d.getUTCDate()).padStart(2, '0');
+    const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const yyyy = d.getUTCFullYear();
+    return `${hh}:${mm} ${dd}/${mo}/${yyyy}`;
+  }
+
+  function populate() {
+    const bene  = req.beneficiary;
+    const proof = req.paymentProof;
+
+    document.getElementById('bene-name').textContent      = bene.name;
+    document.getElementById('phone-value').textContent    = bene.phone;
+    document.getElementById('amount-receive').textContent = P2P_DATA.formatVND(req.amountReceive);
+    document.getElementById('memo-value').textContent     = req.memo;
+
+    document.getElementById('ref-code').textContent      = proof.refCode;
+    document.getElementById('proof-note').textContent    = proof.note;
+    document.getElementById('proof-submitted').textContent = formatDateTime(proof.submittedAt);
+  }
+
+  function renderCountdowns() {
+    const cdStr = P2P_DATA.formatCountdown(req.t4Deadline);
+    const cd    = P2P_DATA.getCountdown(req.t4Deadline);
+
+    [document.getElementById('topbar-countdown'), document.getElementById('deadline-countdown')].forEach(el => {
+      if (!el) return;
+      el.textContent = cdStr;
+      el.classList.remove('urgent');
+      if (cd && cd.isUrgent) el.classList.add('urgent');
+    });
+  }
+
+  populate();
+  renderCountdowns();
+  setInterval(renderCountdowns, 1000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>P2P_COMPONENTS.renderBottomNav('received');</script>
+</body>
+</html>

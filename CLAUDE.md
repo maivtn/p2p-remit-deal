@@ -18,6 +18,5 @@ Chi tiết được chia theo chủ đề trong `.claude/rules/`:
 
 ## Tài liệu nghiệp vụ
 
-- [BA Final v4.0](src/docs/P2P_Remit_Deals_BA_Final_v4.0.md)
-- [UX/UI Spec v4.0](src/docs/P2P_Remit_Deals_UX_UI_Spec_v4.0.md)
-- [UI Text Wireframes v4.0](src/docs/P2P_Remit_Deals_UI_Text_Wireframes_v4.0.md)
+- [BA Final v1.6.1](src/docs/P2P_Remit_Deals_BA_Final_v1.6.1.md)
+- [Wireframes v1.6.1](src/docs/P2P_Remit_Deals_Wireframes_v1.6.1.md)

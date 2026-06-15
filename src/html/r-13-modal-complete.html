@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-13 · Xác nhận hoàn tất — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+
+  <style>
+    body { background: var(--color-cloud); }
+
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+    .success-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--color-mint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .summary-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--color-pebble); font-size:14px; }
+    .summary-row:last-child { border-bottom:none; }
+    .summary-label { color:var(--color-slate); }
+    .summary-value { font-weight:500; color:var(--color-ink); text-align:right; }
+
+    .confirm-checkbox-wrap {
+      background: var(--color-cloud);
+      border-radius: var(--radius-images);
+      padding: 16px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-sm">
+    <div class="topbar-inner">
+      <a href="r-12-detail-transfer-sent.html" class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;background:var(--color-cloud);border-radius:50%;text-decoration:none;color:var(--color-ink);">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="flex-grow-1">
+        <div style="font-size:16px;font-weight:600;color:var(--color-ink);">Xác nhận hoàn tất</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-sm py-4">
+
+  <!-- Central confirmation card -->
+  <div class="p2p-card text-center mb-3">
+
+    <!-- Success icon -->
+    <div class="success-icon-wrap">
+      <i class="bi bi-check-lg" style="font-size:36px;color:var(--color-forest);font-weight:700;"></i>
+    </div>
+
+    <h5 style="font-size:20px;font-weight:700;color:var(--color-ink);margin-bottom:4px;">Giao dịch RQ-6D1W4</h5>
+    <p style="font-size:13px;color:var(--color-slate);margin-bottom:0;">Vui lòng xác nhận người thụ hưởng đã nhận tiền</p>
+  </div>
+
+  <!-- Summary card -->
+  <div class="p2p-card mb-3">
+    <div class="section-label mb-2">Tóm tắt giao dịch</div>
+    <div class="summary-row">
+      <span class="summary-label">Bạn đã gửi</span>
+      <span class="summary-value">
+        <span class="money" style="color:var(--color-ink);">$250,00</span>
+        <span style="font-size:12px;color:var(--color-iron);"> qua Venmo</span>
+      </span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Người thụ hưởng nhận</span>
+      <span class="summary-value">
+        <span class="money money-receive">6.375.000 ₫</span>
+        <span style="font-size:12px;color:var(--color-iron);"> qua Vietcombank</span>
+      </span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Provider</span>
+      <span class="summary-value d-flex align-items-center gap-2 justify-content-end">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--color-mint);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--color-forest);flex-shrink:0;">HM</div>
+        Hùng Mạnh Lê
+      </span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Người thụ hưởng</span>
+      <span class="summary-value">Nguyễn Thị Lan</span>
+    </div>
+  </div>
+
+  <!-- Confirmation prompt -->
+  <div class="p2p-card mb-3">
+    <p style="font-size:16px;font-weight:600;color:var(--color-ink);text-align:center;margin-bottom:16px;">
+      Bạn xác nhận người thụ hưởng <strong>Nguyễn Thị Lan</strong> đã nhận đủ <strong style="color:var(--color-forest);">6.375.000 ₫</strong>?
+    </p>
+
+    <!-- Warning -->
+    <div class="banner-warning mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0" style="color:var(--color-warning);"></i>
+        <strong>Hành động này không thể hoàn tác.</strong>
+      </div>
+    </div>
+
+    <!-- Checkbox -->
+    <div class="confirm-checkbox-wrap">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="confirmFinalCheck" onchange="toggleFinalBtn(this)">
+        <label class="form-check-label" style="font-size:14px;color:var(--color-ink);" for="confirmFinalCheck">
+          Tôi đã kiểm tra với người nhận và xác nhận đã nhận đủ.
+        </label>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column gap-2 mt-4">
+      <button id="btnFinalConfirm" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" disabled onclick="doComplete()" style="font-size:16px;padding:14px 24px;">
+        <i class="bi bi-check-circle-fill"></i> Xác nhận hoàn tất
+      </button>
+      <a href="r-12-detail-transfer-sent.html" class="btn btn-outline-secondary w-100" style="font-size:15px;padding:12px 24px;">
+        Quay lại
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+
+<script src="mock-data.js"></script>
+  <script src="components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+function toggleFinalBtn(checkbox) {
+  document.getElementById('btnFinalConfirm').disabled = !checkbox.checked;
+}
+
+
+function doComplete() {
+  showToast('Giao dịch hoàn tất!');
+  setTimeout(function () { window.location.href = 'r-05-request-list.html'; }, 1800);
+}
+</script>
+</body>
+</html>

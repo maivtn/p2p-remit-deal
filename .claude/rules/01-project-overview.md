@@ -22,9 +22,8 @@ Dòng tiền giao dịch chính **chạy ngoài hệ thống** qua Zelle, Venmo,
 
 | Tài liệu | Nội dung |
 |---|---|
-| [BA Final v4.0](../../src/docs/P2P_Remit_Deals_BA_Final_v4.0.md) | State machine, ledger, fee, SLA, dispute, KYC, invariants |
-| [UX/UI Spec v4.0](../../src/docs/P2P_Remit_Deals_UX_UI_Spec_v4.0.md) | Design principles, component inventory, screen mapping |
-| [UI Text Wireframes v4.0](../../src/docs/P2P_Remit_Deals_UI_Text_Wireframes_v4.0.md) | Wireframe text từng màn hình theo role |
+| [BA Final v1.6.1](../../src/docs/P2P_Remit_Deals_BA_Final_v1.6.1.md) | State machine, ledger, fee, SLA, dispute, KYC, invariants |
+| [Wireframes v1.6.1](../../src/docs/P2P_Remit_Deals_Wireframes_v1.6.1.md) | Screen inventory, wireframe text, CTA rules, navigation |
 
 ## Loại tài khoản, vai và navigation
 
@@ -147,4 +146,4 @@ Dự án là **UI prototype** với mock data tĩnh — **chưa có backend th�
 - Admin dispute console
 - Chat 3 bên, rating double-blind, notification system
 
-Khi thêm tính năng mới, bám theo `src/docs/` — đặc biệt **Hard Release Gates (G0–G8)** trong BA v4.0 §2.3 trước khi xử lý giao dịch tiền thật.
+Khi thêm tính năng mới, bám theo `src/docs/` — đặc biệt **Hard Release Gates** trong BA v1.6.1 trước khi xử lý giao dịch tiền thật.

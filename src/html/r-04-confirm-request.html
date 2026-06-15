@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R-04 · Xác nhận yêu cầu — P2P Remit Deals</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <script src="mock-data.js"></script>
+  <script src="components.js"></script>
+
+  <style>
+    body { background: var(--color-cloud); }
+    .topbar { background:#fff; border-bottom:1px solid var(--color-pebble); padding:12px 0; position:sticky; top:0; z-index:100; }
+    .topbar-inner { display:flex; align-items:center; gap:12px; }
+
+    /* Section heading */
+    .section-card { background:#fff; border-radius:24px; border:1px solid var(--color-mist); box-shadow:var(--shadow-xl); padding:20px; }
+
+    /* Flow card (two columns with arrow) */
+    .flow-card {
+      background: linear-gradient(135deg, var(--color-periwinkle) 0%, #eef1ff 100%);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--color-mist);
+    }
+    .flow-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .flow-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .flow-amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-ink);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+    .flow-amount.receive { color: var(--color-forest); }
+    .flow-method {
+      font-size: 13px;
+      color: var(--color-slate);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .flow-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1.5px solid var(--color-mist);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-monday-violet);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* USDV check row */
+    .usdv-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-pebble);
+      gap: 8px;
+    }
+    .usdv-row:last-child { border-bottom: none; }
+    .usdv-label { font-size: 13px; color: var(--color-slate); }
+    .usdv-value { font-size: 14px; font-weight: 500; color: var(--color-ink); text-align: right; }
+
+    /* Beneficiary row */
+    .bene-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Fee breakdown */
+    .fee-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--color-pebble);
+      gap: 8px;
+    }
+    .fee-row:last-child { border-bottom: none; }
+    .fee-label { font-size: 14px; color: var(--color-slate); }
+    .fee-value { font-size: 14px; font-weight: 500; color: var(--color-ink); text-align: right; }
+    .fee-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 4px;
+      gap: 8px;
+    }
+
+    /* Sticky CTA */
+    .sticky-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, #fff 70%, transparent);
+      padding: 16px 16px 28px;
+      z-index: 50;
+    }
+
+    /* Provider avatar */
+    .provider-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Note box */
+    .note-box {
+      background: var(--color-cloud);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: var(--color-ink);
+      border-left: 3px solid var(--color-pebble);
+    }
+
+    /* Eligible badge */
+    .badge-eligible {
+      background: var(--color-mint);
+      color: var(--color-forest);
+      border-radius: 160px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Rate tag */
+    .rate-tag {
+      background: var(--color-periwinkle);
+      color: var(--color-monday-violet);
+      border-radius: 160px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="container-md">
+    <div class="topbar-inner">
+      <a href="r-03-deal-results.html" style="width:36px;height:36px;border-radius:50%;background:var(--color-cloud);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--color-ink);flex-shrink:0;">
+        <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+      </a>
+      <div style="flex:1;">
+        <div style="font-size:16px; font-weight:700; color:var(--color-ink);">Xác nhận yêu cầu</div>
+        <div style="font-size:12px; color:var(--color-slate);">Kiểm tra kỹ trước khi gửi</div>
+      </div>
+      <div style="width:36px;"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container-md py-3 d-flex flex-column gap-3">
+
+  <!-- Provider section -->
+  <div>
+    <div class="section-label mb-2">NHÀ CUNG CẤP</div>
+    <div class="section-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="provider-avatar" style="background:#bcfe90;color:#2a5c4e;">HM</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:15px;font-weight:600;color:var(--color-ink);">
+            Hùng M. L.
+            <span class="badge-status badge-accepted" style="font-size:11px;margin-left:6px;vertical-align:middle;">✓ KYC T2</span>
+          </div>
+          <div style="font-size:13px;color:var(--color-slate);margin-top:3px;">
+            <i class="bi bi-star-fill" style="color:#f59e0b;"></i> 4.9
+            &nbsp;·&nbsp; 247 giao dịch
+            &nbsp;·&nbsp; 98.4% đúng hạn
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction flow -->
+  <div>
+    <div class="section-label mb-2">LUỒNG GIAO DỊCH</div>
+    <div class="flow-card">
+      <div class="d-flex align-items-center gap-3">
+        <div class="flow-col">
+          <div class="flow-label">Bạn trả</div>
+          <div class="flow-amount">🇺🇸 $500.00</div>
+          <div class="flow-method"><span>💱</span> qua Zelle</div>
+        </div>
+        <div class="flow-arrow">
+          <i class="bi bi-arrow-right"></i>
+        </div>
+        <div class="flow-col">
+          <div class="flow-label">Người nhận sẽ nhận</div>
+          <div class="flow-amount receive">🇻🇳 12.750.000 ₫</div>
+          <div class="flow-method"><span>🍑</span> qua MoMo</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-center mt-3">
+        <span class="rate-tag"><i class="bi bi-graph-up me-1"></i>Tỷ giá áp dụng: 25.500đ/USD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fee breakdown -->
+  <div>
+    <div class="section-label mb-2">CHI PHÍ GIAO DỊCH</div>
+    <div class="section-card">
+      <div class="fee-row">
+        <span class="fee-label">Khoản chuyển cho Provider</span>
+        <span class="fee-value money" id="fee-send">$500.00</span>
+      </div>
+      <div class="fee-row">
+        <span class="fee-label">Phí nền tảng (0,5%)</span>
+        <span class="fee-value money-fee" id="fee-platform">$2.50</span>
+      </div>
+      <div class="fee-total-row">
+        <span style="font-size:15px;font-weight:700;color:var(--color-ink);">Tổng chi phí của bạn</span>
+        <span style="font-size:16px;font-weight:700;color:var(--color-monday-violet);" id="fee-total">$502.50</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- USDV check -->
+  <div>
+    <div class="section-label mb-2">KIỂM TRA USDV</div>
+    <div class="section-card">
+      <div class="usdv-row">
+        <span class="usdv-label">Số dư USDV của bạn</span>
+        <span class="usdv-value">600 USDV</span>
+      </div>
+      <div class="usdv-row">
+        <span class="usdv-label">Amount quy đổi</span>
+        <span class="usdv-value">500 USDV</span>
+      </div>
+      <div class="usdv-row">
+        <span class="usdv-label">Phí nền tảng 0,5%</span>
+        <span class="usdv-value">2.50 USDV</span>
+      </div>
+      <div class="usdv-row">
+        <span class="usdv-label">Trạng thái</span>
+        <span class="badge-eligible"><i class="bi bi-check-circle-fill"></i> Đủ điều kiện</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beneficiary -->
+  <div>
+    <div class="section-label mb-2">NGƯỜI THỤ HƯỞNG</div>
+    <div class="section-card">
+      <div class="bene-row">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--color-mint);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="bi bi-person-fill" style="font-size:20px;color:var(--color-forest);"></i>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--color-ink);">Nguyễn Thị Lan</div>
+          <div style="font-size:13px;color:var(--color-slate);">Vietcombank · +84 912 345 678</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div>
+    <div class="section-label mb-2">GHI CHÚ</div>
+    <div class="note-box">
+      <i class="bi bi-chat-left-text me-2" style="color:var(--color-slate);"></i>
+      Cần chuyển gấp trong hôm nay
+    </div>
+  </div>
+
+  <!-- Terms reminder -->
+  <div class="banner-protected">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-shield-check" style="font-size:20px;color:var(--color-monday-violet);flex-shrink:0;margin-top:2px;"></i>
+      <div style="font-size:13px;color:var(--color-slate);">
+        <strong style="color:var(--color-ink);">Bảo vệ bởi P2P Remit</strong><br>
+        Provider đã ký quỹ 102% giá trị. Nếu phát sinh tranh chấp, Admin sẽ phân xử trong 48h.
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer for sticky CTA -->
+  <div style="height:24px;"></div>
+
+</div>
+
+<!-- Sticky CTA -->
+<div class="sticky-cta">
+  <div class="container-md">
+    <button class="btn btn-primary w-100" id="submit-btn" onclick="submitRequest()">
+      <i class="bi bi-send me-2"></i>Gửi Yêu Cầu
+    </button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+
+<!-- Toast -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  // Use RQ-4F8N1 data for display reference
+  const req = P2P_DATA.getRequest('RQ-4F8N1');
+  const deal = P2P_DATA.getDeal(req.dealId);
+
+
+  function submitRequest() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+
+    setTimeout(() => {
+      showToast('Đã gửi yêu cầu! Chờ Provider chấp nhận.');
+      setTimeout(() => {
+        window.location.href = 'r-06-detail-pending.html';
+      }, 1200);
+    }, 900);
+  }
+</script>
+
+<script>P2P_COMPONENTS.renderBottomNav('send');</script>
+</body>
+</html>
