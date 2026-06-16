@@ -147,7 +147,14 @@ export default function App() {
   // ── Derived slices ──────────────────────────────────────────
   const providerDeals    = sharedDeals.filter(d => d.providerId === 'self');
   const providerRequests = sharedRequests.filter(r => r.providerId === 'self');
-  const availableDeals   = sharedDeals.filter(d => d.status === 'active');
+  const takenDealIds = new Set(
+    sharedRequests
+      .filter(r => !['cancelled', 'rejected'].includes(r.status))
+      .map(r => r.dealId)
+  );
+  const availableDeals = sharedDeals.filter(
+    d => d.status === 'active' && !takenDealIds.has(d.id)
+  );
   const myRequests       = sharedRequests.filter(r => r.requesterId === 'self');
 
   const newProviderRequestIds = providerRequests
@@ -187,6 +194,14 @@ export default function App() {
     setSharedRequests(prev =>
       prev.map(r => r.id === id ? { ...r, ...partial } : r)
     );
+    if (partial.status === 'completed') {
+      const req = sharedRequests.find(r => r.id === id);
+      if (req) {
+        setSharedDeals(prev =>
+          prev.map(d => d.id === req.dealId ? { ...d, status: 'completed' } : d)
+        );
+      }
+    }
     triggerSync();
   };
 

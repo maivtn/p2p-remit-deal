@@ -418,7 +418,7 @@ export interface Deal {
   rate: number;
   minAmount: number;
   maxAmount: number;
-  status: "active" | "paused" | "expired";
+  status: "active" | "paused" | "expired" | "completed";
   requestCount: number;
   completedDeals: number;
   expiresAt: string;

@@ -34,6 +34,7 @@ import {
   Edit2,
   Copy,
   Check,
+  Eye,
 } from "lucide-react";
 import {
   CURRENCIES,
@@ -261,21 +262,23 @@ function CreateDealModal({
   onClose,
   onSave,
   accounts: initAccounts,
+  initialDeal,
 }: {
   onClose: () => void;
   onSave: (deal: Deal) => void;
   accounts: ProviderAccount[];
+  initialDeal?: Deal;
 }) {
   const [form, setForm] = useState({
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: "",
-    minAmount: "",
-    maxAmount: "",
-    notes: "",
+    fromCurrency: initialDeal?.fromCurrency ?? "USD",
+    toCurrency: initialDeal?.toCurrency ?? "VND",
+    rate: initialDeal ? String(initialDeal.rate) : "",
+    minAmount: initialDeal ? String(initialDeal.minAmount) : "",
+    maxAmount: initialDeal ? String(initialDeal.maxAmount) : "",
+    notes: initialDeal?.notes ?? "",
     selectedAccountId: "",
     selectedMethodId: "",
-    recipientPaymentMethods: ["momo", "bank_transfer"] as string[],
+    recipientPaymentMethods: initialDeal?.recipientPaymentMethods ?? ["momo", "bank_transfer"] as string[],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [localAccounts, setLocalAccounts] = useState<ProviderAccount[]>(initAccounts);
@@ -332,23 +335,25 @@ function CreateDealModal({
       return;
     }
     onSave({
-      id: "d_" + Date.now(),
-      providerId: "self",
-      providerName: "Nguyễn Văn B",
-      providerRating: 4.9,
-      providerReviews: 248,
-      providerVerified: true,
+      ...(initialDeal ?? {
+        id: "d_" + Date.now(),
+        providerId: "self",
+        providerName: "Nguyễn Văn B",
+        providerRating: 4.9,
+        providerReviews: 248,
+        providerVerified: true,
+        status: "active" as const,
+        requestCount: 0,
+        completedDeals: 248,
+        expiresAt: "",
+        transferTime: "",
+      }),
       fromCurrency: form.fromCurrency,
       toCurrency: form.toCurrency,
       rate: Number(form.rate),
       minAmount: Number(form.minAmount),
       maxAmount: Number(form.maxAmount),
-      status: "active",
-      requestCount: 0,
-      completedDeals: 248,
-      expiresAt: "",
       notes: form.notes,
-      transferTime: "",
       senderPaymentMethods: selectedAccount ? [selectedAccount.methodId] : [],
       recipientPaymentMethods: form.recipientPaymentMethods,
     });
@@ -402,7 +407,7 @@ function CreateDealModal({
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
-            Tạo Deal Mới
+            {initialDeal ? "Chỉnh sửa Deal" : "Tạo Deal Mới"}
           </h2>
           <button
             onClick={onClose}
@@ -417,43 +422,38 @@ function CreateDealModal({
           style={{ maxHeight: "calc(92vh - 130px)" }}
         >
           {/* Currency pair */}
-          <div>
-            <label
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#374151",
-                display: "block",
-                marginBottom: 8,
-              }}
-            >
-              Cặp tiền tệ
-            </label>
-            <div className="flex items-center gap-3">
+          <div className="space-y-2">
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
+                Người thụ hưởng nhận bằng
+              </label>
               <select
                 value={form.fromCurrency}
                 onChange={(e) => changeFrom(e.target.value)}
-                className="flex-1 border border-gray-200 rounded-xl px-3 py-3 bg-gray-50"
+                className="w-full border border-gray-200 rounded-xl px-3 py-3 bg-gray-50"
                 style={{ fontSize: 14 }}
               >
                 {fromCurrs.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.flag} {c.code} - {c.name}
+                    {c.code} - {c.name}
                   </option>
                 ))}
               </select>
-              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <ArrowRight size={14} color={PRIMARY} />
-              </div>
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 2 }}>
+                Tôi gửi bằng
+              </label>
+              <p style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 6 }}>Đang ở quốc gia nào, trả bằng</p>
               <select
                 value={form.toCurrency}
                 onChange={(e) => changeTo(e.target.value)}
-                className="flex-1 border border-gray-200 rounded-xl px-3 py-3 bg-gray-50"
+                className="w-full border border-gray-200 rounded-xl px-3 py-3 bg-gray-50"
                 style={{ fontSize: 14 }}
               >
                 {CURRENCIES.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.flag} {c.code}
+                    {c.code} - {c.name}
                   </option>
                 ))}
               </select>
@@ -578,7 +578,7 @@ function CreateDealModal({
             style={{ background: "#EFF6FF", border: "1.5px solid #BFDBFE" }}
           >
             <p style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>
-              Người thụ hưởng nhận {form.fromCurrency} bằng
+              Người thụ hưởng nhận {form.fromCurrency} bằng hình thức
             </p>
 
             {/* Radio method list */}
@@ -682,7 +682,7 @@ function CreateDealModal({
                 marginBottom: 10,
               }}
             >
-              Tôi gửi tiền {form.toCurrency} bằng
+              Tôi gửi tiền {form.toCurrency} bằng hình thức
             </p>
             <PaymentMethodPicker
               currency={form.toCurrency}
@@ -735,7 +735,7 @@ function CreateDealModal({
               cursor: "pointer",
             }}
           >
-            Đăng Deal
+            {initialDeal ? "Cập nhật Deal" : "Đăng Deal"}
           </button>
         </div>
 
@@ -1184,12 +1184,22 @@ function HomeTab({
 function DealsTab({
   deals,
   onDealsChange,
+  requests,
 }: {
   deals: Deal[];
   onDealsChange: (d: Deal[]) => void;
+  requests: DealRequest[];
 }) {
   const [filter, setFilter] = useState<DealFilter>("all");
   const [showCreate, setShowCreate] = useState(false);
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
+  const [viewingDeal, setViewingDeal] = useState<Deal | null>(null);
+
+  const takenDealIds = new Set(
+    requests
+      .filter(r => !['cancelled', 'rejected'].includes(r.status))
+      .map(r => r.dealId)
+  );
 
   const filtered = deals.filter((d) => filter === "all" || d.status === filter);
   const counts = {
@@ -1237,7 +1247,7 @@ function DealsTab({
       </div>
 
       <div className="flex gap-2 px-5 py-3 border-b border-gray-100 overflow-x-auto">
-        {(["all", "active", "paused", "expired"] as DealFilter[]).map((f) => {
+        {(["all", "active", "expired"] as DealFilter[]).map((f) => {
           const labels: Record<DealFilter, string> = {
             all: "Tất cả",
             active: "Hoạt động",
@@ -1277,9 +1287,6 @@ function DealsTab({
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span style={{ fontSize: 22 }}>{from?.flag}</span>
-                  <ArrowRight size={14} color="#9CA3AF" />
-                  <span style={{ fontSize: 22 }}>{to?.flag}</span>
                   <span
                     style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}
                   >
@@ -1312,81 +1319,57 @@ function DealsTab({
               {/* Payment methods */}
               <div className="space-y-1 mb-3">
                 <div className="flex items-center gap-1 flex-wrap">
-                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Nhận:</span>
-                  {deal.senderPaymentMethods.map((id) => (
-                    <MethodBadge
-                      key={id}
-                      currency={deal.fromCurrency}
-                      methodId={id}
-                    />
-                  ))}
+                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Thụ hưởng nhận qua:</span>
+                  {deal.senderPaymentMethods[0] ? (
+                    <MethodBadge currency={deal.fromCurrency} methodId={deal.senderPaymentMethods[0]} />
+                  ) : (
+                    <span style={{ fontSize: 11, color: "#D1D5DB" }}>—</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-1 flex-wrap">
-                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Gửi:</span>
+                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Tôi gửi qua:</span>
                   {deal.recipientPaymentMethods.map((id) => (
-                    <MethodBadge
-                      key={id}
-                      currency={deal.toCurrency}
-                      methodId={id}
-                    />
+                    <MethodBadge key={id} currency={deal.toCurrency} methodId={id} />
                   ))}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center gap-1">
-                  <Clock size={12} color="#9CA3AF" />
-                  <span style={{ fontSize: 12, color: "#6B7280" }}>
-                    {deal.transferTime}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Bell size={12} color="#9CA3AF" />
-                  <span style={{ fontSize: 12, color: "#6B7280" }}>
-                    {deal.requestCount} yêu cầu
-                  </span>
-                </div>
+              <div className="flex items-center gap-1 mb-3">
+                <Bell size={12} color="#9CA3AF" />
+                <span style={{ fontSize: 12, color: "#6B7280" }}>
+                  {deal.requestCount} yêu cầu
+                </span>
               </div>
 
-              {deal.status !== "expired" && (
-                <div className="flex gap-2 pt-3 border-t border-gray-100">
+              <div className="flex gap-2 pt-3 border-t border-gray-100">
+                <button
+                  onClick={() => setViewingDeal(deal)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
+                  style={{ background: "#F3F4F6", border: "none", cursor: "pointer" }}
+                >
+                  <Eye size={14} color="#6B7280" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#6B7280" }}>Xem</span>
+                </button>
+                {deal.status !== "expired" && (
                   <button
-                    onClick={() => togglePause(deal.id)}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl"
-                    style={{
-                      background: "#F3F4F6",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
+                    onClick={() => setEditingDeal(deal)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
+                    style={{ background: "#EFF6FF", border: "none", cursor: "pointer" }}
                   >
-                    {deal.status === "active" ? (
-                      <Pause size={14} color="#6B7280" />
-                    ) : (
-                      <Play size={14} color="#059669" />
-                    )}
-                    <span
-                      style={{
-                        fontSize: 13,
-                        color: deal.status === "active" ? "#6B7280" : "#059669",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {deal.status === "active" ? "Tạm dừng" : "Kích hoạt"}
-                    </span>
+                    <Edit2 size={14} color={PRIMARY} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY }}>Sửa</span>
                   </button>
+                )}
+                {deal.status !== "expired" && (
                   <button
                     onClick={() => deleteDeal(deal.id)}
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{
-                      background: "#FEE2E2",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: "#FEE2E2", border: "none", cursor: "pointer" }}
                   >
                     <Trash2 size={15} color="#EF4444" />
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           );
         })}
@@ -1424,6 +1407,110 @@ function DealsTab({
             }}
             accounts={PROVIDER_ACCOUNTS_INIT}
           />
+        )}
+        {editingDeal && (
+          <CreateDealModal
+            onClose={() => setEditingDeal(null)}
+            onSave={(d) => {
+              onDealsChange(deals.map(x => x.id === d.id ? d : x));
+              setEditingDeal(null);
+            }}
+            accounts={PROVIDER_ACCOUNTS_INIT}
+            initialDeal={editingDeal}
+          />
+        )}
+        {viewingDeal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center"
+            style={{ background: "rgba(0,0,0,0.5)" }}
+            onClick={() => setViewingDeal(null)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30 }}
+              className="w-full max-w-[430px] bg-white rounded-t-3xl overflow-hidden"
+              style={{ maxHeight: "80vh" }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h2 style={{ fontSize: 17, fontWeight: 700, color: "#111827" }}>Chi tiết Deal</h2>
+                <button onClick={() => setViewingDeal(null)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                  <X size={16} color="#6B7280" />
+                </button>
+              </div>
+              <div className="overflow-y-auto px-5 py-4 space-y-4">
+                {/* Currency & rate */}
+                <div className="bg-gray-50 rounded-2xl p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 22 }}>{getCurrency(viewingDeal.fromCurrency)?.flag}</span>
+                    <span style={{ fontSize: 16, fontWeight: 700 }}>{viewingDeal.fromCurrency}</span>
+                    <ArrowRight size={16} color="#9CA3AF" />
+                    <span style={{ fontSize: 22 }}>{getCurrency(viewingDeal.toCurrency)?.flag}</span>
+                    <span style={{ fontSize: 16, fontWeight: 700 }}>{viewingDeal.toCurrency}</span>
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: PRIMARY }}>
+                    {viewingDeal.rate.toLocaleString()}
+                  </div>
+                </div>
+                {/* Amount range */}
+                <div className="flex gap-3">
+                  <div className="flex-1 bg-gray-50 rounded-xl p-3 text-center">
+                    <p style={{ fontSize: 11, color: "#9CA3AF" }}>Tối thiểu</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>{viewingDeal.minAmount.toLocaleString()} {viewingDeal.fromCurrency}</p>
+                  </div>
+                  <div className="flex-1 bg-gray-50 rounded-xl p-3 text-center">
+                    <p style={{ fontSize: 11, color: "#9CA3AF" }}>Tối đa</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>{viewingDeal.maxAmount.toLocaleString()} {viewingDeal.fromCurrency}</p>
+                  </div>
+                </div>
+                {/* Payment methods */}
+                {viewingDeal.senderPaymentMethods.length > 0 && (
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", marginBottom: 8 }}>Người thụ hưởng nhận bằng</p>
+                    <div className="flex flex-wrap gap-2">
+                      {viewingDeal.senderPaymentMethods.map(id => {
+                        const m = getPaymentMethod(viewingDeal.fromCurrency, id);
+                        return m ? (
+                          <div key={id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50">
+                            <MethodIcon id={m.id} icon={m.icon} size={14} />
+                            <span style={{ fontSize: 12, fontWeight: 600, color: PRIMARY }}>{m.name}</span>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                )}
+                {viewingDeal.recipientPaymentMethods.length > 0 && (
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", marginBottom: 8 }}>Tôi gửi bằng</p>
+                    <div className="flex flex-wrap gap-2">
+                      {viewingDeal.recipientPaymentMethods.map(id => {
+                        const m = getPaymentMethod(viewingDeal.toCurrency, id);
+                        return m ? (
+                          <div key={id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50">
+                            <MethodIcon id={m.id} icon={m.icon} size={14} />
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#059669" }}>{m.name}</span>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                )}
+                {/* Notes */}
+                {viewingDeal.notes && (
+                  <div className="bg-yellow-50 rounded-xl px-4 py-3">
+                    <p style={{ fontSize: 12, fontWeight: 600, color: "#92400E", marginBottom: 4 }}>Ghi chú</p>
+                    <p style={{ fontSize: 13, color: "#78350F" }}>{viewingDeal.notes}</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
@@ -3567,7 +3654,7 @@ export function ProviderApp({
             />
           )}
           {tab === "deals" && (
-            <DealsTab deals={deals} onDealsChange={onDealsChange} />
+            <DealsTab deals={deals} onDealsChange={onDealsChange} requests={requests} />
           )}
           {tab === "requests" &&
             (requestsViewMode === "list" ? (

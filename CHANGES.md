@@ -19,6 +19,8 @@
 |---|---|
 | `Chờ duyệt` | `Chờ chấp nhận` |
 
+- Tab filter "Tạm dừng" đã bị xoá khỏi Deals của tôi (chỉ còn: Tất cả / Hoạt động / Hết hạn)
+
 **File:** `src/app/components/provider/ProviderApp.tsx`, `src/app/components/requester/RequesterApp.tsx`
 
 ---
@@ -29,22 +31,69 @@
 - **Thời gian chuyển** – bộ nút chọn thời gian (30–60 phút, 1–2 giờ, ...)
 - **Hiệu lực** – bộ nút 7 / 14 / 30 ngày
 
+### Section cặp tiền tệ – thiết kế lại
+
+**Trước:** 1 label "Cặp tiền tệ" với 2 dropdown nằm ngang.
+
+**Sau:** 2 ô dọc với label riêng:
+
+| Input | Label | Ghi chú |
+|---|---|---|
+| 1 | `Người thụ hưởng nhận bằng` | `fromCurrency` |
+| 2 | `Tôi gửi bằng` | `toCurrency` – có subtitle *"Đang ở quốc gia nào, trả bằng"* |
+
 ### Label đổi tên
+
 | Trước | Sau |
 |---|---|
-| `💳 Người gửi 🇺🇸 thanh toán cho tôi qua` | `Người thụ hưởng nhận USD bằng` |
-| `📤 Tôi gửi tiền 🇻🇳 qua` | `Tôi gửi tiền VND bằng` |
+| `💳 Người gửi 🇺🇸 thanh toán cho tôi qua` | `Người thụ hưởng nhận {fromCurrency} bằng` |
+| `📤 Tôi gửi tiền 🇻🇳 qua` | `Tôi gửi tiền {toCurrency} bằng` |
 
-### Section "Người thụ hưởng nhận USD bằng" – thiết kế lại
+### Section "Người thụ hưởng nhận … bằng" – thiết kế lại
 
-**Trước:** `PaymentMethodPicker` multi-select (chọn nhiều hình thức).
+**Trước:** `PaymentMethodPicker` multi-select.
 
-**Sau:** Chỉ chọn **1 tài khoản nhận**, với 2 nút hành động:
+**Sau:**
+1. **Radio list phương thức** (inline, flex-wrap) – chọn 1 trong các phương thức theo `fromCurrency`. Đổi currency reset cả phương thức lẫn tài khoản đã chọn.
+2. **Chip tài khoản đang chọn** (hiển thị khi đã pick/add).
+3. **2 nút hành động:**
+   - **Chọn tài khoản** – overlay danh sách, lọc theo currency + phương thức đang chọn ở radio.
+   - **Thêm tài khoản** – overlay form; nếu đã chọn phương thức ở radio thì ẩn bộ chọn hình thức và hiện thẳng form tương ứng.
 
-- **Chọn tài khoản** – mở overlay danh sách tài khoản (lọc theo `fromCurrency`), single-select.
-- **Thêm tài khoản** – mở overlay form điền thông tin tài khoản mới (hình thức, tên gợi nhớ, số/email/handle tuỳ method). Sau khi lưu, tài khoản mới được chọn tự động.
+### Section "Tôi gửi tiền … bằng"
+
+`PaymentMethodPicker` multi-select giữ nguyên, thêm **checkbox icon** vào mỗi item (ô vuông xanh có dấu ✓ khi chọn).
 
 **File:** `src/app/components/provider/ProviderApp.tsx` – `CreateDealModal`
+
+---
+
+## Deals của tôi (DealsTab – Provider)
+
+### Action buttons
+
+**Trước:** Nút "Tạm dừng / Kích hoạt" + nút Xoá.
+
+**Sau:** 3 nút trên mỗi deal card:
+
+| Nút | Icon | Hiển thị |
+|---|---|---|
+| **Xem** | Eye | Luôn hiện – mở bottom sheet chi tiết deal |
+| **Sửa** | Edit2 | Ẩn nếu `expired` – mở `CreateDealModal` pre-fill, lưu cập nhật deal |
+| **Xoá** | Trash2 | Ẩn nếu `expired` |
+
+### Modal Sửa Deal
+
+`CreateDealModal` nhận thêm prop `initialDeal?: Deal`:
+- Tiêu đề: **"Chỉnh sửa Deal"**
+- Nút lưu: **"Cập nhật Deal"**
+- Form pre-fill từ dữ liệu deal hiện tại
+
+### Modal Xem Deal
+
+Bottom sheet hiển thị: cặp tiền tệ + tỷ giá, khoảng min/max, phương thức nhận/gửi, ghi chú.
+
+**File:** `src/app/components/provider/ProviderApp.tsx` – `DealsTab`
 
 ---
 
