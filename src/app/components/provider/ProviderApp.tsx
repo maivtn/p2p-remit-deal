@@ -615,6 +615,9 @@ function CreateDealModal({
                 );
               })}
             </div>
+             <p style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>
+             Thông tin tài khoản người thụ hưởng
+            </p>
 
             {/* Selected account chip */}
             {selectedAccount && (

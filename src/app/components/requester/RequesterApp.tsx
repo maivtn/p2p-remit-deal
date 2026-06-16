@@ -84,10 +84,20 @@ const StatusBadge = ({ status }: { status: DealRequest['status'] }) => {
   );
 };
 
-// ── Payment method chip selector ──────────────────────────────
+// ── Payment method selector ───────────────────────────────────
 function PaymentMethodSelector({
-  currency, selected, onSelect, label,
-}: { currency: string; selected: string; onSelect: (id: string) => void; label: string }) {
+  currency,
+  selected,
+  onToggle,
+  label,
+  selectionMode = 'checkbox',
+}: {
+  currency: string;
+  selected: string[];
+  onToggle: (id: string) => void;
+  label: string;
+  selectionMode?: 'checkbox' | 'radio';
+}) {
   const methods = PAYMENT_METHODS_BY_CURRENCY[currency] ?? [];
   return (
     <div>
@@ -96,16 +106,42 @@ function PaymentMethodSelector({
         {methods.map(m => (
           <button
             key={m.id}
-            onClick={() => onSelect(m.id)}
+            onClick={() => onToggle(m.id)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all"
             style={{
-              background: selected === m.id ? '#ECFDF5' : '#F9FAFB',
-              border: `2px solid ${selected === m.id ? PRIMARY_REQ : '#E5E7EB'}`,
+              background: selected.includes(m.id) ? '#ECFDF5' : '#F9FAFB',
+              border: `2px solid ${selected.includes(m.id) ? PRIMARY_REQ : '#E5E7EB'}`,
               cursor: 'pointer',
             }}
           >
+            {selectionMode === 'checkbox' ? (
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: selected.includes(m.id) ? PRIMARY_REQ : 'white',
+                  border: `1.5px solid ${selected.includes(m.id) ? PRIMARY_REQ : '#D1D5DB'}`,
+                }}
+              >
+                {selected.includes(m.id) && <Check size={10} color="white" strokeWidth={3} />}
+              </div>
+            ) : (
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'white',
+                  border: `1.5px solid ${selected.includes(m.id) ? PRIMARY_REQ : '#D1D5DB'}`,
+                }}
+              >
+                {selected.includes(m.id) && (
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: PRIMARY_REQ }}
+                  />
+                )}
+              </div>
+            )}
             <MethodIcon id={m.id} icon={m.icon} size={16} />
-            <span style={{ fontSize: 13, fontWeight: selected === m.id ? 700 : 500, color: selected === m.id ? PRIMARY_REQ : '#374151' }}>
+            <span style={{ fontSize: 13, fontWeight: selected.includes(m.id) ? 700 : 500, color: selected.includes(m.id) ? PRIMARY_REQ : '#374151' }}>
               {m.name}
             </span>
           </button>
@@ -148,6 +184,7 @@ interface Need {
   recipientCurrency: string;
   amount: string;
   senderPaymentMethod: string;
+  senderPaymentMethods: string[];
   recipientPaymentMethod: string;
   recipientName: string;
   recipientPhone: string;
@@ -173,6 +210,7 @@ function NeedForm({
     senderCurrency: 'USD', recipientCurrency: 'VND',
     amount: '500',
     senderPaymentMethod: 'zelle',
+    senderPaymentMethods: ['zelle'],
     recipientPaymentMethod: 'momo',
     recipientName: 'Trần Văn C', recipientPhone: '0901234567',
     recipientBank: 'Vietcombank', recipientAccount: '1234567890',
@@ -185,6 +223,13 @@ function NeedForm({
   const [showAddRecipientAccount, setShowAddRecipientAccount] = useState(false);
   const [addRecipientForm, setAddRecipientForm] = useState<Partial<ProviderAccount>>({});
   const set = (k: keyof Need, v: string) => { setNeed(n => ({ ...n, [k]: v })); setErrors(e => ({ ...e, [k]: '' })); };
+  const setSenderPaymentMethods = (updater: (current: string[]) => string[]) => {
+    setNeed(n => {
+      const next = updater(n.senderPaymentMethods);
+      const primary = next[0] ?? '';
+      return { ...n, senderPaymentMethods: next, senderPaymentMethod: primary };
+    });
+  };
 
   const senderCurr = getCurrency(need.senderCurrency);
   const recipientCurr = getCurrency(need.recipientCurrency);
@@ -251,6 +296,7 @@ function NeedForm({
     setNeed(n => ({
       ...n, senderCurrency: code, recipientCurrency: newRecipient,
       senderPaymentMethod: methods[0]?.id ?? '',
+      senderPaymentMethods: methods[0]?.id ? [methods[0].id] : [],
       recipientPaymentMethod: recipientMethods[0]?.id ?? '',
     }));
   };
@@ -565,20 +611,28 @@ function NeedForm({
             <div className="space-y-4">
               <PaymentMethodSelector
                 currency={need.senderCurrency}
-                selected={need.senderPaymentMethod}
-                onSelect={id => set('senderPaymentMethod', id)}
-                label={`Bạn trả nhà cung cấp qua (tại ${senderCurr?.name ?? need.senderCurrency})`}
+                selected={need.senderPaymentMethods}
+                onToggle={id =>
+                  setSenderPaymentMethods(current =>
+                    current.includes(id)
+                      ? (current.length > 1 ? current.filter(item => item !== id) : current)
+                      : [...current, id],
+                  )
+                }
+                label={`Tôi gửi ${need.senderCurrency} bằng hình thức`}
+                selectionMode="checkbox"
               />
               <div className="border-t border-gray-100" />
               <PaymentMethodSelector
                 currency={need.recipientCurrency}
-                selected={need.recipientPaymentMethod}
-                onSelect={id => {
+                selected={[need.recipientPaymentMethod]}
+                onToggle={id => {
                   setNeed(n => ({ ...n, recipientPaymentMethod: id, recipientName: '', recipientPhone: '', recipientBank: '', recipientAccount: '', recipientAddress: '' }));
                   setSelectedRecipientAccountId('');
                   setErrors(e => ({ ...e, recipientName: '', recipientPhone: '', recipientAccount: '' }));
                 }}
-                label={`Người nhận sẽ nhận qua (tại ${recipientCurr?.name ?? need.recipientCurrency})`}
+                label={`Người thụ hưởng nhận ${need.recipientCurrency} bằng hình thức`}
+                selectionMode="radio"
               />
             </div>
           </div>
@@ -588,7 +642,7 @@ function NeedForm({
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 pt-4 pb-4">
             <div className="flex items-center gap-2 mb-3">
-              <p style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Thông tin người thụ hưởng</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Thông tin tài khoản người thụ hưởng</p>
               {recipientMethod && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
                   <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={13} />
@@ -700,7 +754,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
   // Score deals: perfect match (both methods) > partial match > no match but same corridor
   const scoreDeal = (d: Deal) => {
     let score = 0;
-    if (d.senderPaymentMethods.includes(need.senderPaymentMethod)) score += 10;
+    if ((need.senderPaymentMethods.length ? need.senderPaymentMethods : [need.senderPaymentMethod]).some(method => d.senderPaymentMethods.includes(method))) score += 10;
     if (d.recipientPaymentMethods.includes(need.recipientPaymentMethod)) score += 10;
     return score;
   };
@@ -717,7 +771,9 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
   const nearby = corridor.filter(d => !matching.find(m => m.id === d.id))
     .sort((a, b) => b.rate - a.rate);
 
-  const senderMethod = getPaymentMethod(need.senderCurrency, need.senderPaymentMethod);
+  const senderMethods = (need.senderPaymentMethods.length ? need.senderPaymentMethods : [need.senderPaymentMethod])
+    .map(id => getPaymentMethod(need.senderCurrency, id))
+    .filter((m): m is PaymentMethod => !!m);
   const recipientMethod = getPaymentMethod(need.recipientCurrency, need.recipientPaymentMethod);
 
   return (
@@ -731,16 +787,26 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
           <div className="flex items-center gap-3">
             <span style={{ fontSize: 20 }}>{senderCurr?.flag}</span>
             <div className="flex-1">
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn thanh toán qua</p>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Tôi gửi qua</p>
               <p style={{ color: 'white', fontSize: 15, fontWeight: 800 }}>
                 {fmt(amount, need.senderCurrency)}
-                {senderMethod && <span className="inline-flex items-center gap-0.5" style={{ fontSize: 12, fontWeight: 500 }}> · <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={12} /> {senderMethod.name}</span>}
+                {senderMethods.length > 0 && (
+                  <span className="inline-flex flex-wrap items-center gap-1" style={{ fontSize: 12, fontWeight: 500 }}>
+                    <span> ·</span>
+                    {senderMethods.slice(0, 2).map(method => (
+                      <span key={method.id} className="inline-flex items-center gap-0.5">
+                        <MethodIcon id={method.id} icon={method.icon} size={12} /> {method.name}
+                      </span>
+                    ))}
+                    {senderMethods.length > 2 && <span>+{senderMethods.length - 2}</span>}
+                  </span>
+                )}
               </p>
             </div>
             <ArrowRight size={14} color="rgba(255,255,255,0.5)" />
             <span style={{ fontSize: 20 }}>{recipientCurr?.flag}</span>
             <div>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Bạn nhận qua</p>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 10 }}>Tôi nhận qua</p>
               <p style={{ color: 'white', fontSize: 13, fontWeight: 700 }}>
                 {need.recipientCurrency}
                 {recipientMethod && <span style={{ fontSize: 11, fontWeight: 400 }}> · {recipientMethod.icon} {recipientMethod.name}</span>}
@@ -776,9 +842,9 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
 
             {matching.map((deal, i) => {
               const receiveAmount = amount * deal.rate;
-              const supportsSender = deal.senderPaymentMethods.includes(need.senderPaymentMethod);
+              const supportsMultiSender = need.senderPaymentMethods.some(method => deal.senderPaymentMethods.includes(method));
               const supportsRecipient = deal.recipientPaymentMethods.includes(need.recipientPaymentMethod);
-              const perfectMatch = supportsSender && supportsRecipient;
+              const perfectMatch = supportsMultiSender && supportsRecipient;
 
               return (
                 <motion.div
@@ -798,7 +864,9 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
                   {perfectMatch && i > 0 && (
                     <div className="px-4 py-1.5 flex items-center gap-1" style={{ background: '#F0FDF4' }}>
                       <CheckCircle2 size={11} color={PRIMARY_REQ} />
-                      <span style={{ color: PRIMARY_REQ, fontSize: 11, fontWeight: 600 }}>Hỗ trợ {senderMethod?.name} & {recipientMethod?.name}</span>
+                      <span style={{ color: PRIMARY_REQ, fontSize: 11, fontWeight: 600 }}>
+                        Hỗ trợ {senderMethods[0]?.name ?? 'hình thức đã chọn'} & {recipientMethod?.name}
+                      </span>
                     </div>
                   )}
 
@@ -845,7 +913,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
                         const id = deal.senderPaymentMethods[0];
                         if (!id) return null;
                         const m = getPaymentMethod(deal.fromCurrency, id);
-                        const match = id === need.senderPaymentMethod;
+                        const match = need.senderPaymentMethods.includes(id);
                         return m ? (
                           <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs"
                             style={{ background: match ? '#ECFDF5' : '#F3F4F6', border: `1px solid ${match ? '#6EE7B7' : '#E5E7EB'}`, fontWeight: match ? 700 : 400, color: match ? '#065F46' : '#6B7280' }}>
@@ -947,7 +1015,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
       amount, fromCurrency: deal.fromCurrency, toCurrency: deal.toCurrency,
       rate: deal.rate, receiveAmount, status: 'waiting_accept',
       createdAt: new Date().toISOString(), message,
-      senderPaymentMethod: need.senderPaymentMethod,
+      senderPaymentMethod: need.senderPaymentMethods[0] ?? need.senderPaymentMethod,
       recipientPaymentMethod: need.recipientPaymentMethod,
       recipientName: need.recipientName,
       recipientPhone: need.recipientPhone || undefined,
@@ -1087,20 +1155,13 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
           </div>
         </div>
 
-        {/* Note */}
-        <div className="bg-white rounded-2xl px-4 py-4 shadow-sm border border-gray-100">
-          <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, marginBottom: 8 }}>GHI CHÚ</p>
-          <textarea value={message} onChange={e => setMessage(e.target.value)} rows={2}
-            placeholder="Ghi chú thêm nếu cần..."
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 resize-none" style={{ fontSize: 14 }} />
-        </div>
-
+        
         <button onClick={handleConfirm}
           className="w-full py-4 rounded-2xl text-white flex items-center justify-center gap-2"
           style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)`, fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer' }}>
-          <Send size={18} />Gửi Yêu Cầu
+          <Send size={18} />Xác nhận deal
         </button>
-        <p style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center' }}>Nhà cung cấp sẽ xác nhận và liên hệ sớm nhất có thể</p>
+        <p style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center' }}>Sau khi deal được tạo cần chờ bên đăng deal xác nhận để 2 bên kết nối với nhau.</p>
       </div>
     </div>
   );

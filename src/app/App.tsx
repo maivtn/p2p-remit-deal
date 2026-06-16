@@ -63,7 +63,7 @@ function PhoneFrame({
       >
         {/* Notch */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 z-50"
+          className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
           style={{ width: 120, height: 32, background: '#1a1a1a', borderRadius: '0 0 20px 20px' }}
         />
 
