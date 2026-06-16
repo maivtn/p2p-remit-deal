@@ -261,7 +261,7 @@ export default function App() {
         <SyncBridge active={syncFlash} />
 
         {/* Requester phone */}
-        <PhoneFrame label="Người dùng (Requester)" accent="#10B981" icon="💸" syncPulse={syncFlash}>
+        <PhoneFrame label="Người tìm deal" accent="#10B981" icon="💸" syncPulse={syncFlash}>
           <RequesterApp
             onRoleChange={() => {}}
             availableDeals={availableDeals}

@@ -235,13 +235,6 @@ function MethodBadge({
 // ============================================================
 // Create Deal Modal
 // ============================================================
-const TRANSFER_TIMES = [
-  "30-60 phút",
-  "1-2 giờ",
-  "2-4 giờ",
-  "Trong ngày",
-  "Trong 24 giờ",
-];
 const SUGGESTED_RATES: Record<string, string> = {
   VND: "1",
   USD: "25500",
@@ -268,9 +261,7 @@ function CreateDealModal({
     rate: "",
     minAmount: "",
     maxAmount: "",
-    transferTime: "1-2 giờ",
     notes: "",
-    validDays: "14",
     senderPaymentMethods: ["zelle", "paypal"] as string[],
     recipientPaymentMethods: ["momo", "bank_transfer"] as string[],
   });
@@ -329,8 +320,6 @@ function CreateDealModal({
       setErrors(e);
       return;
     }
-    const expiry = new Date("2026-02-26");
-    expiry.setDate(expiry.getDate() + Number(form.validDays));
     onSave({
       id: "d_" + Date.now(),
       providerId: "self",
@@ -346,9 +335,9 @@ function CreateDealModal({
       status: "active",
       requestCount: 0,
       completedDeals: 248,
-      expiresAt: expiry.toISOString(),
+      expiresAt: "",
       notes: form.notes,
-      transferTime: form.transferTime,
+      transferTime: "",
       senderPaymentMethods: form.senderPaymentMethods,
       recipientPaymentMethods: form.recipientPaymentMethods,
     });
@@ -602,73 +591,6 @@ function CreateDealModal({
                 {errors.recipient}
               </p>
             )}
-          </div>
-
-          {/* Transfer time */}
-          <div>
-            <label
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#374151",
-                display: "block",
-                marginBottom: 8,
-              }}
-            >
-              Thời gian chuyển
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {TRANSFER_TIMES.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setForm((f) => ({ ...f, transferTime: t }))}
-                  style={{
-                    background: form.transferTime === t ? PRIMARY : "#F3F4F6",
-                    color: form.transferTime === t ? "white" : "#374151",
-                    border: "none",
-                    borderRadius: 20,
-                    padding: "6px 14px",
-                    fontSize: 13,
-                    cursor: "pointer",
-                  }}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Valid days */}
-          <div>
-            <label
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#374151",
-                display: "block",
-                marginBottom: 8,
-              }}
-            >
-              Hiệu lực
-            </label>
-            <div className="flex gap-2">
-              {["7", "14", "30"].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setForm((f) => ({ ...f, validDays: d }))}
-                  className="flex-1 py-2 rounded-xl"
-                  style={{
-                    background: form.validDays === d ? PRIMARY : "#F3F4F6",
-                    color: form.validDays === d ? "white" : "#374151",
-                    border: "none",
-                    fontSize: 14,
-                    cursor: "pointer",
-                  }}
-                >
-                  {d} ngày
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Notes */}
