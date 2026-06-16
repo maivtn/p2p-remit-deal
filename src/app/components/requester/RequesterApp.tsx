@@ -6,7 +6,8 @@ import {
   CheckCircle2, XCircle, Inbox, Wallet, History, Settings,
   Star, Send, RefreshCw, ChevronLeft, Zap,
   UserRound, Phone, Building2, CreditCard, ArrowDown, MapPin, Mail,
-  Check, Copy, Plus, Edit2, Trash2,
+  Check, Copy, Plus, Edit2, Trash2, Search, 
+  BriefcaseBusiness,
 } from 'lucide-react';
 import {
   CURRENCIES, getCurrency, formatVND, formatAmount, timeAgo,
@@ -18,8 +19,9 @@ import {
 import { ProofModal, ProofCard, EscrowBanner, StepProgress, TransactionProofSections } from '../shared/ProofModal';
 import { RecipientDetails } from '../shared/RecipientDetails';
 import { MethodIcon } from '../shared/MethodIcon';
+import { AppBottomNav, OverviewScreen, type AppTab } from '../shared/AppNavigation';
 
-type Tab = 'home' | 'requests' | 'accounts' | 'profile';
+type Tab = AppTab;
 type RequestsViewMode = 'list' | 'detail';
 const PRIMARY_REQ = '#059669';
 
@@ -599,7 +601,7 @@ function NeedForm({
               <div className="flex-1 border border-emerald-200 rounded-xl px-4 py-3 bg-emerald-50 flex items-center justify-end"><span style={{ fontSize: 14, fontWeight: 800, color: '#065F46' }}>{previewAmount > 0 ? `≈ ${fmt(previewAmount, need.recipientCurrency)}` : '—'}</span></div>
             </div>
             {previewAmount > 0 && (
-              <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>* Tỷ giá ước tính. Tỷ giá thực theo nhà cung cấp.</p>
+              <p style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>* Tỷ giá ước tính. Tỷ giá thực theo người tạo deal.</p>
             )}
           </div>
         </div>
@@ -1172,7 +1174,7 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
 // ============================================================
 type HomeStep = 'input' | 'results' | 'confirm';
 
-function HomeTab({ onRequestSent, availableDeals, accounts, onAccountsChange }: {
+export function HomeTab({ onRequestSent, availableDeals, accounts, onAccountsChange }: {
   onRequestSent: (req: DealRequest) => void;
   availableDeals: Deal[];
   accounts: ProviderAccount[];
@@ -1331,7 +1333,7 @@ function RequestCard({
               transferProof={req.transferProof}
               labels={{
                 payment: 'Bằng chứng thanh toán của bạn',
-                transfer: 'Bằng chứng nhà cung cấp đã chuyển tiền',
+                transfer: 'Bằng chứng người tạo deal đã chuyển tiền',
               }}
             />
           )}
@@ -1342,14 +1344,14 @@ function RequestCard({
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 20 }}>⏳</span>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>Chờ nhà cung cấp chấp nhận</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>Chờ người tạo deal chấp nhận</p>
               </div>
             </div>
           </div>
         )}
         {showProviderPaymentInfo && (
           <div className="rounded-xl mb-3" style={{ background: '#F0FDF4', border: '1.5px solid #6EE7B7', padding: '8px 10px' }}>
-            <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 Bước 1: Gửi tiền cho nhà cung cấp</p>
+            <p style={{ fontSize: 10, fontWeight: 700, color: '#065F46', letterSpacing: 0.4, marginBottom: 6 }}>💳 Bước 1: Gửi tiền cho người tạo deal</p>
             <p style={{ fontSize: 13, color: '#065F46', marginBottom: 8 }}>
               Chuyển <strong>{fmt(req.amount, req.fromCurrency)}</strong> qua{' '}
               <strong>{senderMethod?.icon} {senderMethod?.name}</strong> cho{' '}
@@ -1457,7 +1459,7 @@ function RequestCard({
                 <button onClick={() => safeCopy(paymentMemo)} style={{ fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', padding: 1 }} title="Sao chép">📋</button>
               </div>
               <p style={{ fontSize: 10, color: '#92400E', background: '#FEF3C7', borderRadius: 5, padding: '4px 7px', marginTop: 4, lineHeight: 1.5 }}>
-                ⚠️ Vui lòng điền chính xác <strong>{paymentMemo}</strong> vào ghi chú / memo của giao dịch khi chuyển tiền cho nhà cung cấp.
+                ⚠️ Vui lòng điền chính xác <strong>{paymentMemo}</strong> vào ghi chú / memo của giao dịch khi chuyển tiền cho người tạo deal.
               </p>
             </div>
           </div>
@@ -1501,7 +1503,7 @@ function RequestCard({
         {req.escrowLocked && !['completed', 'rejected', 'cancelled'].includes(req.status) && (
           <div className="space-y-2 mb-3">
 {/* EscrowBanner phí hệ thống người dùng – đã ẩn */}
-            {/* EscrowBanner phí hệ thống nhà cung cấp – ẩn */}
+            {/* EscrowBanner phí hệ thống người tạo deal – ẩn */}
           </div>
         )}
 
@@ -1526,7 +1528,7 @@ function RequestCard({
           <div className="space-y-2">
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#EDE9FE' }}>
               <span style={{ fontSize: 16 }}>⏳</span>
-              <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ nhà cung cấp xác nhận đã nhận tiền...</p>
+              <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ người tạo deal xác nhận đã nhận tiền...</p>
             </div>
           </div>
         )}
@@ -1537,7 +1539,7 @@ function RequestCard({
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#FEF3C7', border: '1px solid #FCD34D' }}>
               <span style={{ fontSize: 16 }}>🔄</span>
               <p style={{ fontSize: 13, color: '#92400E', fontWeight: 600 }}>
-                Nhà cung cấp đang chuyển tiền cho <strong>{req.recipientName}</strong> qua {recipientMethod?.icon} {recipientMethod?.name}...
+                Người tạo deal đang chuyển tiền cho <strong>{req.recipientName}</strong> qua {recipientMethod?.icon} {recipientMethod?.name}...
               </p>
             </div>
           </div>
@@ -1577,7 +1579,7 @@ function RequestCard({
         {req.status === 'rejected' && (
           <div className="bg-red-50 rounded-xl p-3 flex items-center gap-2">
             <XCircle size={15} color="#EF4444" />
-            <p style={{ fontSize: 13, color: '#991B1B' }}>Nhà cung cấp từ chối. Thử tìm deal khác.</p>
+            <p style={{ fontSize: 13, color: '#991B1B' }}>Người tạo deal từ chối. Thử tìm deal khác.</p>
           </div>
         )}
 
@@ -1652,13 +1654,15 @@ function RequestCard({
   );
 }
 
-function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active', onOpenDetail, onFilterChange }: {
+function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active', onOpenDetail, onFilterChange, title = 'Yêu cầu của tôi', subtitle = 'Theo dõi trạng thái chuyển tiền' }: {
   requests: DealRequest[];
   onUpdate: (id: string, partial: Partial<DealRequest>) => void;
   onCancel: (id: string) => void;
   initialFilter?: ReqFilter;
   onOpenDetail: (requestId: string) => void;
   onFilterChange: (filter: ReqFilter) => void;
+  title?: string;
+  subtitle?: string;
 }) {
   const [filter, setFilter] = useState<ReqFilter>(initialFilter);
   useEffect(() => {
@@ -1686,8 +1690,8 @@ function MyRequestsTab({ requests, onUpdate, onCancel, initialFilter = 'active',
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="px-5 pt-12 pb-4" style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }}>
-        <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Yêu cầu của tôi</h1>
-        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>Theo dõi trạng thái chuyển tiền</p>
+        <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>{title}</h1>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>{subtitle}</p>
       </div>
       <div className="flex gap-2 px-4 py-3 border-b border-gray-100 overflow-x-auto">
         {(['active', 'pending', 'completed', 'other'] as ReqFilter[]).map(f => (
@@ -1880,7 +1884,6 @@ function PaymentAccountsModal({
 
   return (
     <div className={inline ? "flex-1 overflow-y-auto bg-gray-50 flex flex-col" : "absolute inset-0 z-50 bg-gray-50 flex flex-col"}>
-      {/* Header */}
       <div className="flex items-center gap-2 px-4 py-4 bg-white border-b border-gray-100">
         <button
           onClick={view === "list" ? onClose : () => setView("list")}
@@ -1909,7 +1912,7 @@ function PaymentAccountsModal({
           }}
         >
           {view === "list"
-            ? "Tài khoản liên kết"
+            ? "Tài khoản nhận"
             : editTarget
               ? "Chỉnh sửa tài khoản"
               : "Thêm tài khoản"}
@@ -2360,7 +2363,7 @@ function ProfileTabReq({
         </div>
         <div className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl" style={{ background: '#F0FDF4', border: '1px dashed #6EE7B7' }}>
           <ArrowLeftRight size={15} color="#059669" />
-          <span style={{ color: '#047857', fontSize: 13, fontWeight: 600 }}>← Xem Nhà cung cấp ở khung bên trái</span>
+          <span style={{ color: '#047857', fontSize: 13, fontWeight: 600 }}>← Xem B ở khung bên trái</span>
         </div>
         <button className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl" style={{ background: '#FEE2E2', border: 'none', cursor: 'pointer' }}>
           <LogOut size={16} color="#EF4444" />
@@ -2375,28 +2378,7 @@ function ProfileTabReq({
 // Bottom Nav & Main
 // ============================================================
 function BottomNavReq({ tab, onTab, pendingCount }: { tab: Tab; onTab: (t: Tab) => void; pendingCount: number }) {
-  const items: { key: Tab; icon: React.ReactNode; label: string }[] = [
-    { key: 'home', icon: <Home size={22} />, label: 'Gửi tiền' },
-    { key: 'requests', icon: <Bell size={22} />, label: 'Yêu cầu' },
-    { key: 'accounts', icon: <Wallet size={22} />, label: 'Liên kết' },
-    { key: 'profile', icon: <User size={22} />, label: 'Hồ sơ' },
-  ];
-  return (
-    <div className="flex items-center border-t border-gray-100 bg-white px-2" style={{ paddingBottom: 8 }}>
-      {items.map(item => (
-        <button key={item.key} onClick={() => onTab(item.key)} className="flex-1 flex flex-col items-center py-3 gap-1 relative" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-          <div style={{ color: tab === item.key ? PRIMARY_REQ : '#9CA3AF' }}>{item.icon}</div>
-          <span style={{ fontSize: 10, color: tab === item.key ? PRIMARY_REQ : '#9CA3AF', fontWeight: tab === item.key ? 700 : 400 }}>{item.label}</span>
-          {item.key === 'requests' && pendingCount > 0 && (
-            <div className="absolute top-2 right-1/4 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center" style={{ fontSize: 10, color: 'white', fontWeight: 700 }}>{pendingCount}</div>
-          )}
-          {tab === item.key && (
-            <motion.div layoutId="req-indicator" className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full" style={{ background: PRIMARY_REQ }} />
-          )}
-        </button>
-      ))}
-    </div>
-  );
+  return <AppBottomNav tab={tab} onTab={onTab} accent={PRIMARY_REQ} />;
 }
 
 export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmitRequest, onCancelRequest, onUpdateRequest }: {
@@ -2410,18 +2392,18 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
   onUpdateRequest: (id: string, partial: Partial<DealRequest>) => void;
 }) {
   const [accounts, setAccounts] = useState<ProviderAccount[]>(REQUESTER_ACCOUNTS_INIT);
-  const [tab, setTab] = useState<Tab>('home');
+  const [tab, setTab] = useState<Tab>('overview');
   const [requestsViewMode, setRequestsViewMode] = useState<RequestsViewMode>('list');
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-  const [reqTabKey, setReqTabKey] = useState(0);
-  const [reqInitFilter, setReqInitFilter] = useState<ReqFilter>('active');
-  const pendingCount = myRequests.filter(r => r.status === 'pending' || r.status === 'waiting_accept').length;
+  const [manageTabKey, setManageTabKey] = useState(0);
+  const [historyTabKey, setHistoryTabKey] = useState(0);
+  const [manageInitFilter, setManageInitFilter] = useState<ReqFilter>('active');
   const selectedRequest = selectedRequestId
     ? myRequests.find(r => r.id === selectedRequestId) ?? null
     : null;
   const handleTabChange = (nextTab: Tab) => {
     setTab(nextTab);
-    if (nextTab !== 'requests') {
+    if (nextTab !== 'history') {
       setRequestsViewMode('list');
       setSelectedRequestId(null);
     }
@@ -2429,8 +2411,14 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
   const openRequestDetail = (requestId: string) => {
     setSelectedRequestId(requestId);
     setRequestsViewMode('detail');
-    setTab('requests');
+    setTab('history');
   };
+  const processingRequests = myRequests.filter(r =>
+    ['pending', 'waiting_accept', 'accepted', 'payment_sent', 'payment_confirmed', 'transfer_sent'].includes(r.status),
+  );
+  const recentHistory = [...myRequests]
+    .filter(r => ['completed', 'rejected', 'cancelled'].includes(r.status))
+    .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
   useEffect(() => {
     if (requestsViewMode === 'detail' && selectedRequestId && !selectedRequest) {
       setRequestsViewMode('list');
@@ -2442,24 +2430,60 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
     <div className="flex flex-col h-full bg-gray-50">
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="flex-1 overflow-hidden flex flex-col">
-          {tab === 'home' && (
+          {tab === 'overview' && (
+            <OverviewScreen
+              accent={PRIMARY_REQ}
+              processingRequests={processingRequests}
+              hotDeals={availableDeals}
+              recentHistory={recentHistory}
+              onOpenDeal={() => setTab('findDeals')}
+              onOpenHistory={(request) => {
+                setSelectedRequestId(request.id);
+                setRequestsViewMode('detail');
+                setTab('history');
+              }}
+            />
+          )}
+          {tab === 'findDeals' && (
             <HomeTab
               accounts={accounts}
               onAccountsChange={setAccounts}
-              onRequestSent={req => { onSubmitRequest(req); setReqInitFilter('pending'); setReqTabKey(k => k + 1); setRequestsViewMode('list'); setTab('requests'); }}
+              onRequestSent={req => {
+                onSubmitRequest(req);
+                setRequestsViewMode('list');
+                setSelectedRequestId(null);
+                setManageInitFilter('pending');
+                setManageTabKey(k => k + 1);
+                setTab('manageDeals');
+              }}
               availableDeals={availableDeals}
             />
           )}
-          {tab === 'requests' && (
+          {tab === 'manageDeals' && (
+            <MyRequestsTab
+              key={`manage-${manageTabKey}`}
+              requests={myRequests}
+              onUpdate={onUpdateRequest}
+              onCancel={onCancelRequest}
+              initialFilter={manageInitFilter}
+              onOpenDetail={openRequestDetail}
+              onFilterChange={() => {}}
+              title='Quản lý deals'
+              subtitle='Theo dõi các deal đang xử lý của bạn'
+            />
+          )}
+          {tab === 'history' && (
             requestsViewMode === 'list' ? (
               <MyRequestsTab
-                key={reqTabKey}
+                key={`history-${historyTabKey}`}
                 requests={myRequests}
                 onUpdate={onUpdateRequest}
                 onCancel={onCancelRequest}
-                initialFilter={reqInitFilter}
+                initialFilter='completed'
                 onOpenDetail={openRequestDetail}
-                onFilterChange={setReqInitFilter}
+                onFilterChange={() => {}}
+                title='Lịch sử'
+                subtitle='Các giao dịch đã kết nối gần đây'
               />
             ) : (
               <RequesterTransactionDetailScreen
@@ -2473,30 +2497,21 @@ export function RequesterApp({ onRoleChange, availableDeals, myRequests, onSubmi
           {tab === 'accounts' && (
             <div className="flex-1 overflow-hidden flex flex-col">
               <div className="px-5 pt-12 pb-4" style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }}>
-                <button onClick={() => setTab('profile')} className="flex items-center gap-1 mb-3" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
-                  <ChevronLeft size={18} />
-                  <span style={{ fontSize: 14 }}>Quay lại hồ sơ</span>
-                </button>
-                <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Tài khoản liên kết</h1>
+                <h1 style={{ color: 'white', fontSize: 22, fontWeight: 700 }}>Tài khoản nhận</h1>
                 <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, marginTop: 2 }}>Thêm, sửa hoặc xoá tài khoản nhận tiền</p>
               </div>
               <PaymentAccountsModal
                 inline
                 accounts={accounts}
                 onSave={setAccounts}
-                onClose={() => setTab('profile')}
+                onClose={() => setTab('overview')}
               />
             </div>
           )}
-          {tab === 'profile' && (
-            <ProfileTabReq
-              onRoleChange={onRoleChange}
-              onOpenAccounts={() => setTab('accounts')}
-            />
-          )}
+          {tab === 'accounts' && null}
         </motion.div>
       </AnimatePresence>
-      <BottomNavReq tab={tab} onTab={handleTabChange} pendingCount={pendingCount} />
+      <AppBottomNav tab={tab} onTab={handleTabChange} accent={PRIMARY_REQ} />
     </div>
   );
 }

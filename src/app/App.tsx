@@ -260,12 +260,13 @@ export default function App() {
 
       {/* Two-phone layout */}
       <div className="flex items-start justify-center gap-0 px-4 pb-8" style={{ minWidth: 860 }}>
-        {/* Provider phone */}
-        <PhoneFrame label="Người đăng deal" accent="#3B82F6" icon="🏦" syncPulse={syncFlash}>
+        {/* Left side */}
+        <PhoneFrame label="B" accent="#3B82F6" icon="🏦" syncPulse={syncFlash}>
           <ProviderApp
             onRoleChange={() => {}}
             deals={providerDeals}
             requests={providerRequests}
+            availableDeals={availableDeals}
             onDealsChange={handleProviderDealsChange}
             onRequestsChange={handleProviderRequestsChange}
             newRequestIds={newProviderRequestIds}
@@ -275,8 +276,8 @@ export default function App() {
         {/* Sync bridge */}
         <SyncBridge active={syncFlash} />
 
-        {/* Requester phone */}
-        <PhoneFrame label="Người tìm deal" accent="#10B981" icon="💸" syncPulse={syncFlash}>
+        {/* Right side */}
+        <PhoneFrame label="A" accent="#10B981" icon="💸" syncPulse={syncFlash}>
           <RequesterApp
             onRoleChange={() => {}}
             availableDeals={availableDeals}

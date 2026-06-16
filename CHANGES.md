@@ -47,7 +47,7 @@
 
 ## Logic Deal – 1 deal / 1 yêu cầu
 
-- **Phía người tìm deal**: `availableDeals` chỉ hiển thị deal `active` chưa có request nào (non-cancelled/rejected). Deal đã có request biến mất khỏi danh sách.
+- **Phía người tìm deal**: `availableDeals` chỉ hiển thị deal `active` chưa có yêu cầu nào (non-cancelled/rejected). Deal đã có yêu cầu biến mất khỏi danh sách.
 - **Khi request `completed`**: deal tương ứng tự động chuyển sang `status: "completed"`.
 - **Phía người đăng deal**: nút Sửa/Xoá ẩn khi deal đã có request đang xử lý hoặc khi deal không còn `active`.
 
@@ -117,7 +117,7 @@ Multi-select checkbox (ô vuông xanh có ✓ khi chọn), nhiều hình thức.
 
 ---
 
-## Form Tìm Deal (RequesterApp)
+## Form Tìm Deal (Người tìm deal)
 
 | Trước | Sau |
 |---|---|
@@ -127,7 +127,7 @@ Multi-select checkbox (ô vuông xanh có ✓ khi chọn), nhiều hình thức.
 
 ---
 
-## Section "Thông tin người thụ hưởng" (RequesterApp – NeedForm)
+## Section "Thông tin người thụ hưởng" (Người tìm deal – NeedForm)
 
 ### Tiêu đề
 `THÔNG TIN TÀI KHOẢN NHẬN` → `Thông tin người thụ hưởng`

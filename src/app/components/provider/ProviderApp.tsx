@@ -61,6 +61,8 @@ import {
 } from "../shared/ProofModal";
 import { RecipientDetails } from "../shared/RecipientDetails";
 import { MethodIcon } from "../shared/MethodIcon";
+import { AppBottomNav, OverviewScreen, type AppTab } from "../shared/AppNavigation";
+import { HomeTab as SearchDealsTab } from "../requester/RequesterApp";
 
 function fmt(amount: number, code: string) {
   if (code === "VND") return formatVND(amount);
@@ -71,7 +73,7 @@ function fmtRate(rate: number, fromCode: string, toCode: string) {
   return `${fmt(rate, toCode)}/${fromCode}`;
 }
 
-type Tab = "home" | "deals" | "requests" | "profile";
+type Tab = AppTab;
 type RequestsViewMode = "list" | "detail";
 type DealFilter = "all" | "active" | "completed" | "expired";
 const PRIMARY = "#2563EB";
@@ -112,7 +114,6 @@ const StatusBadge = ({ status }: { status: string }) => {
   const map: Record<string, { label: string; bg: string; color: string }> = {
     active: { label: "Hoạt động", bg: "#D1FAE5", color: "#065F46" },
     paused: { label: "Đã hoàn tất", bg: "#D1FAE5", color: "#065F46" },
-    completed: { label: "Đã hoàn tất", bg: "#D1FAE5", color: "#065F46" },
     expired: { label: "Hết hạn", bg: "#F3F4F6", color: "#4B5563" },
     pending: { label: "Chờ chấp nhận", bg: "#FEF3C7", color: "#92400E" },
     waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
@@ -1051,21 +1052,21 @@ function HomeTab({
               label: "Tạo Deal",
               color: "#EFF6FF",
               text: PRIMARY,
-              tab: "deals" as Tab,
+              tab: "manageDeals" as Tab,
             },
             {
               icon: "📋",
               label: "Deals",
               color: "#F0FDF4",
               text: "#059669",
-              tab: "deals" as Tab,
+              tab: "manageDeals" as Tab,
             },
             {
               icon: "🔔",
               label: "Yêu cầu",
               color: "#FFFBEB",
               text: "#D97706",
-              tab: "requests" as Tab,
+              tab: "history" as Tab,
             },
           ].map((item) => (
             <button
@@ -1101,7 +1102,7 @@ function HomeTab({
                 Yêu cầu mới nhất
               </h3>
               <button
-                onClick={() => onTabChange("requests")}
+                onClick={() => onTabChange("history")}
                 style={{
                   color: PRIMARY,
                   fontSize: 13,
@@ -1370,7 +1371,7 @@ function DealsTab({
                       </button>
                       {activeReq && (
                         <button
-                          onClick={() => onTabChange("requests")}
+                          onClick={() => onTabChange("history")}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
                           style={{ background: "#EFF6FF", border: "none", cursor: "pointer" }}
                         >
@@ -2577,14 +2578,16 @@ function RequestsTab({
   newRequestIds,
   selectedRequestId,
   onOpenDetail,
+  initialFilter = "pending",
 }: {
   requests: DealRequest[];
   onRequestsChange: (r: DealRequest[]) => void;
   newRequestIds: string[];
   selectedRequestId: string | null;
   onOpenDetail: (requestId: string) => void;
+  initialFilter?: ProvReqFilter;
 }) {
-  const [filter, setFilter] = useState<ProvReqFilter>("pending");
+  const [filter, setFilter] = useState<ProvReqFilter>(initialFilter);
   const ACTIVE_STATUSES = [
     "accepted",
     "payment_sent",
@@ -3537,7 +3540,7 @@ function ProfileTab({ onRoleChange }: { onRoleChange: () => void }) {
         >
           <ArrowLeftRight size={15} color="#3B82F6" />
           <span style={{ color: "#2563EB", fontSize: 13, fontWeight: 600 }}>
-            Xem Người dùng ở khung bên phải →
+            Xem A ở khung bên phải →
           </span>
         </div>
         <button
@@ -3566,61 +3569,14 @@ function BottomNav({
   onTab: (t: Tab) => void;
   pendingCount: number;
 }) {
-  const items: { key: Tab; icon: React.ReactNode; label: string }[] = [
-    { key: "home", icon: <Home size={22} />, label: "Trang chủ" },
-    { key: "deals", icon: <LayoutGrid size={22} />, label: "Deals" },
-    { key: "requests", icon: <Bell size={22} />, label: "Yêu cầu" },
-    { key: "profile", icon: <User size={22} />, label: "Hồ sơ" },
-  ];
-  return (
-    <div
-      className="flex items-center border-t border-gray-100 bg-white px-2"
-      style={{ paddingBottom: 8 }}
-    >
-      {items.map((item) => (
-        <button
-          key={item.key}
-          onClick={() => onTab(item.key)}
-          className="flex-1 flex flex-col items-center py-3 gap-1 relative"
-          style={{ background: "none", border: "none", cursor: "pointer" }}
-        >
-          <div style={{ color: tab === item.key ? PRIMARY : "#9CA3AF" }}>
-            {item.icon}
-          </div>
-          <span
-            style={{
-              fontSize: 10,
-              color: tab === item.key ? PRIMARY : "#9CA3AF",
-              fontWeight: tab === item.key ? 700 : 400,
-            }}
-          >
-            {item.label}
-          </span>
-          {item.key === "requests" && pendingCount > 0 && (
-            <div
-              className="absolute top-2 right-1/4 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center"
-              style={{ fontSize: 10, color: "white", fontWeight: 700 }}
-            >
-              {pendingCount}
-            </div>
-          )}
-          {tab === item.key && (
-            <motion.div
-              layoutId="provider-indicator"
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full"
-              style={{ background: PRIMARY }}
-            />
-          )}
-        </button>
-      ))}
-    </div>
-  );
+  return <AppBottomNav tab={tab} onTab={onTab} accent={PRIMARY} />;
 }
 
 export function ProviderApp({
   onRoleChange,
   deals,
   requests,
+  availableDeals,
   onDealsChange,
   onRequestsChange,
   newRequestIds,
@@ -3628,11 +3584,15 @@ export function ProviderApp({
   onRoleChange: () => void;
   deals: Deal[];
   requests: DealRequest[];
+  availableDeals: Deal[];
   onDealsChange: (d: Deal[]) => void;
   onRequestsChange: (r: DealRequest[]) => void;
   newRequestIds: string[];
 }) {
-  const [tab, setTab] = useState<Tab>("home");
+  const [tab, setTab] = useState<Tab>("overview");
+  const [accounts, setAccounts] = useState<ProviderAccount[]>(
+    PROVIDER_ACCOUNTS_INIT,
+  );
   const [requestsViewMode, setRequestsViewMode] =
     useState<RequestsViewMode>("list");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
@@ -3644,14 +3604,14 @@ export function ProviderApp({
     : null;
   const handleTabChange = (nextTab: Tab) => {
     setTab(nextTab);
-    if (nextTab !== "requests") {
+    if (nextTab !== "history") {
       setSelectedRequestId(null);
       setRequestsViewMode("list");
     }
   };
   const openRequestDetail = (requestId: string) => {
     setSelectedRequestId(requestId);
-    setTab("requests");
+    setTab("history");
     setRequestsViewMode("detail");
   };
   useEffect(() => {
@@ -3676,18 +3636,41 @@ export function ProviderApp({
           transition={{ duration: 0.2 }}
           className="flex-1 overflow-hidden flex flex-col"
         >
-          {tab === "home" && (
-            <HomeTab
-              deals={deals}
-              requests={requests}
-              onTabChange={handleTabChange}
-              onOpenRequestDetail={openRequestDetail}
+          {tab === "overview" && (
+            <OverviewScreen
+              accent={PRIMARY}
+              processingRequests={requests.filter((r) =>
+                ["pending", "waiting_accept", "accepted", "payment_sent", "payment_confirmed", "transfer_sent"].includes(r.status),
+              )}
+              hotDeals={availableDeals}
+              recentHistory={requests
+                .filter((r) => ["completed", "rejected", "cancelled"].includes(r.status))
+                .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))}
+              onOpenDeal={() => setTab("findDeals")}
+              onOpenHistory={(request) => {
+                setSelectedRequestId(request.id);
+                setRequestsViewMode("detail");
+                setTab("history");
+              }}
             />
           )}
-          {tab === "deals" && (
+          {tab === "findDeals" && (
+            <SearchDealsTab
+              accounts={accounts}
+              onAccountsChange={setAccounts}
+              onRequestSent={(req) => {
+                onRequestsChange([req, ...requests]);
+                setSelectedRequestId(req.id);
+                setRequestsViewMode("list");
+                setTab("history");
+              }}
+              availableDeals={availableDeals}
+            />
+          )}
+          {tab === "manageDeals" && (
             <DealsTab deals={deals} onDealsChange={onDealsChange} requests={requests} onOpenRequestDetail={openRequestDetail} onTabChange={handleTabChange} />
           )}
-          {tab === "requests" &&
+          {tab === "history" &&
             (requestsViewMode === "list" ? (
               <RequestsTab
                 requests={requests}
@@ -3695,6 +3678,7 @@ export function ProviderApp({
                 newRequestIds={newRequestIds}
                 selectedRequestId={selectedRequestId}
                 onOpenDetail={openRequestDetail}
+                initialFilter="completed"
               />
             ) : (
               <ProviderTransactionDetailScreen
@@ -3705,14 +3689,30 @@ export function ProviderApp({
                 onBack={() => setRequestsViewMode("list")}
               />
             ))}
-          {tab === "profile" && <ProfileTab onRoleChange={onRoleChange} />}
+          {tab === "accounts" && (
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <div
+                className="px-5 pt-12 pb-4"
+                style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` }}
+              >
+                <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
+                  Tài khoản nhận
+                </h1>
+                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 2 }}>
+                  Danh sách tài khoản nhận tiền của bạn
+                </p>
+              </div>
+              <PaymentAccountsModal
+                inline
+                accounts={accounts}
+                onSave={setAccounts}
+                onClose={() => setTab("overview")}
+              />
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
-      <BottomNav
-        tab={tab}
-        onTab={handleTabChange}
-        pendingCount={pendingCount}
-      />
+      <AppBottomNav tab={tab} onTab={handleTabChange} accent={PRIMARY} />
     </div>
   );
 }
