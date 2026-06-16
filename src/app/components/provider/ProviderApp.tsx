@@ -73,7 +73,7 @@ function fmtRate(rate: number, fromCode: string, toCode: string) {
 
 type Tab = "home" | "deals" | "requests" | "profile";
 type RequestsViewMode = "list" | "detail";
-type DealFilter = "all" | "active" | "paused" | "expired";
+type DealFilter = "all" | "active" | "completed" | "expired";
 const PRIMARY = "#2563EB";
 
 /** Chỉ áp dụng cho thẻ ở danh sách (`variant="list"`). Màn chi tiết luôn hiện đủ. */
@@ -111,7 +111,8 @@ const Stars = ({ rating }: { rating: number }) => (
 const StatusBadge = ({ status }: { status: string }) => {
   const map: Record<string, { label: string; bg: string; color: string }> = {
     active: { label: "Hoạt động", bg: "#D1FAE5", color: "#065F46" },
-    paused: { label: "Tạm dừng", bg: "#FEF3C7", color: "#92400E" },
+    paused: { label: "Đã hoàn tất", bg: "#D1FAE5", color: "#065F46" },
+    completed: { label: "Đã hoàn tất", bg: "#D1FAE5", color: "#065F46" },
     expired: { label: "Hết hạn", bg: "#F3F4F6", color: "#4B5563" },
     pending: { label: "Chờ chấp nhận", bg: "#FEF3C7", color: "#92400E" },
     waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
@@ -1185,10 +1186,14 @@ function DealsTab({
   deals,
   onDealsChange,
   requests,
+  onOpenRequestDetail,
+  onTabChange,
 }: {
   deals: Deal[];
   onDealsChange: (d: Deal[]) => void;
   requests: DealRequest[];
+  onOpenRequestDetail: (requestId: string) => void;
+  onTabChange: (t: Tab) => void;
 }) {
   const [filter, setFilter] = useState<DealFilter>("all");
   const [showCreate, setShowCreate] = useState(false);
@@ -1201,11 +1206,14 @@ function DealsTab({
       .map(r => r.dealId)
   );
 
-  const filtered = deals.filter((d) => filter === "all" || d.status === filter);
+  const filtered = deals.filter((d) =>
+    filter === "all" ||
+    (filter === "completed" ? d.status === "completed" : d.status === filter)
+  );
   const counts = {
     all: deals.length,
     active: deals.filter((d) => d.status === "active").length,
-    paused: deals.filter((d) => d.status === "paused").length,
+    completed: deals.filter((d) => d.status === "completed").length,
     expired: deals.filter((d) => d.status === "expired").length,
   };
 
@@ -1247,11 +1255,12 @@ function DealsTab({
       </div>
 
       <div className="flex gap-2 px-5 py-3 border-b border-gray-100 overflow-x-auto">
-        {(["all", "active", "expired"] as DealFilter[]).map((f) => {
+        {(["all", "active", "completed", "expired"] as DealFilter[]).map((f) => {
           const labels: Record<DealFilter, string> = {
             all: "Tất cả",
             active: "Hoạt động",
-            paused: "Tạm dừng",
+            completed: "Đã hoàn tất",
+            paused: "Đã hoàn tất",
             expired: "Hết hạn",
           };
           return (
@@ -1334,42 +1343,61 @@ function DealsTab({
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 mb-3">
-                <Bell size={12} color="#9CA3AF" />
-                <span style={{ fontSize: 12, color: "#6B7280" }}>
-                  {deal.requestCount} yêu cầu
-                </span>
-              </div>
+              {(() => {
+                const activeReq = requests.find(
+                  r => r.dealId === deal.id && !['cancelled', 'rejected'].includes(r.status)
+                );
+                return (
+                  <>
+                    <div className="flex items-center gap-1 mb-3">
+                      <Bell size={12} color="#9CA3AF" />
+                      <span style={{ fontSize: 12, color: "#6B7280" }}>
+                        {activeReq ? "1 yêu cầu" : "0 yêu cầu"}
+                      </span>
+                    </div>
 
-              <div className="flex gap-2 pt-3 border-t border-gray-100">
-                <button
-                  onClick={() => setViewingDeal(deal)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
-                  style={{ background: "#F3F4F6", border: "none", cursor: "pointer" }}
-                >
-                  <Eye size={14} color="#6B7280" />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#6B7280" }}>Xem</span>
-                </button>
-                {deal.status !== "expired" && (
-                  <button
-                    onClick={() => setEditingDeal(deal)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
-                    style={{ background: "#EFF6FF", border: "none", cursor: "pointer" }}
-                  >
-                    <Edit2 size={14} color={PRIMARY} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY }}>Sửa</span>
-                  </button>
-                )}
-                {deal.status !== "expired" && (
-                  <button
-                    onClick={() => deleteDeal(deal.id)}
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: "#FEE2E2", border: "none", cursor: "pointer" }}
-                  >
-                    <Trash2 size={15} color="#EF4444" />
-                  </button>
-                )}
-              </div>
+                    <div className="flex gap-2 pt-3 border-t border-gray-100">
+                      <button
+                        onClick={() => setViewingDeal(deal)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
+                        style={{ background: "#F3F4F6", border: "none", cursor: "pointer" }}
+                      >
+                        <Eye size={14} color="#6B7280" />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#6B7280" }}>Xem deal</span>
+                      </button>
+                      {activeReq && (
+                        <button
+                          onClick={() => onTabChange("requests")}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
+                          style={{ background: "#EFF6FF", border: "none", cursor: "pointer" }}
+                        >
+                          <Bell size={14} color={PRIMARY} />
+                          <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY }}>Xem yêu cầu</span>
+                        </button>
+                      )}
+                      {deal.status === "active" && !activeReq && (
+                        <button
+                          onClick={() => setEditingDeal(deal)}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl"
+                          style={{ background: "#EFF6FF", border: "none", cursor: "pointer" }}
+                        >
+                          <Edit2 size={14} color={PRIMARY} />
+                          <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY }}>Sửa</span>
+                        </button>
+                      )}
+                      {deal.status === "active" && !activeReq && (
+                        <button
+                          onClick={() => deleteDeal(deal.id)}
+                          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: "#FEE2E2", border: "none", cursor: "pointer" }}
+                        >
+                          <Trash2 size={15} color="#EF4444" />
+                        </button>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           );
         })}
@@ -3654,7 +3682,7 @@ export function ProviderApp({
             />
           )}
           {tab === "deals" && (
-            <DealsTab deals={deals} onDealsChange={onDealsChange} requests={requests} />
+            <DealsTab deals={deals} onDealsChange={onDealsChange} requests={requests} onOpenRequestDetail={openRequestDetail} onTabChange={handleTabChange} />
           )}
           {tab === "requests" &&
             (requestsViewMode === "list" ? (

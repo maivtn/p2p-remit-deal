@@ -418,7 +418,7 @@ export interface Deal {
   rate: number;
   minAmount: number;
   maxAmount: number;
-  status: "active" | "paused" | "expired" | "completed";
+  status: "active" | "expired" | "completed";
   requestCount: number;
   completedDeals: number;
   expiresAt: string;
@@ -580,7 +580,7 @@ export const PROVIDER_DEALS_INIT: Deal[] = [
     rate: 25480,
     minAmount: 500,
     maxAmount: 20000,
-    status: "paused",
+    status: "completed",
     requestCount: 0,
     completedDeals: 248,
     expiresAt: "2026-03-15T00:00:00",
