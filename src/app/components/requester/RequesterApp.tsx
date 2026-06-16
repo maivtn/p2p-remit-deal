@@ -69,7 +69,7 @@ const Stars = ({ rating }: { rating: number }) => (
 
 const StatusBadge = ({ status }: { status: DealRequest['status'] }) => {
   const map: Record<string, { label: string; bg: string; color: string }> = {
-    pending:     { label: 'Chờ duyệt',  bg: '#FEF3C7', color: '#92400E' },
+    pending:     { label: 'Chờ chấp nhận',  bg: '#FEF3C7', color: '#92400E' },
     accepted:    { label: 'Đã nhận',    bg: '#DBEAFE', color: '#1E40AF' },
     in_progress: { label: 'Đang xử lý', bg: '#EDE9FE', color: '#5B21B6' },
     completed:   { label: 'Hoàn thành', bg: '#D1FAE5', color: '#065F46' },
@@ -334,7 +334,7 @@ function NeedForm({
         {/* ── CARD 2: Hình thức thanh toán ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 pt-4 pb-3">
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5, marginBottom: 14 }}>HÌNH THỨC THANH TOÁN</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5, marginBottom: 14 }}>Tôi gửi bằng</p>
             <div className="space-y-4">
               <PaymentMethodSelector
                 currency={need.senderCurrency}
@@ -987,7 +987,7 @@ function HomeTab({ onRequestSent, availableDeals, accounts, onAccountsChange }: 
 type ReqFilter = 'active' | 'pending' | 'completed' | 'other';
 
 const STATUS_CFG: Record<string, { label: string; bg: string; color: string }> = {
-  pending:           { label: 'Chờ duyệt',       bg: '#FEF3C7', color: '#92400E' },
+  pending:           { label: 'Chờ chấp nhận',       bg: '#FEF3C7', color: '#92400E' },
   waiting_accept:    { label: 'Chờ chấp nhận',   bg: '#DBEAFE', color: '#1E40AF' },
   accepted:          { label: 'Chờ thanh toán',   bg: '#DBEAFE', color: '#1E40AF' },
   payment_sent:      { label: 'Chờ xác nhận',     bg: '#EDE9FE', color: '#5B21B6' },

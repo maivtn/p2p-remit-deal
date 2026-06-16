@@ -112,7 +112,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     active: { label: "Hoạt động", bg: "#D1FAE5", color: "#065F46" },
     paused: { label: "Tạm dừng", bg: "#FEF3C7", color: "#92400E" },
     expired: { label: "Hết hạn", bg: "#F3F4F6", color: "#4B5563" },
-    pending: { label: "Chờ duyệt", bg: "#FEF3C7", color: "#92400E" },
+    pending: { label: "Chờ chấp nhận", bg: "#FEF3C7", color: "#92400E" },
     waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
     accepted: { label: "Đã nhận", bg: "#DBEAFE", color: "#1E40AF" },
     in_progress: { label: "Đang xử lý", bg: "#EDE9FE", color: "#5B21B6" },
@@ -251,9 +251,11 @@ const SUGGESTED_RATES: Record<string, string> = {
 function CreateDealModal({
   onClose,
   onSave,
+  accounts: initAccounts,
 }: {
   onClose: () => void;
   onSave: (deal: Deal) => void;
+  accounts: ProviderAccount[];
 }) {
   const [form, setForm] = useState({
     fromCurrency: "USD",
@@ -262,18 +264,16 @@ function CreateDealModal({
     minAmount: "",
     maxAmount: "",
     notes: "",
-    senderPaymentMethods: ["zelle", "paypal"] as string[],
+    selectedAccountId: "",
+    selectedMethodId: "",
     recipientPaymentMethods: ["momo", "bank_transfer"] as string[],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [localAccounts, setLocalAccounts] = useState<ProviderAccount[]>(initAccounts);
+  const [showPickAccount, setShowPickAccount] = useState(false);
+  const [showAddAccount, setShowAddAccount] = useState(false);
+  const [addForm, setAddForm] = useState<Partial<ProviderAccount>>({});
 
-  const toggleSender = (id: string) =>
-    setForm((f) => ({
-      ...f,
-      senderPaymentMethods: f.senderPaymentMethods.includes(id)
-        ? f.senderPaymentMethods.filter((x) => x !== id)
-        : [...f.senderPaymentMethods, id],
-    }));
   const toggleRecipient = (id: string) =>
     setForm((f) => ({
       ...f,
@@ -282,11 +282,11 @@ function CreateDealModal({
         : [...f.recipientPaymentMethods, id],
     }));
   const changeFrom = (code: string) => {
-    const methods = PAYMENT_METHODS_BY_CURRENCY[code] ?? [];
     setForm((f) => ({
       ...f,
       fromCurrency: code,
-      senderPaymentMethods: methods.slice(0, 2).map((m) => m.id),
+      selectedMethodId: "",
+      selectedAccountId: "",
     }));
   };
   const changeTo = (code: string) => {
@@ -307,12 +307,14 @@ function CreateDealModal({
       e.maxAmount = "Nhập số tiền tối đa";
     if (Number(form.minAmount) >= Number(form.maxAmount))
       e.maxAmount = "Tối đa phải lớn hơn tối thiểu";
-    if (form.senderPaymentMethods.length === 0)
-      e.sender = "Chọn ít nhất 1 hình thức";
+    if (!form.selectedAccountId)
+      e.sender = "Chọn hoặc thêm tài khoản nhận";
     if (form.recipientPaymentMethods.length === 0)
       e.recipient = "Chọn ít nhất 1 hình thức";
     return e;
   };
+
+  const selectedAccount = localAccounts.find(a => a.id === form.selectedAccountId);
 
   const handleSave = () => {
     const e = validate();
@@ -338,9 +340,33 @@ function CreateDealModal({
       expiresAt: "",
       notes: form.notes,
       transferTime: "",
-      senderPaymentMethods: form.senderPaymentMethods,
+      senderPaymentMethods: selectedAccount ? [selectedAccount.methodId] : [],
       recipientPaymentMethods: form.recipientPaymentMethods,
     });
+  };
+
+  const addSelectedMethod = addForm.methodId
+    ? getPaymentMethod(form.fromCurrency, addForm.methodId)
+    : undefined;
+
+  const handleAddAccount = () => {
+    if (!addForm.methodId || !addForm.label) return;
+    const newAcc: ProviderAccount = {
+      id: `pa${Date.now()}`,
+      methodId: addForm.methodId,
+      currency: form.fromCurrency,
+      label: addForm.label,
+      phone: addForm.phone,
+      email: addForm.email,
+      handle: addForm.handle,
+      bankName: addForm.bankName,
+      accountNumber: addForm.accountNumber,
+      accountName: addForm.accountName,
+    };
+    setLocalAccounts(prev => [...prev, newAcc]);
+    setForm(f => ({ ...f, selectedAccountId: newAcc.id }));
+    setAddForm({});
+    setShowAddAccount(false);
   };
 
   const fc = getCurrency(form.fromCurrency);
@@ -537,31 +563,100 @@ function CreateDealModal({
             </div>
           </div>
 
-          {/* Sender payment methods */}
+          {/* Sender — receiver account */}
           <div
-            className="rounded-2xl p-4"
+            className="rounded-2xl p-4 space-y-3"
             style={{ background: "#EFF6FF", border: "1.5px solid #BFDBFE" }}
           >
-            <p
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: "#1E40AF",
-                marginBottom: 10,
-              }}
-            >
-              💳 Người gửi {fc?.flag} thanh toán cho tôi qua
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>
+              Người thụ hưởng nhận {form.fromCurrency} bằng
             </p>
-            <PaymentMethodPicker
-              currency={form.fromCurrency}
-              selected={form.senderPaymentMethods}
-              onToggle={toggleSender}
-              label=""
-            />
+
+            {/* Radio method list */}
+            <div className="flex flex-wrap gap-2">
+              {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => {
+                const isSelected = form.selectedMethodId === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => setForm(f => ({
+                      ...f,
+                      selectedMethodId: m.id,
+                      selectedAccountId: f.selectedAccountId && localAccounts.find(a => a.id === f.selectedAccountId)?.methodId === m.id ? f.selectedAccountId : "",
+                    }))}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                    style={{
+                      background: isSelected ? "white" : "transparent",
+                      border: `1.5px solid ${isSelected ? PRIMARY : "#BFDBFE"}`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div
+                      className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ border: `2px solid ${isSelected ? PRIMARY : "#93C5FD"}`, background: isSelected ? PRIMARY : "transparent" }}
+                    >
+                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <MethodIcon id={m.id} icon={m.icon} size={14} />
+                    <span style={{ fontSize: 13, fontWeight: isSelected ? 700 : 400, color: isSelected ? "#1E40AF" : "#374151" }}>
+                      {m.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Selected account chip */}
+            {selectedAccount && (
+              <div
+                className="flex items-center gap-3 bg-white rounded-xl px-3 py-2.5"
+                style={{ border: "1.5px solid #BFDBFE" }}
+              >
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: "#EFF6FF" }}
+                >
+                  {(() => {
+                    const m = getPaymentMethod(form.fromCurrency, selectedAccount.methodId);
+                    return m ? <MethodIcon id={m.id} icon={m.icon} size={18} /> : <span style={{ fontSize: 16 }}>💳</span>;
+                  })()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>{selectedAccount.label}</p>
+                  <p style={{ fontSize: 11, color: "#6B7280" }}>
+                    {selectedAccount.phone || selectedAccount.email || selectedAccount.handle || selectedAccount.accountNumber || ""}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setForm(f => ({ ...f, selectedAccountId: "" }))}
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
+                >
+                  <X size={14} color="#9CA3AF" />
+                </button>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowPickAccount(true)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl"
+                style={{ background: "white", border: "1.5px solid #BFDBFE", cursor: "pointer" }}
+              >
+                <Wallet size={14} color={PRIMARY} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY }}>Chọn tài khoản</span>
+              </button>
+              <button
+                onClick={() => { setAddForm(form.selectedMethodId ? { methodId: form.selectedMethodId } : {}); setShowAddAccount(true); }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl"
+                style={{ background: PRIMARY, border: "none", cursor: "pointer" }}
+              >
+                <Plus size={14} color="white" />
+                <span style={{ fontSize: 13, fontWeight: 600, color: "white" }}>Thêm tài khoản</span>
+              </button>
+            </div>
             {errors.sender && (
-              <p style={{ color: "#EF4444", fontSize: 12, marginTop: 6 }}>
-                {errors.sender}
-              </p>
+              <p style={{ color: "#EF4444", fontSize: 12 }}>{errors.sender}</p>
             )}
           </div>
 
@@ -578,7 +673,7 @@ function CreateDealModal({
                 marginBottom: 10,
               }}
             >
-              📤 Tôi gửi tiền {tc?.flag} qua
+              Tôi gửi tiền {form.toCurrency} bằng
             </p>
             <PaymentMethodPicker
               currency={form.toCurrency}
@@ -634,6 +729,172 @@ function CreateDealModal({
             Đăng Deal
           </button>
         </div>
+
+        {/* Pick account overlay */}
+        {showPickAccount && (
+          <div className="absolute inset-0 bg-white z-10 flex flex-col rounded-t-3xl">
+            <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-100">
+              <button
+                onClick={() => setShowPickAccount(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              >
+                <ChevronLeft size={22} color="#374151" />
+              </button>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827", flex: 1, textAlign: "center", marginRight: 30 }}>
+                Chọn tài khoản nhận
+              </h3>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+              {(() => {
+                const filtered = localAccounts.filter(a =>
+                  a.currency === form.fromCurrency &&
+                  (!form.selectedMethodId || a.methodId === form.selectedMethodId)
+                );
+                if (filtered.length === 0) return (
+                  <div className="flex flex-col items-center py-12">
+                    <Wallet size={40} color="#E5E7EB" />
+                    <p style={{ color: "#9CA3AF", marginTop: 10, fontSize: 14 }}>
+                      Chưa có tài khoản{form.selectedMethodId ? ` ${getPaymentMethod(form.fromCurrency, form.selectedMethodId)?.name ?? ""}` : ""} nào
+                    </p>
+                  </div>
+                );
+                return filtered.map(acc => {
+                  const m = getPaymentMethod(form.fromCurrency, acc.methodId);
+                  const detail = acc.phone || acc.email || acc.handle || acc.accountNumber || "";
+                  const isSelected = form.selectedAccountId === acc.id;
+                  return (
+                    <button
+                      key={acc.id}
+                      onClick={() => { setForm(f => ({ ...f, selectedAccountId: acc.id })); setShowPickAccount(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left"
+                      style={{
+                        background: isSelected ? "#EFF6FF" : "white",
+                        border: `1.5px solid ${isSelected ? PRIMARY : "#E5E7EB"}`,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#F3F4F6" }}>
+                        {m ? <MethodIcon id={m.id} icon={m.icon} size={20} /> : <span style={{ fontSize: 18 }}>💳</span>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{acc.label}</p>
+                        {detail && <p style={{ fontSize: 12, color: "#6B7280" }}>{detail}</p>}
+                      </div>
+                      {isSelected && <Check size={18} color={PRIMARY} />}
+                    </button>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* Add account overlay */}
+        {showAddAccount && (
+          <div className="absolute inset-0 bg-white z-10 flex flex-col rounded-t-3xl">
+            <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-100">
+              <button
+                onClick={() => setShowAddAccount(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
+              >
+                <ChevronLeft size={22} color="#374151" />
+              </button>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827", flex: 1, textAlign: "center", marginRight: 30 }}>
+                Thêm tài khoản nhận
+              </h3>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
+                  Hình thức thanh toán
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => setAddForm(f => ({ ...f, methodId: m.id }))}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl"
+                      style={{
+                        background: addForm.methodId === m.id ? "#EFF6FF" : "#F9FAFB",
+                        border: `2px solid ${addForm.methodId === m.id ? PRIMARY : "#E5E7EB"}`,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <MethodIcon id={m.id} icon={m.icon} size={15} />
+                      <span style={{ fontSize: 12, fontWeight: addForm.methodId === m.id ? 700 : 400, color: addForm.methodId === m.id ? PRIMARY : "#374151" }}>
+                        {m.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Tên gợi nhớ</label>
+                <input
+                  value={addForm.label || ""}
+                  onChange={e => setAddForm(f => ({ ...f, label: e.target.value }))}
+                  placeholder="Ví dụ: Zelle chính, PayPal cá nhân..."
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              {addSelectedMethod && (
+                <div className="space-y-3 p-4 rounded-2xl" style={{ background: "#F8FAFF", border: "1.5px solid #DBEAFE" }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: PRIMARY }}>📋 Thông tin tài khoản</p>
+                  {addSelectedMethod.id === "venmo" && (
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Venmo username</label>
+                      <input value={addForm.handle || ""} onChange={e => setAddForm(f => ({ ...f, handle: e.target.value }))} placeholder="@username" style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                  )}
+                  {addSelectedMethod.requiresPhone && addSelectedMethod.id !== "venmo" && (
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Số điện thoại / Email liên kết</label>
+                      <input value={addForm.phone || ""} onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))} placeholder="+1 (xxx) xxx-xxxx hoặc email" style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                  )}
+                  {!addSelectedMethod.requiresPhone && !addSelectedMethod.requiresAccount && (
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Email tài khoản</label>
+                      <input value={addForm.email || ""} onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                    </div>
+                  )}
+                  {addSelectedMethod.requiresAccount && (
+                    <>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Tên ngân hàng</label>
+                        <input value={addForm.bankName || ""} onChange={e => setAddForm(f => ({ ...f, bankName: e.target.value }))} placeholder="Chase, Bank of America..." style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Số tài khoản / IBAN</label>
+                        <input value={addForm.accountNumber || ""} onChange={e => setAddForm(f => ({ ...f, accountNumber: e.target.value }))} placeholder="Số tài khoản hoặc IBAN" style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Tên chủ tài khoản</label>
+                        <input value={addForm.accountName || ""} onChange={e => setAddForm(f => ({ ...f, accountName: e.target.value }))} placeholder="Họ và tên" style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="px-4 py-4 border-t border-gray-100">
+              <button
+                onClick={handleAddAccount}
+                disabled={!addForm.methodId || !addForm.label}
+                className="w-full py-3.5 rounded-2xl text-white"
+                style={{
+                  background: addForm.methodId && addForm.label ? `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` : "#D1D5DB",
+                  border: "none",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: addForm.methodId && addForm.label ? "pointer" : "not-allowed",
+                }}
+              >
+                Lưu tài khoản
+              </button>
+            </div>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
@@ -1141,6 +1402,7 @@ function DealsTab({
               onDealsChange([d, ...deals]);
               setShowCreate(false);
             }}
+            accounts={PROVIDER_ACCOUNTS_INIT}
           />
         )}
       </AnimatePresence>

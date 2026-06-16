@@ -246,7 +246,7 @@ export default function App() {
       {/* Two-phone layout */}
       <div className="flex items-start justify-center gap-0 px-4 pb-8" style={{ minWidth: 860 }}>
         {/* Provider phone */}
-        <PhoneFrame label="Nhà cung cấp (Provider)" accent="#3B82F6" icon="🏦" syncPulse={syncFlash}>
+        <PhoneFrame label="Người đăng deal" accent="#3B82F6" icon="🏦" syncPulse={syncFlash}>
           <ProviderApp
             onRoleChange={() => {}}
             deals={providerDeals}

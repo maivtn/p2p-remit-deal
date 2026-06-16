@@ -47,7 +47,7 @@ export function RoleSelection({ onSelect }: Props) {
             </div>
             <div className="flex-1">
               <div style={{ fontSize: 17, fontWeight: 700, color: '#111827' }}>
-                Tôi là Nhà cung cấp
+                Tôi là Người đăng deal
               </div>
               <div style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
                 Đăng deal & nhận yêu cầu từ khách
