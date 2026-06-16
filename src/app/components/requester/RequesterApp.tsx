@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Home, Bell, User, ArrowRight, BadgeCheck, Clock,
+  Home, Bell, User, ArrowRight, BadgeCheck,
   ChevronRight, X, ArrowLeftRight, LogOut,
   CheckCircle2, XCircle, Inbox, Wallet, History, Settings,
   Star, Send, RefreshCw, ChevronLeft, Zap,
@@ -180,11 +180,19 @@ function NeedForm({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showAccountsModal, setShowAccountsModal] = useState(false);
+  const [selectedRecipientAccountId, setSelectedRecipientAccountId] = useState('');
+  const [showPickRecipientAccount, setShowPickRecipientAccount] = useState(false);
+  const [showAddRecipientAccount, setShowAddRecipientAccount] = useState(false);
+  const [addRecipientForm, setAddRecipientForm] = useState<Partial<ProviderAccount>>({});
   const set = (k: keyof Need, v: string) => { setNeed(n => ({ ...n, [k]: v })); setErrors(e => ({ ...e, [k]: '' })); };
 
   const senderCurr = getCurrency(need.senderCurrency);
   const recipientCurr = getCurrency(need.recipientCurrency);
   const previewRate = PREVIEW_RATES[need.senderCurrency]?.[need.recipientCurrency] ?? 0;
+  const selectedRecipientAccount = accounts.find(a => a.id === selectedRecipientAccountId);
+  const addRecipientSelectedMethod = addRecipientForm.methodId
+    ? getPaymentMethod(need.recipientCurrency, addRecipientForm.methodId)
+    : undefined;
   const previewAmount = need.amount && !isNaN(Number(need.amount)) && previewRate > 0
     ? Number(need.amount) * previewRate : 0;
 
@@ -192,10 +200,37 @@ function NeedForm({
 
   const recipientMethod: PaymentMethod | undefined = getPaymentMethod(need.recipientCurrency, need.recipientPaymentMethod);
 
+  const handleAddRecipientAccount = () => {
+    if (!addRecipientForm.methodId || !addRecipientForm.label) return;
+    const newAcc: ProviderAccount = {
+      id: `ra_${Date.now()}`,
+      methodId: addRecipientForm.methodId,
+      currency: need.recipientCurrency,
+      label: addRecipientForm.label,
+      phone: addRecipientForm.phone,
+      email: addRecipientForm.email,
+      handle: addRecipientForm.handle,
+      bankName: addRecipientForm.bankName,
+      accountNumber: addRecipientForm.accountNumber,
+      accountName: addRecipientForm.accountName,
+    };
+    onAccountsChange([...accounts, newAcc]);
+    setSelectedRecipientAccountId(newAcc.id);
+    setNeed(n => ({
+      ...n,
+      recipientName: newAcc.accountName || '',
+      recipientPhone: newAcc.phone || '',
+      recipientAccount: newAcc.accountNumber || '',
+      recipientBank: newAcc.bankName || '',
+    }));
+    setShowAddRecipientAccount(false);
+    setAddRecipientForm({});
+  };
+
   const validate = () => {
     const e: Record<string, string> = {};
     if (!need.amount || isNaN(Number(need.amount)) || Number(need.amount) <= 0) e.amount = 'Nhập số tiền hợp lệ';
-    if (!need.recipientName.trim()) e.recipientName = 'Nhập tên chủ tài khoản';
+    if (!need.recipientName.trim()) e.recipientName = 'Vui lòng chọn hoặc thêm tài khoản nhận';
     if (recipientMethod?.requiresPhone && !need.recipientPhone.trim()) e.recipientPhone = 'Nhập số điện thoại';
     if (recipientMethod?.requiresAccount && !need.recipientAccount.trim()) e.recipientAccount = 'Nhập số tài khoản';
     return e;
@@ -222,7 +257,8 @@ function NeedForm({
 
   const changeRecipientCurrency = (code: string) => {
     const methods = PAYMENT_METHODS_BY_CURRENCY[code] ?? [];
-    setNeed(n => ({ ...n, recipientCurrency: code, recipientPaymentMethod: methods[0]?.id ?? '' }));
+    setNeed(n => ({ ...n, recipientCurrency: code, recipientPaymentMethod: methods[0]?.id ?? '', recipientName: '', recipientPhone: '', recipientBank: '', recipientAccount: '' }));
+    setSelectedRecipientAccountId('');
   };
 
   const BANKS = ['Vietcombank', 'Techcombank', 'MB Bank', 'BIDV', 'Agribank', 'VPBank', 'ACB', 'TPBank', 'Sacombank'];
@@ -236,6 +272,197 @@ function NeedForm({
           onClose={() => setShowAccountsModal(false)}
         />
       )}
+
+      {/* Pick recipient account overlay */}
+      {showPickRecipientAccount && (
+        <div className="absolute inset-0 bg-white z-50 flex flex-col">
+          <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-100">
+            <button
+              onClick={() => setShowPickRecipientAccount(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+            >
+              <ChevronLeft size={22} color="#374151" />
+            </button>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827', flex: 1, textAlign: 'center', marginRight: 30 }}>
+              Chọn tài khoản nhận
+            </h3>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+            {(() => {
+              const filtered = accounts.filter(a =>
+                a.currency === need.recipientCurrency &&
+                a.methodId === need.recipientPaymentMethod
+              );
+              if (filtered.length === 0) return (
+                <div className="flex flex-col items-center py-12">
+                  <Wallet size={40} color="#E5E7EB" />
+                  <p style={{ color: '#9CA3AF', marginTop: 10, fontSize: 14 }}>
+                    Chưa có tài khoản {recipientMethod?.name ?? ''} nào
+                  </p>
+                </div>
+              );
+              return filtered.map(acc => {
+                const m = getPaymentMethod(need.recipientCurrency, acc.methodId);
+                const detail = acc.phone || acc.email || acc.handle || acc.accountNumber || '';
+                const isSelected = selectedRecipientAccountId === acc.id;
+                return (
+                  <button
+                    key={acc.id}
+                    onClick={() => {
+                      setSelectedRecipientAccountId(acc.id);
+                      setNeed(n => ({
+                        ...n,
+                        recipientName: acc.accountName || '',
+                        recipientPhone: acc.phone || '',
+                        recipientAccount: acc.accountNumber || '',
+                        recipientBank: acc.bankName || '',
+                      }));
+                      setErrors(e => ({ ...e, recipientName: '' }));
+                      setShowPickRecipientAccount(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left"
+                    style={{
+                      background: isSelected ? '#ECFDF5' : 'white',
+                      border: `1.5px solid ${isSelected ? PRIMARY_REQ : '#E5E7EB'}`,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#F3F4F6' }}>
+                      {m ? <MethodIcon id={m.id} icon={m.icon} size={20} /> : <span style={{ fontSize: 18 }}>💳</span>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{acc.label}</p>
+                      {detail && <p style={{ fontSize: 12, color: '#6B7280' }}>{detail}</p>}
+                    </div>
+                    {isSelected && <Check size={18} color={PRIMARY_REQ} />}
+                  </button>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* Add recipient account overlay */}
+      {showAddRecipientAccount && (
+        <div className="absolute inset-0 bg-white z-50 flex flex-col">
+          <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-100">
+            <button
+              onClick={() => setShowAddRecipientAccount(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+            >
+              <ChevronLeft size={22} color="#374151" />
+            </button>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111827', flex: 1, textAlign: 'center', marginRight: 30 }}>
+              Thêm tài khoản nhận
+            </h3>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            {addRecipientForm.methodId ? (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0' }}>
+                {(() => { const m = getPaymentMethod(need.recipientCurrency, addRecipientForm.methodId!); return m ? <MethodIcon id={m.id} icon={m.icon} size={16} /> : null; })()}
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#065F46' }}>
+                  {getPaymentMethod(need.recipientCurrency, addRecipientForm.methodId!)?.name}
+                </span>
+              </div>
+            ) : (
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Hình thức thanh toán</label>
+                <div className="flex flex-wrap gap-2">
+                  {(PAYMENT_METHODS_BY_CURRENCY[need.recipientCurrency] ?? []).map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => setAddRecipientForm(f => ({ ...f, methodId: m.id }))}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl"
+                      style={{
+                        background: addRecipientForm.methodId === m.id ? '#ECFDF5' : '#F9FAFB',
+                        border: `2px solid ${addRecipientForm.methodId === m.id ? PRIMARY_REQ : '#E5E7EB'}`,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <MethodIcon id={m.id} icon={m.icon} size={15} />
+                      <span style={{ fontSize: 12, fontWeight: addRecipientForm.methodId === m.id ? 700 : 400, color: addRecipientForm.methodId === m.id ? PRIMARY_REQ : '#374151' }}>
+                        {m.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Tên gợi nhớ</label>
+              <input
+                value={addRecipientForm.label || ''}
+                onChange={e => setAddRecipientForm(f => ({ ...f, label: e.target.value }))}
+                placeholder="Ví dụ: Vietcombank chính, Ví MoMo..."
+                style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {addRecipientSelectedMethod && (
+              <div className="space-y-3 p-4 rounded-2xl" style={{ background: '#F0FDF4', border: '1.5px solid #A7F3D0' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: PRIMARY_REQ }}>📋 Thông tin tài khoản</p>
+
+                {addRecipientSelectedMethod.id === 'venmo' && (
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Venmo username</label>
+                    <input value={addRecipientForm.handle || ''} onChange={e => setAddRecipientForm(f => ({ ...f, handle: e.target.value }))} placeholder="@username" style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                )}
+
+                {addRecipientSelectedMethod.requiresPhone && addRecipientSelectedMethod.id !== 'venmo' && (
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Số điện thoại / Email liên kết</label>
+                    <input value={addRecipientForm.phone || ''} onChange={e => setAddRecipientForm(f => ({ ...f, phone: e.target.value }))} placeholder="+84 xxx hoặc email" style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                )}
+
+                {!addRecipientSelectedMethod.requiresPhone && !addRecipientSelectedMethod.requiresAccount && (
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Email tài khoản</label>
+                    <input value={addRecipientForm.email || ''} onChange={e => setAddRecipientForm(f => ({ ...f, email: e.target.value }))} placeholder="email@example.com" style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                )}
+
+                {addRecipientSelectedMethod.requiresAccount && (
+                  <>
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Tên ngân hàng</label>
+                      <input value={addRecipientForm.bankName || ''} onChange={e => setAddRecipientForm(f => ({ ...f, bankName: e.target.value }))} placeholder="Vietcombank, Techcombank..." style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Số tài khoản</label>
+                      <input value={addRecipientForm.accountNumber || ''} onChange={e => setAddRecipientForm(f => ({ ...f, accountNumber: e.target.value }))} placeholder="Số tài khoản" style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Tên chủ tài khoản</label>
+                      <input value={addRecipientForm.accountName || ''} onChange={e => setAddRecipientForm(f => ({ ...f, accountName: e.target.value }))} placeholder="Họ và tên" style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="px-4 py-4 border-t border-gray-100">
+            <button
+              onClick={handleAddRecipientAccount}
+              disabled={!addRecipientForm.methodId || !addRecipientForm.label}
+              className="w-full py-3.5 rounded-2xl text-white"
+              style={{
+                background: addRecipientForm.methodId && addRecipientForm.label ? `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` : '#D1D5DB',
+                border: 'none',
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: addRecipientForm.methodId && addRecipientForm.label ? 'pointer' : 'not-allowed',
+              }}
+            >
+              Lưu tài khoản
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ background: `linear-gradient(135deg, ${PRIMARY_REQ}, #047857)` }} className="px-5 pt-12 pb-6 relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-44 h-44 rounded-full bg-white/10" />
@@ -347,9 +574,9 @@ function NeedForm({
                 currency={need.recipientCurrency}
                 selected={need.recipientPaymentMethod}
                 onSelect={id => {
-                  set('recipientPaymentMethod', id);
-                  // reset recipient detail fields when switching method
-                  setNeed(n => ({ ...n, recipientPaymentMethod: id, recipientPhone: '', recipientBank: '', recipientAccount: '', recipientAddress: '' }));
+                  setNeed(n => ({ ...n, recipientPaymentMethod: id, recipientName: '', recipientPhone: '', recipientBank: '', recipientAccount: '', recipientAddress: '' }));
+                  setSelectedRecipientAccountId('');
+                  setErrors(e => ({ ...e, recipientName: '', recipientPhone: '', recipientAccount: '' }));
                 }}
                 label={`Người nhận sẽ nhận qua (tại ${recipientCurr?.name ?? need.recipientCurrency})`}
               />
@@ -357,11 +584,11 @@ function NeedForm({
           </div>
         </div>
 
-        {/* ── CARD 3: Thông tin tài khoản nhận (adaptive) ── */}
+        {/* ── CARD 3: Thông tin người thụ hưởng ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 pt-4 pb-4">
             <div className="flex items-center gap-2 mb-3">
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5 }}>THÔNG TIN TÀI KHOẢN NHẬN</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Thông tin người thụ hưởng</p>
               {recipientMethod && (
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
                   <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={13} />
@@ -371,124 +598,71 @@ function NeedForm({
             </div>
 
             <div className="space-y-3">
-
-              {/* Saved Accounts Dropdown */}
-              {accounts.filter(a => a.currency === need.recipientCurrency && a.methodId === need.recipientPaymentMethod).length > 0 && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <p style={{ fontSize: 12, color: '#6B7280' }}>Chọn tài khoản đã lưu:</p>
-                    <button
-                      type="button"
-                      onClick={() => setShowAccountsModal(true)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg"
-                      style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', cursor: 'pointer' }}
-                    >
-                      <Settings size={12} color="#6B7280" />
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#4B5563' }}>Cài đặt</span>
-                    </button>
+              {/* Selected account chip */}
+              {selectedRecipientAccount && (
+                <div
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+                  style={{ background: 'white', border: '1.5px solid #A7F3D0' }}
+                >
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: '#ECFDF5' }}
+                  >
+                    {(() => {
+                      const m = getPaymentMethod(need.recipientCurrency, selectedRecipientAccount.methodId);
+                      return m ? <MethodIcon id={m.id} icon={m.icon} size={18} /> : <span style={{ fontSize: 16 }}>💳</span>;
+                    })()}
                   </div>
-                  <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-                    {accounts.filter(a => a.currency === need.recipientCurrency && a.methodId === need.recipientPaymentMethod).map(acc => (
-                      <button
-                        key={acc.id}
-                        onClick={() => {
-                          set('recipientName', acc.accountName || '');
-                          if (acc.phone) set('recipientPhone', acc.phone);
-                          if (acc.accountNumber) set('recipientAccount', acc.accountNumber);
-                          if (acc.bankName) set('recipientBank', acc.bankName);
-                        }}
-                        className="whitespace-nowrap px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 active:bg-gray-100 text-left"
-                      >
-                        <p style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{acc.label}</p>
-                        <p style={{ fontSize: 11, color: '#6B7280' }}>{acc.accountName}</p>
-                      </button>
-                    ))}
+                  <div className="flex-1 min-w-0">
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{selectedRecipientAccount.label}</p>
+                    <p style={{ fontSize: 11, color: '#6B7280' }}>
+                      {selectedRecipientAccount.phone || selectedRecipientAccount.email || selectedRecipientAccount.handle || selectedRecipientAccount.accountNumber || ''}
+                    </p>
                   </div>
+                  <button
+                    onClick={() => {
+                      setSelectedRecipientAccountId('');
+                      setNeed(n => ({ ...n, recipientName: '', recipientPhone: '', recipientBank: '', recipientAccount: '' }));
+                    }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+                  >
+                    <X size={14} color="#9CA3AF" />
+                  </button>
                 </div>
               )}
 
-              {/* Name – always shown */}
-
-              <div>
-                <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientName ? '#EF4444' : '#E5E7EB' }}>
-                  <UserRound size={16} color="#9CA3AF" />
-                  <input
-                    value={need.recipientName}
-                    onChange={e => set('recipientName', e.target.value)}
-                    placeholder="Tên chủ tài khoản *"
-                    className="flex-1 bg-transparent outline-none"
-                    style={{ fontSize: 14, color: '#111827' }}
-                  />
-                </div>
-                {errors.recipientName && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 3 }}>{errors.recipientName}</p>}
+              {/* 2 action buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowPickRecipientAccount(true)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl"
+                  style={{ background: 'white', border: '1.5px solid #A7F3D0', cursor: 'pointer' }}
+                >
+                  <Wallet size={14} color={PRIMARY_REQ} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: PRIMARY_REQ }}>Chọn tài khoản</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setAddRecipientForm({ methodId: need.recipientPaymentMethod });
+                    setShowAddRecipientAccount(true);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl"
+                  style={{ background: PRIMARY_REQ, border: 'none', cursor: 'pointer' }}
+                >
+                  <Plus size={14} color="white" />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>Thêm tài khoản</span>
+                </button>
               </div>
-
-              {/* Phone – for mobile wallets & digital methods */}
-              {recipientMethod?.requiresPhone && (
-                <div>
-                  <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientPhone ? '#EF4444' : '#E5E7EB' }}>
-                    <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={16} />
-                    <input
-                      value={need.recipientPhone}
-                      onChange={e => set('recipientPhone', e.target.value)}
-                      placeholder={`Số điện thoại ${recipientMethod.name} *`}
-                      className="flex-1 bg-transparent outline-none"
-                      style={{ fontSize: 14, color: '#111827' }}
-                      type="tel"
-                    />
-                  </div>
-                  {errors.recipientPhone && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 3 }}>{errors.recipientPhone}</p>}
-                </div>
+              {errors.recipientName && (
+                <p style={{ color: '#EF4444', fontSize: 12 }}>{errors.recipientName}</p>
               )}
-
-              {/* Bank + account – for bank transfer */}
-              {recipientMethod?.requiresAccount && (
-                <>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-3 bg-gray-50">
-                    <Building2 size={16} color="#9CA3AF" />
-                    {need.recipientCurrency === 'VND' ? (
-                      <select
-                        value={need.recipientBank}
-                        onChange={e => set('recipientBank', e.target.value)}
-                        className="flex-1 bg-transparent outline-none"
-                        style={{ fontSize: 14, color: need.recipientBank ? '#111827' : '#9CA3AF' }}
-                      >
-                        <option value="">Chọn ngân hàng</option>
-                        {BANKS.map(b => <option key={b} value={b}>{b}</option>)}
-                      </select>
-                    ) : (
-                      <input
-                        value={need.recipientBank}
-                        onChange={e => set('recipientBank', e.target.value)}
-                        placeholder="Tên ngân hàng"
-                        className="flex-1 bg-transparent outline-none"
-                        style={{ fontSize: 14, color: '#111827' }}
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 border rounded-xl px-3 py-3 bg-gray-50" style={{ borderColor: errors.recipientAccount ? '#EF4444' : '#E5E7EB' }}>
-                      <CreditCard size={16} color="#9CA3AF" />
-                      <input
-                        value={need.recipientAccount}
-                        onChange={e => set('recipientAccount', e.target.value)}
-                        placeholder="Số tài khoản *"
-                        className="flex-1 bg-transparent outline-none"
-                        style={{ fontSize: 14, color: '#111827' }}
-                      />
-                    </div>
-                    {errors.recipientAccount && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 3 }}>{errors.recipientAccount}</p>}
-                  </div>
-                </>
-              )}
-
             </div>
           </div>
         </div>
 
         {/* ── Note ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-4">
-          <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5, marginBottom: 8 }}>GHI CHÚ CHO NHÀ CUNG CẤP</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', letterSpacing: 0.5, marginBottom: 8 }}>Ghi chú</p>
           <textarea
             value={need.message}
             onChange={e => set('message', e.target.value)}
@@ -596,7 +770,7 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle2 size={15} color={PRIMARY_REQ} />
               <p style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>
-                {matching.length} deal phù hợp — sắp xếp theo hình thức + tỷ giá
+                {matching.length} deal phù hợp — ưu tiên khớp hình thức + tỷ giá tốt nhất
               </p>
             </div>
 
@@ -665,40 +839,35 @@ function DealResults({ need, onBack, onSelectDeal, availableDeals }: {
                     </div>
 
                     {/* Payment method badges */}
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <div className="flex items-center gap-1">
-                        <span style={{ fontSize: 11, color: '#6B7280' }}>Nhận qua:</span>
-                        {deal.senderPaymentMethods.slice(0, 3).map(id => {
-                          const m = getPaymentMethod(deal.fromCurrency, id);
-                          const match = id === need.senderPaymentMethod;
-                          return m ? (
-                            <span key={id} className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-xs"
-                              style={{ background: match ? '#ECFDF5' : '#F3F4F6', border: `1px solid ${match ? '#6EE7B7' : '#E5E7EB'}`, fontWeight: match ? 700 : 400, color: match ? '#065F46' : '#6B7280' }}>
-                              {m.icon} {m.name}
-                            </span>
-                          ) : null;
-                        })}
-                      </div>
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0 }}>Nhận bằng:</span>
+                      {(() => {
+                        const id = deal.senderPaymentMethods[0];
+                        if (!id) return null;
+                        const m = getPaymentMethod(deal.fromCurrency, id);
+                        const match = id === need.senderPaymentMethod;
+                        return m ? (
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs"
+                            style={{ background: match ? '#ECFDF5' : '#F3F4F6', border: `1px solid ${match ? '#6EE7B7' : '#E5E7EB'}`, fontWeight: match ? 700 : 400, color: match ? '#065F46' : '#6B7280' }}>
+                            <MethodIcon id={m.id} icon={m.icon} size={13} />
+                            {m.name}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <div className="flex items-center gap-1">
-                        <span style={{ fontSize: 11, color: '#6B7280' }}>Gửi qua:</span>
-                        {deal.recipientPaymentMethods.slice(0, 3).map(id => {
-                          const m = getPaymentMethod(deal.toCurrency, id);
-                          const match = id === need.recipientPaymentMethod;
-                          return m ? (
-                            <span key={id} className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-xs"
-                              style={{ background: match ? '#ECFDF5' : '#F3F4F6', border: `1px solid ${match ? '#6EE7B7' : '#E5E7EB'}`, fontWeight: match ? 700 : 400, color: match ? '#065F46' : '#6B7280' }}>
-                              {m.icon} {m.name}
-                            </span>
-                          ) : null;
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock size={12} color="#9CA3AF" />
-                      <span style={{ fontSize: 12, color: '#6B7280' }}>{deal.transferTime}</span>
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0 }}>Gửi bằng:</span>
+                      {deal.recipientPaymentMethods.slice(0, 3).map(id => {
+                        const m = getPaymentMethod(deal.toCurrency, id);
+                        const match = id === need.recipientPaymentMethod;
+                        return m ? (
+                          <span key={id} className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs"
+                            style={{ background: match ? '#ECFDF5' : '#F3F4F6', border: `1px solid ${match ? '#6EE7B7' : '#E5E7EB'}`, fontWeight: match ? 700 : 400, color: match ? '#065F46' : '#6B7280' }}>
+                            <MethodIcon id={m.id} icon={m.icon} size={13} />
+                            {m.name}
+                          </span>
+                        ) : null;
+                      })}
                     </div>
 
                     {deal.notes && (
@@ -798,14 +967,14 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
         <button onClick={onBack} className="flex items-center gap-1 mb-4" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)' }}>
           <ChevronLeft size={18} /><span style={{ fontSize: 14 }}>Chọn deal khác</span>
         </button>
-        <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700 }}>Xác nhận yêu cầu</h1>
+        <h1 style={{ color: 'white', fontSize: 20, fontWeight: 700 }}>Xác nhận deal</h1>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 3 }}>Kiểm tra kỹ trước khi gửi</p>
       </div>
 
       <div className="px-4 py-4 space-y-3">
         {/* Provider */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, marginBottom: 10 }}>NHÀ CUNG CẤP</p>
+          <p style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, marginBottom: 10 }}>Người tạo deal</p>
           <div className="flex items-center gap-3">
             <Avatar name={deal.providerName} size={48} />
             <div>
@@ -840,7 +1009,6 @@ function ConfirmRequest({ deal, need, onBack, onConfirm }: {
               <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: PRIMARY_REQ }}>
                 <ArrowRight size={12} color="white" />
               </div>
-              <p style={{ fontSize: 10, color: '#9CA3AF' }}>{deal.transferTime}</p>
             </div>
             <div className="text-center flex-1">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mx-auto mb-2 shadow-sm">

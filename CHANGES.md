@@ -124,3 +124,31 @@ Multi-select checkbox (ô vuông xanh có ✓ khi chọn), nhiều hình thức.
 | `HÌNH THỨC THANH TOÁN` (section header) | `Tôi gửi bằng` |
 
 **File:** `src/app/components/requester/RequesterApp.tsx`
+
+---
+
+## Section "Thông tin người thụ hưởng" (RequesterApp – NeedForm)
+
+### Tiêu đề
+`THÔNG TIN TÀI KHOẢN NHẬN` → `Thông tin người thụ hưởng`
+
+### Thiết kế lại
+
+**Trước:** Danh sách tài khoản đã lưu (scroll ngang) + các input thủ công (tên, SĐT, ngân hàng, số tài khoản).
+
+**Sau:** 2 nút hành động, tuỳ thuộc vào `recipientPaymentMethod` đã chọn ở card trên:
+1. **Chọn tài khoản** – mở overlay, lọc danh sách theo `recipientCurrency` + `recipientPaymentMethod`.
+2. **Thêm tài khoản** – mở overlay form; phương thức được khoá sẵn từ lựa chọn trên (chip hiển thị, không chọn lại).
+
+### Chip tài khoản đang chọn
+Khi tài khoản được pick/add: hiển thị chip (icon phương thức + tên gợi nhớ + chi tiết). Có nút ✕ để bỏ chọn.
+
+### Reset khi đổi phương thức/tiền tệ
+Đổi `recipientPaymentMethod` hoặc `recipientCurrency` → reset chip + các trường `recipientName/Phone/Bank/Account`.
+
+### Logic tài khoản
+- Nguồn dữ liệu: `REQUESTER_ACCOUNTS_INIT` (qua prop `accounts`).
+- Tài khoản mới thêm: tự động được chọn, lưu vào state qua `onAccountsChange`.
+- Các trường `need` (recipientName, recipientPhone, recipientBank, recipientAccount) vẫn được điền từ tài khoản được chọn để truyền vào request.
+
+**File:** `src/app/components/requester/RequesterApp.tsx` – `NeedForm`

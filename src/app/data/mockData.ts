@@ -531,17 +531,8 @@ export const PROVIDER_DEALS_INIT: Deal[] = [
     expiresAt: "2026-03-10T00:00:00",
     notes: "Chuyển nhanh 1-2 giờ.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: [
-      "zelle",
-      "venmo",
-      "paypal",
-      "bank_transfer",
-    ],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-      ],
+    senderPaymentMethods: ["zelle"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "d2",
@@ -561,12 +552,8 @@ export const PROVIDER_DEALS_INIT: Deal[] = [
     expiresAt: "2026-03-08T00:00:00",
     notes: "EUR → VND tỷ giá tốt.",
     transferTime: "2-4 giờ",
-    senderPaymentMethods: ["paypal", "sepa", "bank_transfer"],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-    ],
+    senderPaymentMethods: ["paypal"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "d3",
@@ -586,7 +573,7 @@ export const PROVIDER_DEALS_INIT: Deal[] = [
     expiresAt: "2026-03-15T00:00:00",
     notes: "Chỉ xử lý lượng lớn, liên hệ trước.",
     transferTime: "Trong ngày",
-    senderPaymentMethods: ["bank_transfer", "zelle"],
+    senderPaymentMethods: ["bank_transfer"],
     recipientPaymentMethods: ["bank_transfer"],
   },
 ];
@@ -611,17 +598,8 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-15T00:00:00",
     notes: "Chuyển trong 30-60 phút. Hỗ trợ mọi hình thức.",
     transferTime: "30-60 phút",
-    senderPaymentMethods: [
-      "zelle",
-      "venmo",
-      "paypal",
-      "bank_transfer",
-    ],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-      ],
+    senderPaymentMethods: ["zelle"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "ad2",
@@ -641,7 +619,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-10T00:00:00",
     notes: "Chuyển trong ngày.",
     transferTime: "1-3 giờ",
-    senderPaymentMethods: ["zelle", "paypal"],
+    senderPaymentMethods: ["zelle"],
     recipientPaymentMethods: ["momo", "bank_transfer"],
   },
   {
@@ -662,11 +640,8 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-05T00:00:00",
     notes: "Ưu tiên Venmo.",
     transferTime: "2-4 giờ",
-    senderPaymentMethods: ["venmo", "bank_transfer"],
-    recipientPaymentMethods: [
-      "zalopay",
-      "bank_transfer",
-      ],
+    senderPaymentMethods: ["venmo"],
+    recipientPaymentMethods: ["zalopay", "bank_transfer"],
   },
   {
     id: "ad4",
@@ -686,12 +661,8 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-12T00:00:00",
     notes: "Tỷ giá tốt nhất thị trường.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypal", "sepa", "bank_transfer"],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-    ],
+    senderPaymentMethods: ["paypal"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "ad5",
@@ -711,7 +682,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-08T00:00:00",
     notes: "GBP → VND. Uy tín, nhanh chóng.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypal", "bank_transfer"],
+    senderPaymentMethods: ["paypal"],
     recipientPaymentMethods: ["momo", "bank_transfer"],
   },
   {
@@ -732,12 +703,8 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-11T00:00:00",
     notes: "Nhận PayNow, chuyển MoMo/ZaloPay.",
     transferTime: "2-4 giờ",
-    senderPaymentMethods: ["paynow", "bank_transfer"],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-    ],
+    senderPaymentMethods: ["paynow"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "ad7",
@@ -757,7 +724,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-07T00:00:00",
     notes: "AUD → VND. PayID được ưu tiên.",
     transferTime: "2-3 giờ",
-    senderPaymentMethods: ["payid", "paypal", "bank_transfer"],
+    senderPaymentMethods: ["payid"],
     recipientPaymentMethods: ["bank_transfer", "momo"],
   },
   {
@@ -778,12 +745,8 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-14T00:00:00",
     notes: "Yen → VND. PayPay hoặc chuyển khoản.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypay", "bank_transfer"],
-    recipientPaymentMethods: [
-      "momo",
-      "zalopay",
-      "bank_transfer",
-    ],
+    senderPaymentMethods: ["paypay"],
+    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
   },
   {
     id: "ad9",
@@ -804,12 +767,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     notes:
       "USD → USD tại VN. Phí 2%. Mọi ngân hàng có tài khoản ngoại tệ.",
     transferTime: "1-2 giờ",
-    senderPaymentMethods: [
-      "zelle",
-      "venmo",
-      "paypal",
-      "bank_transfer",
-    ],
+    senderPaymentMethods: ["zelle"],
     recipientPaymentMethods: ["bank_transfer"],
   },
   {
@@ -830,7 +788,7 @@ export const AVAILABLE_DEALS: Deal[] = [
     expiresAt: "2026-03-09T00:00:00",
     notes: "EUR → USD. Phí thấp, chuyển nhanh.",
     transferTime: "2-3 giờ",
-    senderPaymentMethods: ["paypal", "sepa", "bank_transfer"],
+    senderPaymentMethods: ["paypal"],
     recipientPaymentMethods: ["bank_transfer", "zelle"],
   },
 ];
