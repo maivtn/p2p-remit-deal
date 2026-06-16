@@ -180,6 +180,15 @@ function PaymentMethodPicker({
                 cursor: "pointer",
               }}
             >
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: selected.includes(m.id) ? PRIMARY : "white",
+                  border: `1.5px solid ${selected.includes(m.id) ? PRIMARY : "#D1D5DB"}`,
+                }}
+              >
+                {selected.includes(m.id) && <Check size={10} color="white" strokeWidth={3} />}
+              </div>
               <MethodIcon id={m.id} icon={m.icon} size={15} />
               <span
                 style={{
@@ -804,30 +813,41 @@ function CreateDealModal({
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-                  Hình thức thanh toán
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => (
-                    <button
-                      key={m.id}
-                      onClick={() => setAddForm(f => ({ ...f, methodId: m.id }))}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl"
-                      style={{
-                        background: addForm.methodId === m.id ? "#EFF6FF" : "#F9FAFB",
-                        border: `2px solid ${addForm.methodId === m.id ? PRIMARY : "#E5E7EB"}`,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <MethodIcon id={m.id} icon={m.icon} size={15} />
-                      <span style={{ fontSize: 12, fontWeight: addForm.methodId === m.id ? 700 : 400, color: addForm.methodId === m.id ? PRIMARY : "#374151" }}>
-                        {m.name}
-                      </span>
-                    </button>
-                  ))}
+              {form.selectedMethodId ? (
+                /* Method locked from radio selection */
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: "#EFF6FF", border: "1.5px solid #BFDBFE" }}>
+                  {(() => { const m = getPaymentMethod(form.fromCurrency, form.selectedMethodId); return m ? <MethodIcon id={m.id} icon={m.icon} size={16} /> : null; })()}
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1E40AF" }}>
+                    {getPaymentMethod(form.fromCurrency, form.selectedMethodId)?.name}
+                  </span>
                 </div>
-              </div>
+              ) : (
+                /* Method picker when none pre-selected */
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
+                    Hình thức thanh toán
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => (
+                      <button
+                        key={m.id}
+                        onClick={() => setAddForm(f => ({ ...f, methodId: m.id }))}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl"
+                        style={{
+                          background: addForm.methodId === m.id ? "#EFF6FF" : "#F9FAFB",
+                          border: `2px solid ${addForm.methodId === m.id ? PRIMARY : "#E5E7EB"}`,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <MethodIcon id={m.id} icon={m.icon} size={15} />
+                        <span style={{ fontSize: 12, fontWeight: addForm.methodId === m.id ? 700 : 400, color: addForm.methodId === m.id ? PRIMARY : "#374151" }}>
+                          {m.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div>
                 <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>Tên gợi nhớ</label>
                 <input
