@@ -44,7 +44,6 @@ body{
   font-size:21px;
   line-height:1.15;
   margin:0;
-  letter-spacing:-.02em;
 }
 .app-subtitle{
   margin:6px 0 0;
@@ -70,11 +69,10 @@ body{
 }
 .hero-kicker{font-size:13px; opacity:.94; margin-bottom:6px;}
 .hero-title{
-  font-size:24px;
+  font-size:20px;
   line-height:1.05;
-  font-weight:900;
+  font-weight:700;
   margin:0 0 20px;
-  letter-spacing:-.03em;
 }
 .hero-card{
   background:rgba(255,255,255,.16);
@@ -87,7 +85,6 @@ body{
 .section-title{
   font-size:18px;
   font-weight:900;
-  letter-spacing:-.02em;
   margin:18px 0 2px;
 }
 .section-caption{
@@ -487,7 +484,7 @@ body{
 }
 
 .hero-title{
-  font-size:34px;
+  font-size:28px;
 }
 
 .tabs-wrap{

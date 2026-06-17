@@ -620,7 +620,7 @@ function renderRatingSection(data){
   if(!el) return;
   if(!data.showRating){ el.innerHTML = ""; return; }
   el.innerHTML = `
-    <section class="form-card">
+    <section class="form-card p-0">
       <div class="rating-card">
         <div class="fw-bold">Đánh giá giao dịch</div>
         <div class="small-muted mt-1">Giao dịch đã hoàn tất. Hãy đánh giá trải nghiệm với đối tác.</div>
@@ -634,12 +634,12 @@ function renderRatingSection(data){
         <div class="mb-3">
           <div class="small text-muted mb-2">Gợi ý nhận xét:</div>
           <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Giao dịch nhanh chóng">Nhanh chóng</button>
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Đúng hẹn cam kết">Đúng hẹn</button>
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Uy tín, đáng tin cậy">Uy tín</button>
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Giao tiếp tốt, phản hồi nhanh">Giao tiếp tốt</button>
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Tỷ giá hợp lý">Tỷ giá tốt</button>
-            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Rất chuyên nghiệp">Chuyên nghiệp</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Giao dịch nhanh chóng">Nhanh chóng</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Đúng hẹn cam kết">Đúng hẹn</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Uy tín, đáng tin cậy">Uy tín</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Giao tiếp tốt, phản hồi nhanh">Giao tiếp tốt</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Tỷ giá hợp lý">Tỷ giá tốt</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill rating-chip" data-suggestion="Rất chuyên nghiệp">Chuyên nghiệp</button>
           </div>
         </div>
         <textarea class="form-control mb-3" rows="3" id="ratingTextarea" placeholder="Nhập nhận xét hoặc chọn gợi ý bên trên..."></textarea>
