@@ -643,7 +643,7 @@ function renderRatingSection(data){
           </div>
         </div>
         <textarea class="form-control mb-3" rows="3" id="ratingTextarea" placeholder="Nhập nhận xét hoặc chọn gợi ý bên trên..."></textarea>
-        <button class="btn btn-outline-primary fw-bold" data-submit-rating><i class="bi bi-star-fill"></i> Đánh giá</button>
+        <button class="btn btn-primary fw-bold" data-submit-rating><i class="bi bi-star-fill"></i> Gửi đánh giá</button>
       </div>
     </section>
   `;
