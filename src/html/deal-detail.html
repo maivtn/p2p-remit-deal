@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/app.css" rel="stylesheet">
+  <title>Tìm deal</title>
+  <title>Tìm Deal</title>
+  <title>Chi tiết deal</title>
+</head>
+
+<body data-active-tab="searchDeals">
+  <div class="app-shell">
+    <header class="screen-toolbar blue">
+      <a class="text-white text-decoration-none" href="deal-results.html"><i class="bi bi-chevron-left"></i> Quay lại
+        kết quả</a>
+      <h1 class="title">Chi tiết deal</h1>
+    </header>
+
+    <main class="app-page">
+      <section class="deal-detail-hero">
+        <h1 class="deal-detail-title">Deal phù hợp với nhu cầu chuyển tiền của bạn</h1>
+        <p class="deal-detail-subtitle">Xem kỹ thông tin deal trước khi chọn. Sau khi xác nhận, giao dịch sẽ chuyển sang
+          trạng thái chờ bên kia chấp nhận trong 15 phút.</p>
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <div class="deal-detail-rate">
+              <div class="small-muted">Cặp tiền</div>
+              <div id="dealPair">VND → USD</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="deal-detail-rate">
+              <div class="small-muted">Giới hạn</div>
+              <div id="dealAmount">$99 - $799</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="deal-detail-rate">
+              <div class="small-muted">Tỷ giá</div>
+              <div id="dealRate">1 USD = 25.500đ</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="desktop-grid">
+        <div class="desktop-col-7">
+          <section class="form-card">
+            <h2 class="section-title mt-0">Thông tin thanh toán của deal</h2>
+            <div id="dealMethods"></div>
+          </section>
+          <section class="form-card" id="cardAccountInfo"><h2 class="section-title mt-0">Tài khoản người thụ hưởng</h2><div id="dealAccountInfo"></div></section>
+          <section class="form-card">
+            <h2 class="section-title mt-0">Ghi chú của deal</h2>
+            <p class="small-muted mb-0">Có thể thanh toán VND qua MoMo, ZaloPay hoặc chuyển khoản ngân hàng. Ưu tiên xử
+              lý nhanh trong giờ hành chính.</p>
+          </section>
+        </div>
+
+        <aside class="desktop-col-5">
+          <section class="form-card desktop-sticky">
+            <h2 class="section-title mt-0">Điều gì xảy ra sau khi chọn deal?</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="fw-bold">1. Bạn xác nhận chọn deal</div>
+                <div class="small-muted">Giao dịch được tạo với trạng thái chờ bên kia chấp nhận.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="fw-bold">2. Bên kia có 15 phút để xử lý</div>
+                <div class="small-muted">Nếu bên kia không chấp nhận hoặc huỷ trong 15 phút, giao dịch hết hạn.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="fw-bold">3. Sau khi chấp nhận</div>
+                <div class="small-muted">Giao dịch chuyển sang đang xử lý, hai bên có 1 giờ để upload bằng chứng.</div>
+              </div>
+            </div>
+            <div class="detail-cta-sticky mt-3"><a class="btn btn-primary btn-lg w-100" href="select-deal.html">Chọn
+                deal này</a></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <div class="tabs-wrap">
+      <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/mock-data.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/deal-detail.js"></script>
+</body>
+
+</html>

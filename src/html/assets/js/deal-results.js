@@ -1,0 +1,41 @@
+
+document.addEventListener("DOMContentLoaded", () => {
+  const results = document.getElementById("dealResultsList");
+  if(!results) return;
+
+  results.innerHTML = mockDealsB.map(deal => `
+    <div class="deal-card">
+      <div class="name-line">
+        <div>
+          <h3 class="card-name">Tran *** B</h3>
+          <div class="small-muted">
+            ${currencyFlag(deal.beneficiaryReceiveCurrency.currency)} ${deal.beneficiaryReceiveCurrency.currency}
+            →
+            ${currencyFlag(deal.senderPayCurrency.currency)} ${deal.senderPayCurrency.currency}
+            · $${deal.amountLimit.minUsd}–$${deal.amountLimit.maxUsd}
+          </div>
+        </div>
+        <span class="badge-soft badge-success">Phù hợp</span>
+      </div>
+
+      <div class="result-rate-action-row mt-2">
+        <div>
+          <div class="small-muted">Tỷ giá</div>
+          <div class="rate-blue">${deal.exchangeRate.rate.toLocaleString("vi-VN")}đ/USD</div>
+        </div>
+        <a href="deal-detail.html" class="btn btn-primary btn-sm">Xem chi tiết</a>
+      </div>
+
+      <div class="result-method-split mt-3">
+        <div class="result-method-row">
+          <div class="result-method-label">Nhận qua:</div>
+          <div class="result-method-tags">${deal.senderPaymentMethods.map(m => methodTag(m, "green")).join("")}</div>
+        </div>
+        <div class="result-method-row">
+          <div class="result-method-label">Gửi qua:</div>
+          <div class="result-method-tags">${methodTag(deal.beneficiaryReceiveMethod)}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+});

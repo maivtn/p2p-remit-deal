@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="assets/css/app.css" rel="stylesheet">
+<title>Tìm deal</title>
+<title>Tìm Deal</title>
+<title>Case 08 - Chờ mình chấp nhận</title>
+</head>
+<body data-active-tab="history" data-detail-case="case-08">
+<div class="app-shell">
+  <header class="screen-toolbar blue">
+    <a class="text-white text-decoration-none" href="history.html"><i class="bi bi-chevron-left"></i> Quay lại</a>
+    <h1 class="title">Chi tiết giao dịch</h1>
+  </header>
+
+  <main class="app-page">
+    <div class="accept-fee-hold-note alert alert-warning small mb-3">Khi chấp nhận giao dịch, mỗi bên bị trừ phí 0.5% từ ví USDV trong VLINKPAY, phí không hoàn lại. Đồng thời ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch.</div>
+    <div class="case-switcher" id="caseSwitcher"></div>
+
+    <section class="form-card">
+      <div class="name-line">
+        <div>
+          <h2 class="section-title mt-0" id="detailCaseTitle">Chi tiết giao dịch</h2>
+          <p class="section-caption mb-0" id="detailCaseDescription">Theo dõi và xử lý giao dịch</p>
+        </div>
+        <span class="badge-soft badge-processing" id="detailStatusBadge">Đang xử lý</span>
+      </div>
+      <div class="summary-line"><span>Mã giao dịch</span><strong>TXN-USD-VND-001</strong></div>
+      <div class="summary-line"><span>Bạn gửi</span><strong>$500</strong></div>
+      <div class="summary-line"><span>Người thụ hưởng nhận</span><strong>12.750.000đ</strong></div>
+      <div class="summary-line"><span>Tỷ giá</span><strong>1 USD = 25.500đ</strong></div>
+      <div class="mt-3" id="caseSummaryNote"></div>
+    </section>
+
+    <div id="countdownPanel"></div>
+    <div id="myAcceptancePanel"></div>
+    <div id="acceptancePanel"></div>
+
+
+    <div id="paymentFlows"></div>
+    <div id="ratingSection"></div>
+    <div id="disputeSection"></div>
+
+    <section class="form-card" id="cardHistory">
+      <h2 class="section-title mt-0">Lịch sử hoạt động</h2>
+      <div class="timeline" id="activityTimeline"></div>
+    </section>
+  </main>
+
+
+  <div class="modal fade" id="confirmPaidModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered confirm-paid-dialog">
+      <div class="modal-content confirm-paid-modal">
+        <div class="confirm-paid-header">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h5 class="confirm-paid-title"><i class="bi bi-upload"></i><span>Xác nhận đã gửi tiền</span></h5>
+              <div class="confirm-paid-subtitle" id="confirmPaidSubtitle">Tải lên bằng chứng bạn đã gửi tiền.</div>
+            </div>
+            <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+        <div class="confirm-paid-body">
+          <div class="confirm-paid-section-title">Upload bằng chứng đã gửi tiền (bắt buộc)</div>
+          <div data-upload-control data-upload-id="confirm_paid_proof" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Có thể upload nhiều bằng chứng từ thiết bị của bạn" data-formats-label="Hỗ trợ image, video, audio." class="compact" id="confirmPaidUpload"></div>
+          <div class="confirm-paid-note-label">📝 Ghi chú / Mô tả</div>
+          <textarea class="form-control confirm-paid-note" id="confirmPaidNote" placeholder="Ví dụ: Đã chuyển đủ số tiền, mã GD: ..."></textarea>
+        </div>
+        <div class="modal-footer confirm-paid-footer">
+          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Hủy</button>
+          <button class="btn btn-success flex-fill" id="confirmPaidSubmitBtn" disabled>✅ Xác nhận gửi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="acceptIncomingDealModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width:460px">
+      <div class="modal-content accept-modal-card">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title fw-black">Xác nhận chấp nhận giao dịch</h5>
+            <div class="small-muted">Sau khi chấp nhận, giao dịch chuyển sang tiến trình gửi tiền và upload bằng chứng.</div>
+          </div>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="incoming-deal-summary modal-summary">
+            <div class="incoming-deal-title">
+              <span class="masked-party"><span class="avatar">B</span> Tran *** B</span>
+              <span class="small-muted">Deal của bên B</span>
+            </div>
+
+            <div class="summary-line"><span>Cặp tiền tệ</span><strong>VND → USD</strong></div>
+            <div class="summary-line"><span>B gửi</span><strong>12.750.000đ VND</strong></div>
+            <div class="summary-line"><span>B muốn nhận</span><strong>$500 USD</strong></div>
+            <div class="summary-line"><span>Gửi qua</span><strong>MoMo</strong></div>
+            <div class="summary-line"><span>Nhận qua</span><strong>Zelle</strong></div>
+          </div>
+
+          <div class="alert alert-warning mt-3 small mb-0">
+            Khi chấp nhận, bạn cần gửi tiền đúng thông tin, phí 0.5% mỗi bên sẽ bị trừ bằng ví USDV và số tiền giao dịch sẽ được hold theo rule bảo vệ giao dịch.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Huỷ</button>
+          <a class="btn btn-success flex-fill" href="transaction-detail-case-02-accepted-upload-proof.html">Đồng ý & Chấp nhận</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="createDisputeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable dispute-action-dialog">
+      <div class="modal-content dispute-action-modal">
+        <div class="dispute-action-header">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h5 class="dispute-action-title"><i class="bi bi-exclamation-triangle"></i><span>Gửi khiếu nại</span></h5>
+              <div class="dispute-action-subtitle">Upload hình ảnh, video hoặc audio làm bằng chứng. Tối đa 6 file.</div>
+            </div>
+            <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+        <div class="dispute-action-body">
+          <div class="dispute-upload-note">Bằng chứng có thể là ảnh chụp màn hình, video quay màn hình, hoặc audio ghi âm. Hỗ trợ nhiều file, tối đa 6 file.</div>
+          <div data-upload-control data-upload-id="create_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh, video hoặc audio. Tối đa 6 file." class="compact" id="createDisputeUpload"></div>
+          <label class="form-label mt-3">Ghi chú khiếu nại</label>
+          <textarea class="form-control" rows="4" placeholder="Mô tả vấn đề: chưa nhận tiền, nhận thiếu, proof không đúng..."></textarea>
+        </div>
+        <div class="modal-footer dispute-action-footer">
+          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Hủy</button>
+          <button class="btn btn-danger flex-fill" id="createDisputeSubmitBtn" disabled><i class="bi bi-send"></i> Gửi khiếu nại</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="explainDisputeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable dispute-action-dialog">
+      <div class="modal-content dispute-action-modal">
+        <div class="dispute-action-header explain">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h5 class="dispute-action-title"><i class="bi bi-chat-square-text"></i><span>Giải thích về khiếu nại</span></h5>
+              <div class="dispute-action-subtitle">Bổ sung giải thích và bằng chứng khi bên kia mở khiếu nại. Tối đa 6 file.</div>
+            </div>
+            <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+        <div class="dispute-action-body">
+          <div class="dispute-upload-note">Bạn có thể upload hình ảnh, video hoặc audio để giải thích về khiếu nại của bên kia. Tối đa 6 file.</div>
+          <div data-upload-control data-upload-id="explain_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh, video hoặc audio. Tối đa 6 file." class="compact" id="explainDisputeUpload"></div>
+          <label class="form-label mt-3">Ghi chú giải thích</label>
+          <textarea class="form-control" rows="4" placeholder="Giải thích chi tiết: đã chuyển lúc nào, mã giao dịch, bằng chứng bổ sung..."></textarea>
+        </div>
+        <div class="modal-footer dispute-action-footer">
+          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Hủy</button>
+          <button class="btn btn-primary flex-fill" id="explainDisputeSubmitBtn" disabled><i class="bi bi-send"></i> Gửi giải thích</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="tabs-wrap">
+    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/detail-cases.js"></script>
+</body>
+</html>

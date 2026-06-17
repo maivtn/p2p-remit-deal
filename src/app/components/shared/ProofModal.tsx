@@ -421,12 +421,12 @@ export function ProofCard({
 }
 
 // ── Dual proof sections (detail screen) ───────────────────────
-export function defaultOpenPaymentSection(status: string): boolean {
-  return status === "accepted" || status === "payment_sent";
+export function defaultOpenPaymentSection(_status: string): boolean {
+  return true;
 }
 
-export function defaultOpenTransferSection(status: string): boolean {
-  return ["payment_confirmed", "transfer_sent", "completed"].includes(status);
+export function defaultOpenTransferSection(_status: string): boolean {
+  return true;
 }
 
 export function TransactionProofSections({
@@ -962,28 +962,55 @@ export function EscrowBanner({
   );
 }
 
-// ── Step Progress Bar ─────────────────────────────────────────
-const STEPS: { key: string; label: string }[] = [
-  { key: "accepted", label: "Chờ TT" },
-  { key: "payment_sent", label: "XN nhận" },
-  { key: "payment_confirmed", label: "Đang CK" },
-  { key: "transfer_sent", label: "XN giao" },
-  { key: "completed", label: "Xong ✓" },
+// ── Step Progress Bar (parallel flow) ────────────────────────
+const PARALLEL_STEPS: { label: string }[] = [
+  { label: "Chấp nhận" },
+  { label: "Upload BC" },
+  { label: "Xác nhận" },
+  { label: "Xong ✓" },
 ];
 
-export function StepProgress({ status }: { status: string }) {
-  const idx = STEPS.findIndex((s) => s.key === status);
-  if (idx < 0) return null;
+function getParallelStepIdx(
+  status: string,
+  hasRequesterProof: boolean,
+  hasProviderProof: boolean,
+  requesterConfirmed: boolean,
+  providerConfirmed: boolean,
+): number {
+  if (status === "completed") return 3;
+  if (status === "processing") {
+    if (requesterConfirmed || providerConfirmed) return 2;
+    if (hasRequesterProof || hasProviderProof) return 1;
+    return 1;
+  }
+  return 0;
+}
+
+export function StepProgress({
+  status,
+  hasRequesterProof = false,
+  hasProviderProof = false,
+  requesterConfirmed = false,
+  providerConfirmed = false,
+}: {
+  status: string;
+  hasRequesterProof?: boolean;
+  hasProviderProof?: boolean;
+  requesterConfirmed?: boolean;
+  providerConfirmed?: boolean;
+}) {
+  const idx = getParallelStepIdx(status, hasRequesterProof, hasProviderProof, requesterConfirmed, providerConfirmed);
+  if (!["processing", "completed", "disputed"].includes(status)) return null;
+
   return (
     <div className="flex items-center gap-0">
-      {STEPS.map((step, i) => (
-        <div key={step.key} className="flex items-center flex-1">
+      {PARALLEL_STEPS.map((step, i) => (
+        <div key={step.label} className="flex items-center flex-1">
           <div className="flex flex-col items-center flex-1">
             <div
               className="w-6 h-6 rounded-full flex items-center justify-center"
               style={{
-                background:
-                  i < idx ? "#059669" : i === idx ? "#2563EB" : "#E5E7EB",
+                background: i < idx ? "#059669" : i === idx ? "#2563EB" : "#E5E7EB",
                 fontSize: 10,
                 color: i <= idx ? "white" : "#9CA3AF",
                 fontWeight: 700,
@@ -1003,13 +1030,10 @@ export function StepProgress({ status }: { status: string }) {
               {step.label}
             </p>
           </div>
-          {i < STEPS.length - 1 && (
+          {i < PARALLEL_STEPS.length - 1 && (
             <div
               className="h-0.5 flex-1"
-              style={{
-                background: i < idx ? "#059669" : "#E5E7EB",
-                marginBottom: 14,
-              }}
+              style={{ background: i < idx ? "#059669" : "#E5E7EB", marginBottom: 14 }}
             />
           )}
         </div>

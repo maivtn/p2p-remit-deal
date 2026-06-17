@@ -37,21 +37,14 @@ export const getCurrency = (code: string) =>
   CURRENCIES.find((c) => c.code === code);
 
 export const formatVND = (amount: number): string =>
-  new Intl.NumberFormat("vi-VN").format(Math.round(amount)) +
-  "₫";
+  new Intl.NumberFormat("vi-VN").format(Math.round(amount)) + "₫";
 
-export const formatAmount = (
-  amount: number,
-  code: string,
-): string => {
+export const formatAmount = (amount: number, code: string): string => {
   const c = getCurrency(code);
   if (!c) return amount.toString();
   if (code === "VND") return formatVND(amount);
   if (code === "JPY" || code === "KRW")
-    return (
-      c.symbol +
-      new Intl.NumberFormat("en-US").format(Math.round(amount))
-    );
+    return c.symbol + new Intl.NumberFormat("en-US").format(Math.round(amount));
   return (
     c.symbol +
     new Intl.NumberFormat("en-US", {
@@ -95,118 +88,43 @@ export const getInitials = (name: string): string => {
   return (parts[parts.length - 1][0] ?? "U").toUpperCase();
 };
 
-// ── Provider Payment Accounts (shared) ───────────────────────
-export interface ProviderAccount {
+// ── Shared payment/account models ────────────────────────────
+export interface PaymentAccount {
   id: string;
   methodId: string;
   currency: string;
   label: string;
+  country?: string;
+  name?: string;
   phone?: string;
+  phoneNumber?: string;
   email?: string;
   handle?: string;
+  wechatId?: string;
+  paypayId?: string;
   bankName?: string;
+  bankCode?: string;
+  branchName?: string;
+  branchCode?: string;
+  city?: string;
+  province?: string;
+  routingNumber?: string;
+  sortCode?: string;
   accountNumber?: string;
+  accountType?: string;
   accountName?: string;
+  iban?: string;
+  bic?: string;
+  bsb?: string;
+  payNowType?: string;
+  payNowValue?: string;
+  payIdType?: string;
+  payIdValue?: string;
+  promptPayType?: string;
+  promptPayValue?: string;
 }
+export type ProviderAccount = PaymentAccount;
 
-
-export const REQUESTER_ACCOUNTS_INIT: ProviderAccount[] = [
-  {
-    id: "ra1",
-    methodId: "bank_transfer",
-    currency: "VND",
-    label: "Vietcombank chính",
-    bankName: "VCB",
-    accountNumber: "0123456789",
-    accountName: "Nguyen Van A",
-  },
-  {
-    id: "ra2",
-    methodId: "momo",
-    currency: "VND",
-    label: "Ví MoMo",
-    phone: "0901234567",
-    accountName: "Nguyen Van A",
-  },
-  {
-    id: "ra3",
-    methodId: "bank_transfer",
-    currency: "VND",
-    label: "Techcombank phụ",
-    bankName: "Techcombank",
-    accountNumber: "0987654321",
-    accountName: "Nguyen Van A",
-  },
-  {
-    id: "ra4",
-    methodId: "zelle",
-    currency: "USD",
-    label: "Zelle cá nhân",
-    phone: "+1 (415) 555-0128",
-    accountName: "Nguyen Van A",
-  },
-  {
-    id: "ra5",
-    methodId: "paypal",
-    currency: "USD",
-    label: "PayPal USD",
-    email: "van.a.remit@gmail.com",
-    accountName: "Nguyen Van A",
-  },
-  {
-    id: "ra6",
-    methodId: "bank_transfer",
-    currency: "EUR",
-    label: "SEPA Euro",
-    bankName: "ING",
-    accountNumber: "NL91INGB0001234567",
-    accountName: "Nguyen Van A",
-  },
-];
-
-export const PROVIDER_ACCOUNTS_INIT: ProviderAccount[] = [
-  {
-    id: "pa1",
-    methodId: "zelle",
-    currency: "USD",
-    label: "Zelle chính",
-    phone: "+1 (408) 555-0199",
-  },
-  {
-    id: "pa2",
-    methodId: "venmo",
-    currency: "USD",
-    label: "Venmo",
-    handle: "@nguyenvanb",
-  },
-  {
-    id: "pa3",
-    methodId: "paypal",
-    currency: "USD",
-    label: "PayPal",
-    email: "vanb.remit@gmail.com",
-  },
-  {
-    id: "pa4",
-    methodId: "bank_transfer",
-    currency: "USD",
-    label: "Chase Bank",
-    bankName: "Chase Bank",
-    accountNumber: "****4821",
-    accountName: "Nguyen Van B",
-  },
-  {
-    id: "pa5",
-    methodId: "bank_transfer",
-    currency: "EUR",
-    label: "SEPA – Deutsche",
-    bankName: "Deutsche Bank",
-    accountNumber: "DE89370400440532013000",
-    accountName: "Nguyen Van B",
-  },
-];
-
-// ── Payment methods by currency/country ──────────────────────
 export interface PaymentMethod {
   id: string;
   name: string;
@@ -215,195 +133,30 @@ export interface PaymentMethod {
   requiresAccount?: boolean; // Bank Transfer
 }
 
-export const PAYMENT_METHODS_BY_CURRENCY: Record<
-  string,
-  PaymentMethod[]
-> = {
-  USD: [
-    {
-      id: "zelle",
-      name: "Zelle",
-      icon: "⚡",
-      requiresPhone: true,
-    },
-    {
-      id: "venmo",
-      name: "Venmo",
-      icon: "V",
-      requiresPhone: true,
-    },
-    {
-      id: "paypal",
-      name: "PayPal",
-      icon: "🅿️",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  EUR: [
-    {
-      id: "paypal",
-      name: "PayPal",
-      icon: "🅿️",
-      requiresPhone: true,
-    },
-    {
-      id: "sepa",
-      name: "SEPA Transfer",
-      icon: "🇪🇺",
-      requiresAccount: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  GBP: [
-    {
-      id: "paypal",
-      name: "PayPal",
-      icon: "🅿️",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  SGD: [
-    {
-      id: "paynow",
-      name: "PayNow",
-      icon: "📱",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  AUD: [
-    {
-      id: "payid",
-      name: "PayID",
-      icon: "📱",
-      requiresPhone: true,
-    },
-    {
-      id: "paypal",
-      name: "PayPal",
-      icon: "🅿️",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  JPY: [
-    {
-      id: "paypay",
-      name: "PayPay",
-      icon: "📱",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  KRW: [
-    {
-      id: "kakaopay",
-      name: "KakaoPay",
-      icon: "💛",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  THB: [
-    {
-      id: "promptpay",
-      name: "PromptPay",
-      icon: "📱",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  CNY: [
-    {
-      id: "wechat_pay",
-      name: "WeChat Pay",
-      icon: "💚",
-      requiresPhone: true,
-    },
-    {
-      id: "alipay",
-      name: "Alipay",
-      icon: "🔵",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Bank Transfer",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-  VND: [
-    {
-      id: "momo",
-      name: "MoMo",
-      icon: "🟣",
-      requiresPhone: true,
-    },
-    {
-      id: "zalopay",
-      name: "ZaloPay",
-      icon: "🔵",
-      requiresPhone: true,
-    },
-    {
-      id: "bank_transfer",
-      name: "Chuyển khoản NH",
-      icon: "🏦",
-      requiresAccount: true,
-    },
-  ],
-};
+export interface PaymentMethodMatrixMethod extends PaymentMethod {
+  method: string;
+  label: string;
+  fields: string[];
+  oneOf?: string[][];
+  optionalFields?: string[];
+}
+
+export interface PaymentMethodMatrixEntry {
+  currency: string;
+  country: string;
+  methods: PaymentMethodMatrixMethod[];
+}
+
+export const getPaymentMethodsByCurrency = (
+  currency: string,
+): PaymentMethod[] =>
+  paymentMethodMatrix.find((item) => item.currency === currency)?.methods ?? [];
 
 export const getPaymentMethod = (
   currency: string,
   id: string,
 ): PaymentMethod | undefined =>
-  PAYMENT_METHODS_BY_CURRENCY[currency]?.find(
-    (m) => m.id === id,
-  );
+  getPaymentMethodsByCurrency(currency).find((m) => m.id === id);
 
 // ── Deal & DealRequest interfaces ─────────────────────────────
 export interface Deal {
@@ -431,10 +184,7 @@ export interface Deal {
 export type TxStatus =
   | "pending"
   | "waiting_accept"
-  | "accepted"
-  | "payment_sent"
-  | "payment_confirmed"
-  | "transfer_sent"
+  | "processing"   // both parties transferring & uploading proof simultaneously
   | "completed"
   | "rejected"
   | "cancelled"
@@ -452,11 +202,11 @@ export interface ProofData {
 
 export interface ProofMediaFile {
   url: string;
-  type: 'image' | 'video' | 'audio';
+  type: "image" | "video" | "audio";
   name: string;
 }
 
-export interface DealRequest {
+export interface DealRequestBase {
   id: string;
   dealId: string;
   requesterId: string;
@@ -489,10 +239,11 @@ export interface DealRequest {
   systemFeeRate: number;
   systemFeeAmount: number;
   escrowLocked: boolean;
-  // Proof chain
-  paymentProof?: ProofData;
-  paymentConfirmedAt?: string;
-  transferProof?: ProofData;
+  // Parallel proof chain — both sides upload simultaneously after accept
+  requesterProof?: ProofData;              // A's proof: sent fromCurrency to B
+  providerProof?: ProofData;              // B's proof: sent toCurrency to recipient
+  requesterConfirmedReceived?: boolean;   // A confirmed recipient got B's transfer
+  providerConfirmedReceived?: boolean;    // B confirmed they received A's transfer
   completedAt?: string;
   // Dispute
   disputedBy?: "requester" | "provider";
@@ -500,301 +251,12 @@ export interface DealRequest {
   disputeProof?: ProofData;
   disputedAt?: string;
 }
-
-// ── System wallet balances (mock) ─────────────────────────────
-export const PROVIDER_WALLET_INIT: Record<string, number> = {
-  USD: 18500,
-  VND: 480_000_000,
-  EUR: 6200,
-};
-export const REQUESTER_WALLET_INIT: Record<string, number> = {
-  USD: 4800,
-};
-
-// ── Provider's own deals ──────────────────────────────────────
-export const PROVIDER_DEALS_INIT: Deal[] = [
-  {
-    id: "d1",
-    providerId: "self",
-    providerName: "Nguyễn Văn B",
-    providerRating: 4.9,
-    providerReviews: 248,
-    providerVerified: true,
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: 25600,
-    minAmount: 100,
-    maxAmount: 5000,
-    status: "active",
-    requestCount: 3,
-    completedDeals: 248,
-    expiresAt: "2026-03-10T00:00:00",
-    notes: "Chuyển nhanh 1-2 giờ.",
-    transferTime: "1-2 giờ",
-    senderPaymentMethods: ["zelle"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "d2",
-    providerId: "self",
-    providerName: "Nguyễn Văn B",
-    providerRating: 4.9,
-    providerReviews: 248,
-    providerVerified: true,
-    fromCurrency: "EUR",
-    toCurrency: "VND",
-    rate: 27900,
-    minAmount: 50,
-    maxAmount: 2000,
-    status: "active",
-    requestCount: 1,
-    completedDeals: 248,
-    expiresAt: "2026-03-08T00:00:00",
-    notes: "EUR → VND tỷ giá tốt.",
-    transferTime: "2-4 giờ",
-    senderPaymentMethods: ["paypal"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "d3",
-    providerId: "self",
-    providerName: "Nguyễn Văn B",
-    providerRating: 4.9,
-    providerReviews: 248,
-    providerVerified: true,
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: 25480,
-    minAmount: 500,
-    maxAmount: 20000,
-    status: "completed",
-    requestCount: 0,
-    completedDeals: 248,
-    expiresAt: "2026-03-15T00:00:00",
-    notes: "Chỉ xử lý lượng lớn, liên hệ trước.",
-    transferTime: "Trong ngày",
-    senderPaymentMethods: ["bank_transfer"],
-    recipientPaymentMethods: ["bank_transfer"],
-  },
-];
-
-// ── Available deals on marketplace ───────────────────────────
-export const AVAILABLE_DEALS: Deal[] = [
-  {
-    id: "ad1",
-    providerId: "p1",
-    providerName: "Hùng Mạnh",
-    providerRating: 4.9,
-    providerReviews: 512,
-    providerVerified: true,
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: 25520,
-    minAmount: 50,
-    maxAmount: 10000,
-    status: "active",
-    requestCount: 5,
-    completedDeals: 512,
-    expiresAt: "2026-03-15T00:00:00",
-    notes: "Chuyển trong 30-60 phút. Hỗ trợ mọi hình thức.",
-    transferTime: "30-60 phút",
-    senderPaymentMethods: ["zelle"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "ad2",
-    providerId: "p2",
-    providerName: "Thu Hà",
-    providerRating: 4.8,
-    providerReviews: 187,
-    providerVerified: true,
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: 25480,
-    minAmount: 100,
-    maxAmount: 3000,
-    status: "active",
-    requestCount: 2,
-    completedDeals: 187,
-    expiresAt: "2026-03-10T00:00:00",
-    notes: "Chuyển trong ngày.",
-    transferTime: "1-3 giờ",
-    senderPaymentMethods: ["zelle"],
-    recipientPaymentMethods: ["momo", "bank_transfer"],
-  },
-  {
-    id: "ad3",
-    providerId: "p3",
-    providerName: "Đức Anh",
-    providerRating: 4.6,
-    providerReviews: 94,
-    providerVerified: false,
-    fromCurrency: "USD",
-    toCurrency: "VND",
-    rate: 25460,
-    minAmount: 200,
-    maxAmount: 5000,
-    status: "active",
-    requestCount: 1,
-    completedDeals: 94,
-    expiresAt: "2026-03-05T00:00:00",
-    notes: "Ưu tiên Venmo.",
-    transferTime: "2-4 giờ",
-    senderPaymentMethods: ["venmo"],
-    recipientPaymentMethods: ["zalopay", "bank_transfer"],
-  },
-  {
-    id: "ad4",
-    providerId: "p4",
-    providerName: "Lan Anh",
-    providerRating: 5.0,
-    providerReviews: 63,
-    providerVerified: true,
-    fromCurrency: "EUR",
-    toCurrency: "VND",
-    rate: 27850,
-    minAmount: 50,
-    maxAmount: 2000,
-    status: "active",
-    requestCount: 0,
-    completedDeals: 63,
-    expiresAt: "2026-03-12T00:00:00",
-    notes: "Tỷ giá tốt nhất thị trường.",
-    transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypal"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "ad5",
-    providerId: "p5",
-    providerName: "Minh Phúc",
-    providerRating: 4.7,
-    providerReviews: 302,
-    providerVerified: true,
-    fromCurrency: "GBP",
-    toCurrency: "VND",
-    rate: 32150,
-    minAmount: 50,
-    maxAmount: 3000,
-    status: "active",
-    requestCount: 3,
-    completedDeals: 302,
-    expiresAt: "2026-03-08T00:00:00",
-    notes: "GBP → VND. Uy tín, nhanh chóng.",
-    transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypal"],
-    recipientPaymentMethods: ["momo", "bank_transfer"],
-  },
-  {
-    id: "ad6",
-    providerId: "p6",
-    providerName: "Bảo Ngọc",
-    providerRating: 4.8,
-    providerReviews: 155,
-    providerVerified: true,
-    fromCurrency: "SGD",
-    toCurrency: "VND",
-    rate: 19050,
-    minAmount: 100,
-    maxAmount: 5000,
-    status: "active",
-    requestCount: 2,
-    completedDeals: 155,
-    expiresAt: "2026-03-11T00:00:00",
-    notes: "Nhận PayNow, chuyển MoMo/ZaloPay.",
-    transferTime: "2-4 giờ",
-    senderPaymentMethods: ["paynow"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "ad7",
-    providerId: "p7",
-    providerName: "Quốc Bảo",
-    providerRating: 4.5,
-    providerReviews: 78,
-    providerVerified: false,
-    fromCurrency: "AUD",
-    toCurrency: "VND",
-    rate: 16900,
-    minAmount: 100,
-    maxAmount: 4000,
-    status: "active",
-    requestCount: 1,
-    completedDeals: 78,
-    expiresAt: "2026-03-07T00:00:00",
-    notes: "AUD → VND. PayID được ưu tiên.",
-    transferTime: "2-3 giờ",
-    senderPaymentMethods: ["payid"],
-    recipientPaymentMethods: ["bank_transfer", "momo"],
-  },
-  {
-    id: "ad8",
-    providerId: "p8",
-    providerName: "Thanh Thảo",
-    providerRating: 4.9,
-    providerReviews: 421,
-    providerVerified: true,
-    fromCurrency: "JPY",
-    toCurrency: "VND",
-    rate: 172,
-    minAmount: 10000,
-    maxAmount: 500000,
-    status: "active",
-    requestCount: 4,
-    completedDeals: 421,
-    expiresAt: "2026-03-14T00:00:00",
-    notes: "Yen → VND. PayPay hoặc chuyển khoản.",
-    transferTime: "1-2 giờ",
-    senderPaymentMethods: ["paypay"],
-    recipientPaymentMethods: ["momo", "zalopay", "bank_transfer"],
-  },
-  {
-    id: "ad9",
-    providerId: "p9",
-    providerName: "Việt Anh",
-    providerRating: 4.8,
-    providerReviews: 233,
-    providerVerified: true,
-    fromCurrency: "USD",
-    toCurrency: "USD",
-    rate: 0.98,
-    minAmount: 100,
-    maxAmount: 8000,
-    status: "active",
-    requestCount: 2,
-    completedDeals: 233,
-    expiresAt: "2026-03-13T00:00:00",
-    notes:
-      "USD → USD tại VN. Phí 2%. Mọi ngân hàng có tài khoản ngoại tệ.",
-    transferTime: "1-2 giờ",
-    senderPaymentMethods: ["zelle"],
-    recipientPaymentMethods: ["bank_transfer"],
-  },
-  {
-    id: "ad10",
-    providerId: "p10",
-    providerName: "Hải Yến",
-    providerRating: 4.7,
-    providerReviews: 118,
-    providerVerified: true,
-    fromCurrency: "EUR",
-    toCurrency: "USD",
-    rate: 1.06,
-    minAmount: 50,
-    maxAmount: 3000,
-    status: "active",
-    requestCount: 1,
-    completedDeals: 118,
-    expiresAt: "2026-03-09T00:00:00",
-    notes: "EUR → USD. Phí thấp, chuyển nhanh.",
-    transferTime: "2-3 giờ",
-    senderPaymentMethods: ["paypal"],
-    recipientPaymentMethods: ["bank_transfer", "zelle"],
-  },
-];
+export type DealRequest = DealRequestBase;
+export type ProviderDealRequest = DealRequestBase;
+export type RequesterDealRequest = DealRequestBase;
 
 // ── Incoming requests (Provider sees these) ───────────────────
-export const INCOMING_REQUESTS_INIT: DealRequest[] = [
+export const INCOMING_REQUESTS_INIT: ProviderDealRequest[] = [
   {
     id: "r1",
     dealId: "d1",
@@ -810,8 +272,7 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
     receiveAmount: 12750000,
     status: "pending",
     createdAt: "2026-02-26T09:30:00",
-    message:
-      "Mình cần chuyển gấp trong hôm nay, bạn có thể xử lý không?",
+    message: "Mình cần chuyển gấp trong hôm nay, bạn có thể xử lý không?",
     senderPaymentMethod: "zelle",
     recipientPaymentMethod: "momo",
     recipientName: "Nguyễn Thị Mai",
@@ -858,7 +319,7 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
     toCurrency: "VND",
     rate: 27900,
     receiveAmount: 5580000,
-    status: "payment_sent",
+    status: "processing",
     createdAt: "2026-02-25T15:00:00",
     message: "",
     senderPaymentMethod: "paypal",
@@ -868,7 +329,7 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
     systemFeeRate: 0.005,
     systemFeeAmount: 1,
     escrowLocked: true,
-    paymentProof: {
+    requesterProof: {
       type: "paypal",
       label: "PayPal",
       icon: "🅿️",
@@ -900,8 +361,8 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
     recipientAccount: "6677889900",
     systemFeeRate: 0.005,
     systemFeeAmount: 1.5,
-    escrowLocked: true,
-    paymentProof: {
+    escrowLocked: false,
+    requesterProof: {
       type: "paypal",
       label: "PayPal",
       icon: "🅿️",
@@ -909,8 +370,7 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
       note: "$300 gửi cho Nguyễn Văn B",
       timestamp: "2026-02-24T12:00:00",
     },
-    paymentConfirmedAt: "2026-02-24T12:10:00",
-    transferProof: {
+    providerProof: {
       type: "bank_transfer",
       label: "Chuyển khoản",
       icon: "🏦",
@@ -918,6 +378,8 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
       note: "Đã gửi 7,650,000₫ vào MB Bank",
       timestamp: "2026-02-24T13:00:00",
     },
+    requesterConfirmedReceived: true,
+    providerConfirmedReceived: true,
     completedAt: "2026-02-24T13:15:00",
   },
   {
@@ -947,4 +409,851 @@ export const INCOMING_REQUESTS_INIT: DealRequest[] = [
 ];
 
 // ── My requests (Requester sees these) ───────────────────────
-export const MY_REQUESTS_INIT: DealRequest[] = [];
+export const MY_REQUESTS_INIT: RequesterDealRequest[] = [];
+
+import alipayIcon from "../../images/alipay.png";
+import appleCashIcon from "../../images/apple_cash.png";
+import bankTransferIcon from "../../images/bank-transfer.png";
+import cashAppIcon from "../../images/cash_app.png";
+import cashIcon from "../../images/cash.png";
+import kakaoPayIcon from "../../images/kakao-pay.png";
+import momoIcon from "../../images/momo.png";
+import payIdIcon from "../../images/pay-id.png";
+import payNowIcon from "../../images/pay-now.png";
+import paypalIcon from "../../images/paypal.png";
+import promptPayIcon from "../../images/prompt-pay.png";
+import sepaIcon from "../../images/sepa.png";
+import venmoIcon from "../../images/venmo.png";
+import wechatPayIcon from "../../images/wechat-pay.png";
+import zaloPayIcon from "../../images/zalo-pay.png";
+import zelleIcon from "../../images/zelle.png";
+
+export const paymentMethodMatrix: PaymentMethodMatrixEntry[] = [
+  {
+    currency: "USD",
+    country: "US",
+    methods: [
+      {
+        id: "zelle",
+        name: "Zelle",
+        method: "Zelle",
+        label: "Zelle",
+        icon: zelleIcon,
+        fields: ["name"],
+        oneOf: [["phoneNumber"], ["email"]],
+      },
+      {
+        id: "venmo",
+        name: "Venmo",
+        method: "Venmo",
+        label: "Venmo",
+        icon: venmoIcon,
+        fields: ["name", "handle"],
+      },
+      {
+        id: "apple_cash",
+        name: "Apple Cash",
+        method: "Apple Cash",
+        label: "Apple Cash",
+        icon: appleCashIcon,
+        fields: ["name"],
+        oneOf: [["phoneNumber"], ["email"]],
+      },
+      {
+        id: "paypal",
+        name: "PayPal",
+        method: "PayPal",
+        label: "PayPal",
+        icon: paypalIcon,
+        fields: ["name", "email"],
+      },
+      {
+        id: "cash_app",
+        name: "Cash App",
+        method: "Cash App",
+        label: "Cash App",
+        icon: cashAppIcon,
+        fields: ["name"],
+        oneOf: [["cashtag"], ["phoneNumber"], ["email"]],
+      },
+      {
+        id: "cash",
+        name: "Cash",
+        method: "Cash",
+        label: "Cash",
+        icon: cashIcon,
+        fields: ["name"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: [
+          "name",
+          "bankName",
+          "routingNumber",
+          "accountNumber",
+          "accountType",
+        ],
+      },
+    ],
+  },
+
+  {
+    currency: "VND",
+    country: "Vietnam",
+    methods: [
+      {
+        id: "momo",
+        name: "MoMo",
+        method: "MoMo",
+        label: "MoMo",
+        icon: momoIcon,
+        fields: ["name", "phoneNumber"],
+      },
+      {
+        id: "zalopay",
+        name: "ZaloPay",
+        method: "ZaloPay",
+        label: "ZaloPay",
+        icon: zaloPayIcon,
+        fields: ["name", "phoneNumber"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Chuyển khoản NH",
+        method: "Bank Transfer",
+        label: "Chuyển khoản NH",
+        icon: bankTransferIcon,
+        fields: ["name", "accountNumber"],
+        oneOf: [["bankName"], ["bankCode"]],
+        optionalFields: ["branchName"],
+      },
+    ],
+  },
+
+  {
+    currency: "EUR",
+    country: "Eurozone",
+    methods: [
+      {
+        id: "sepa",
+        name: "SEPA Transfer",
+        method: "SEPA Transfer",
+        label: "SEPA Transfer",
+        icon: sepaIcon,
+        fields: ["name", "iban"],
+        optionalFields: ["bic"],
+      },
+      {
+        id: "paypal",
+        name: "PayPal",
+        method: "PayPal",
+        label: "PayPal",
+        icon: paypalIcon,
+        fields: ["name", "email"],
+      },
+    ],
+  },
+
+  {
+    currency: "GBP",
+    country: "UK",
+    methods: [
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "sortCode", "accountNumber"],
+      },
+      {
+        id: "paypal",
+        name: "PayPal",
+        method: "PayPal",
+        label: "PayPal",
+        icon: paypalIcon,
+        fields: ["name", "email"],
+      },
+    ],
+  },
+
+  {
+    currency: "SGD",
+    country: "Singapore",
+    methods: [
+      {
+        id: "paynow",
+        name: "PayNow",
+        method: "PayNow",
+        label: "PayNow",
+        icon: payNowIcon,
+        fields: ["name", "payNowType", "payNowValue"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "bankCode", "accountNumber"],
+      },
+    ],
+  },
+
+  {
+    currency: "AUD",
+    country: "Australia",
+    methods: [
+      {
+        id: "payid",
+        name: "PayID",
+        method: "PayID",
+        label: "PayID",
+        icon: payIdIcon,
+        fields: ["name", "payIdType", "payIdValue"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "bsb", "accountNumber"],
+      },
+    ],
+  },
+
+  {
+    currency: "JPY",
+    country: "Japan",
+    methods: [
+      {
+        id: "paypay",
+        name: "PayPay",
+        method: "PayPay",
+        label: "PayPay",
+        icon: cashIcon,
+        fields: ["name"],
+        oneOf: [["phoneNumber"], ["paypayId"]],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: [
+          "name",
+          "bankName",
+          "bankCode",
+          "branchName",
+          "branchCode",
+          "accountType",
+          "accountNumber",
+        ],
+      },
+    ],
+  },
+
+  {
+    currency: "KRW",
+    country: "Korea",
+    methods: [
+      {
+        id: "kakaopay",
+        name: "KakaoPay",
+        method: "KakaoPay",
+        label: "KakaoPay",
+        icon: kakaoPayIcon,
+        fields: ["name", "phoneNumber"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "bankCode", "accountNumber"],
+      },
+    ],
+  },
+
+  {
+    currency: "THB",
+    country: "Thailand",
+    methods: [
+      {
+        id: "promptpay",
+        name: "PromptPay",
+        method: "PromptPay",
+        label: "PromptPay",
+        icon: promptPayIcon,
+        fields: ["name", "promptPayType", "promptPayValue"],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "bankCode", "accountNumber"],
+      },
+    ],
+  },
+
+  {
+    currency: "CNY",
+    country: "China",
+    methods: [
+      {
+        id: "wechat_pay",
+        name: "WeChat Pay",
+        method: "WeChat Pay",
+        label: "WeChat Pay",
+        icon: wechatPayIcon,
+        fields: ["name"],
+        oneOf: [["wechatId"], ["phoneNumber"]],
+      },
+      {
+        id: "alipay",
+        name: "Alipay",
+        method: "Alipay",
+        label: "Alipay",
+        icon: alipayIcon,
+        fields: ["name"],
+        oneOf: [["alipayId"], ["phoneNumber"], ["email"]],
+      },
+      {
+        id: "bank_transfer",
+        name: "Bank Transfer",
+        method: "Bank Transfer",
+        label: "Bank Transfer",
+        icon: bankTransferIcon,
+        fields: ["name", "bankName", "accountNumber"],
+        optionalFields: ["branchName", "city", "province"],
+      },
+    ],
+  },
+];
+
+export interface BeneficiaryAccountSeed {
+  id: string;
+  currency: string;
+  country: string;
+  method: string;
+  isDefault: boolean;
+  status: string;
+  details: Record<string, string>;
+}
+
+export type BeneficiaryAccountSeedA = BeneficiaryAccountSeed;
+export type BeneficiaryAccountSeedB = BeneficiaryAccountSeed;
+
+export const beneficiaryAccountsB: BeneficiaryAccountSeedB[] = [
+  // USD accounts — used by deals referencing acc_b_us_*
+  {
+    id: "acc_b_us_zelle_001",
+    currency: "USD",
+    country: "US",
+    method: "Zelle",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      phoneNumber: "+1 415 555 2288",
+    },
+  },
+  {
+    id: "acc_b_us_paypal_001",
+    currency: "USD",
+    country: "US",
+    method: "PayPal",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      email: "tranminhb@gmail.com",
+    },
+  },
+  {
+    id: "acc_b_us_bank_001",
+    currency: "USD",
+    country: "US",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "Bank of America",
+      routingNumber: "026009593",
+      accountNumber: "9876543210",
+      accountType: "checking",
+    },
+  },
+  // VND accounts — B can receive VND from A's friend
+  {
+    id: "acc_b_vn_momo_001",
+    currency: "VND",
+    country: "VN",
+    method: "MoMo",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      phoneNumber: "0987654321",
+    },
+  },
+  {
+    id: "acc_b_vn_bank_001",
+    currency: "VND",
+    country: "VN",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "Techcombank",
+      accountNumber: "19031234567890",
+      branchName: "Chi nhánh TP.HCM",
+    },
+  },
+  {
+    id: "acc_b_sgd_paynow_001",
+    currency: "SGD",
+    country: "SG",
+    method: "PayNow",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      payNowType: "phone",
+      payNowValue: "+6581234567",
+    },
+  },
+  {
+    id: "acc_b_sgd_bank_001",
+    currency: "SGD",
+    country: "SG",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "DBS Bank",
+      bankCode: "7171",
+      accountNumber: "0012347788",
+    },
+  },
+  {
+    id: "acc_b_aud_payid_001",
+    currency: "AUD",
+    country: "AU",
+    method: "PayID",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      payIdType: "email",
+      payIdValue: "tranminhb@gmail.com",
+    },
+  },
+  {
+    id: "acc_b_aud_bank_001",
+    currency: "AUD",
+    country: "AU",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "Commonwealth Bank",
+      bsb: "062-000",
+      accountNumber: "12349900",
+    },
+  },
+  {
+    id: "acc_b_jpy_paypay_001",
+    currency: "JPY",
+    country: "JP",
+    method: "PayPay",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      paypayId: "paypay_tran_jp",
+    },
+  },
+  {
+    id: "acc_b_jpy_bank_001",
+    currency: "JPY",
+    country: "JP",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "MUFG Bank",
+      bankCode: "0005",
+      branchName: "Tokyo Branch",
+      branchCode: "001",
+      accountType: "ordinary",
+      accountNumber: "12347781",
+    },
+  },
+  {
+    id: "acc_b_krw_kakaopay_001",
+    currency: "KRW",
+    country: "KR",
+    method: "KakaoPay",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      phoneNumber: "+821012342211",
+    },
+  },
+  {
+    id: "acc_b_krw_bank_001",
+    currency: "KRW",
+    country: "KR",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "Kookmin Bank",
+      bankCode: "004",
+      accountNumber: "1234564455",
+    },
+  },
+  {
+    id: "acc_b_thb_promptpay_001",
+    currency: "THB",
+    country: "TH",
+    method: "PromptPay",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      promptPayType: "phone",
+      promptPayValue: "+66812348899",
+    },
+  },
+  {
+    id: "acc_b_thb_bank_001",
+    currency: "THB",
+    country: "TH",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "Kasikorn Bank",
+      bankCode: "004",
+      accountNumber: "1234565522",
+    },
+  },
+  {
+    id: "acc_b_cny_wechat_001",
+    currency: "CNY",
+    country: "CN",
+    method: "WeChat Pay",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      wechatId: "tran_cn_88",
+    },
+  },
+  {
+    id: "acc_b_cny_alipay_001",
+    currency: "CNY",
+    country: "CN",
+    method: "Alipay",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      email: "tranminhb@email.com",
+    },
+  },
+  {
+    id: "acc_b_cny_bank_001",
+    currency: "CNY",
+    country: "CN",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Tran Van B",
+      bankName: "ICBC Bank",
+      accountNumber: "6222021234568890",
+      branchName: "Shanghai Main Branch",
+      city: "Shanghai",
+      province: "Shanghai",
+    },
+  },
+];
+
+export const beneficiaryAccountsA: BeneficiaryAccountSeedA[] = [
+  {
+    id: "acc_a_us_zelle_001",
+    currency: "USD",
+    country: "US",
+    method: "Zelle",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      phoneNumber: "+1 408 555 0199",
+    },
+  },
+  {
+    id: "acc_a_us_venmo_001",
+    currency: "USD",
+    country: "US",
+    method: "Venmo",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      handle: "@nguyenvana",
+    },
+  },
+  {
+    id: "acc_a_us_apple_cash_001",
+    currency: "USD",
+    country: "US",
+    method: "Apple Cash",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      email: "nguyenvana@icloud.com",
+    },
+  },
+  {
+    id: "acc_a_us_paypal_001",
+    currency: "USD",
+    country: "US",
+    method: "PayPal",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      email: "nguyenvana@gmail.com",
+    },
+  },
+  {
+    id: "acc_a_us_bank_001",
+    currency: "USD",
+    country: "US",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      bankName: "Chase Bank",
+      routingNumber: "021000021",
+      accountNumber: "1234567890",
+      accountType: "checking",
+    },
+  },
+  {
+    id: "acc_a_vn_momo_001",
+    currency: "VND",
+    country: "VN",
+    method: "MoMo",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      phoneNumber: "0901236789",
+    },
+  },
+  {
+    id: "acc_a_vn_zalopay_001",
+    currency: "VND",
+    country: "VN",
+    method: "ZaloPay",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      phoneNumber: "0918882222",
+    },
+  },
+  {
+    id: "acc_a_vn_bank_001",
+    currency: "VND",
+    country: "VN",
+    method: "Bank Transfer",
+    isDefault: false,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      bankCode: "VCB",
+      accountNumber: "1029384321",
+      branchName: "Chi nhánh Cần Thơ",
+    },
+  },
+  {
+    id: "acc_a_eur_sepa_001",
+    currency: "EUR",
+    country: "EU",
+    method: "SEPA Transfer",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      iban: "DE89370400440532013000",
+      bic: "COBADEFFXXX",
+    },
+  },
+  {
+    id: "acc_a_gbp_bank_001",
+    currency: "GBP",
+    country: "UK",
+    method: "Bank Transfer",
+    isDefault: true,
+    status: "active",
+    details: {
+      name: "Nguyen Van A",
+      bankName: "Barclays Bank",
+      sortCode: "20-00-00",
+      accountNumber: "12343344",
+    },
+  },
+];
+
+function mapBeneficiaryAccount(seed: BeneficiaryAccountSeed): ProviderAccount {
+  const methodId =
+    getPaymentMethodsByCurrency(seed.currency)?.find(
+      (method) =>
+        method.method === seed.method ||
+        method.label === seed.method ||
+        method.name === seed.method ||
+        method.id === seed.method,
+    )?.id ?? "";
+  const details = seed.details ?? {};
+  const name = details.name ?? "";
+  return {
+    id: seed.id,
+    methodId,
+    currency: seed.currency,
+    country: seed.country,
+    label: `${seed.method}${name ? ` - ${name}` : ""}`,
+    name,
+    phone: details.phone ?? details.phoneNumber,
+    phoneNumber: details.phoneNumber ?? details.phone,
+    email: details.email,
+    handle: details.handle,
+    wechatId: details.wechatId,
+    paypayId: details.paypayId,
+    bankName: details.bankName,
+    bankCode: details.bankCode,
+    branchName: details.branchName,
+    branchCode: details.branchCode,
+    city: details.city,
+    province: details.province,
+    routingNumber: details.routingNumber,
+    sortCode: details.sortCode,
+    accountNumber: details.accountNumber,
+    accountType: details.accountType,
+    accountName: name,
+    iban: details.iban,
+    bic: details.bic,
+    bsb: details.bsb,
+    payNowType: details.payNowType,
+    payNowValue: details.payNowValue,
+    payIdType: details.payIdType,
+    payIdValue: details.payIdValue,
+    promptPayType: details.promptPayType,
+    promptPayValue: details.promptPayValue,
+  };
+}
+
+export const REQUESTER_ACCOUNTS_INIT_FROM_BENEFICIARY: ProviderAccount[] =
+  beneficiaryAccountsA.map(mapBeneficiaryAccount);
+
+export const PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY: ProviderAccount[] =
+  beneficiaryAccountsB.map(mapBeneficiaryAccount);
+
+// ── B's deals (direct Deal objects, no seed mapping) ─────────
+// fromCurrency = what A sends (USD) to B's US member
+// toCurrency   = what B sends (VND) to A's friend in Vietnam
+// senderPaymentMethods    = method A uses to pay B's US member (matches Deal.fromCurrency)
+// recipientPaymentMethods = methods B uses to send VND to A's friend (matches Deal.toCurrency)
+
+export const PROVIDER_DEALS_B_INIT: Deal[] = [
+  {
+    id: 'deal_b_001',
+    providerId: 'self',
+    providerName: 'Nguyễn Văn B',
+    providerRating: 4.9,
+    providerReviews: 248,
+    providerVerified: true,
+    fromCurrency: 'USD',
+    toCurrency: 'VND',
+    rate: 25500,
+    minAmount: 99,
+    maxAmount: 799,
+    status: 'active',
+    requestCount: 0,
+    completedDeals: 0,
+    expiresAt: '2026-06-16T12:30:00Z',
+    notes: 'Có thể thanh toán VND qua MoMo, ZaloPay hoặc chuyển khoản ngân hàng.',
+    transferTime: '',
+    senderPaymentMethods: ['zelle'],
+    recipientPaymentMethods: ['momo', 'zalopay', 'bank_transfer'],
+  },
+  {
+    id: 'deal_b_002',
+    providerId: 'self',
+    providerName: 'Nguyễn Văn B',
+    providerRating: 4.9,
+    providerReviews: 248,
+    providerVerified: true,
+    fromCurrency: 'USD',
+    toCurrency: 'VND',
+    rate: 25480,
+    minAmount: 50,
+    maxAmount: 2000,
+    status: 'active',
+    requestCount: 0,
+    completedDeals: 0,
+    expiresAt: '2026-06-16T11:20:00Z',
+    notes: 'Chỉ hỗ trợ ZaloPay.',
+    transferTime: '',
+    senderPaymentMethods: ['paypal'],
+    recipientPaymentMethods: ['zalopay'],
+  },
+  {
+    id: 'deal_b_003',
+    providerId: 'self',
+    providerName: 'Nguyễn Văn B',
+    providerRating: 4.9,
+    providerReviews: 248,
+    providerVerified: true,
+    fromCurrency: 'USD',
+    toCurrency: 'VND',
+    rate: 25600,
+    minAmount: 300,
+    maxAmount: 10000,
+    status: 'active',
+    requestCount: 0,
+    completedDeals: 0,
+    expiresAt: '2026-06-16T10:00:00Z',
+    notes: 'Ưu tiên giao dịch số tiền lớn.',
+    transferTime: '',
+    senderPaymentMethods: ['bank_transfer'],
+    recipientPaymentMethods: ['bank_transfer'],
+  },
+];
+
+export const REQUESTER_DEALS_A_INIT: Deal[] = [];
+export const AVAILABLE_DEALS: Deal[] = [];

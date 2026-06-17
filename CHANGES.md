@@ -91,7 +91,7 @@ Bottom sheet: cặp tiền tệ + tỷ giá, khoảng min/max, phương thức n
 | Thứ tự | Label | Field | Ghi chú |
 |---|---|---|---|
 | 1 | `Người thụ hưởng nhận bằng` | `fromCurrency` | |
-| 2 | `Tôi gửi bằng` | `toCurrency` | Subtitle: *"Đang ở quốc gia nào, trả bằng"* |
+| 2 | `Tôi gửi bằng` | `toCurrency` |
 
 ### Label section payment methods
 

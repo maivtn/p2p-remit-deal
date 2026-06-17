@@ -92,104 +92,85 @@ function CompactDealCard({
   return (
     <button
       onClick={() => onSelect?.(deal)}
-      className="w-full text-left bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+      className="w-full text-left bg-white rounded-2xl px-3 py-2.5 shadow-sm border border-gray-100"
       style={{ cursor: onSelect ? "pointer" : "default" }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>
-            {deal.providerName}
-          </div>
-          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>
-            {from?.flag} {deal.fromCurrency} → {to?.flag} {deal.toCurrency}
-          </div>
-        </div>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#2563EB" }}>
+      <div className="flex items-center justify-between gap-2">
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>{deal.providerName}</div>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#2563EB", whiteSpace: "nowrap" }}>
           {fmtRate(deal.rate, deal.fromCurrency, deal.toCurrency)}
         </div>
       </div>
-
-      <div className="flex items-center justify-between mt-3">
-        <div style={{ fontSize: 12, color: "#6B7280" }}>
-          {fmt(deal.minAmount, deal.fromCurrency)} - {fmt(deal.maxAmount, deal.fromCurrency)}
-        </div>
-        <div style={{ fontSize: 12, color: "#9CA3AF" }}>
-          {deal.requestCount} yêu cầu
-        </div>
+      <div className="flex items-center justify-between mt-1" style={{ fontSize: 11, color: "#6B7280" }}>
+        <span>{from?.flag} {deal.fromCurrency} → {to?.flag} {deal.toCurrency} · {fmt(deal.minAmount, deal.fromCurrency)}–{fmt(deal.maxAmount, deal.fromCurrency)}</span>
       </div>
-
-      <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-1 flex-wrap">
-          {deal.senderPaymentMethods.slice(0, 2).map((id) => {
-            const method = getPaymentMethod(deal.fromCurrency, id);
-            return method ? (
-              <span key={id} className="inline-flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-                <MethodIcon id={method.id} icon={method.icon} size={13} />
-                <span style={{ fontSize: 11, fontWeight: 600, color: "#1D4ED8" }}>{method.name}</span>
-              </span>
-            ) : null;
-          })}
-        </div>
-        {onSelect && (
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#2563EB" }}>
-            Xem deal
-          </span>
-        )}
+      <div className="flex items-center gap-1 flex-wrap mt-1.5">
+        {deal.senderPaymentMethods.slice(0, 2).map((id) => {
+          const method = getPaymentMethod(deal.fromCurrency, id);
+          return method ? (
+            <span key={id} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
+              <MethodIcon id={method.id} icon={method.icon} size={11} />
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#1D4ED8" }}>{method.name}</span>
+            </span>
+          ) : null;
+        })}
+        {onSelect && <span style={{ fontSize: 11, fontWeight: 700, color: "#2563EB", marginLeft: "auto" }}>Xem deal</span>}
       </div>
     </button>
   );
 }
 
+const STATUS_LABEL: Record<string, { label: string; bg: string; color: string }> = {
+  completed:         { label: "Hoàn thành",    bg: "#D1FAE5", color: "#065F46" },
+  pending:           { label: "Chờ chấp nhận", bg: "#FEF3C7", color: "#92400E" },
+  waiting_accept:    { label: "Chờ chấp nhận", bg: "#FEF3C7", color: "#92400E" },
+  accepted:          { label: "Chờ thanh toán", bg: "#DBEAFE", color: "#1E40AF" },
+  payment_sent:      { label: "Chờ xác nhận",  bg: "#EDE9FE", color: "#5B21B6" },
+  payment_confirmed: { label: "Đang chuyển",   bg: "#FEF3C7", color: "#B45309" },
+  transfer_sent:     { label: "Chờ hoàn tất",  bg: "#D1FAE5", color: "#065F46" },
+  rejected:          { label: "Từ chối",        bg: "#FEE2E2", color: "#991B1B" },
+  cancelled:         { label: "Đã hủy",         bg: "#F3F4F6", color: "#4B5563" },
+};
+
 function CompactRequestCard({
   request,
+  onClick,
 }: {
   request: DealRequest;
+  onClick?: () => void;
 }) {
   const senderMethod = getPaymentMethod(request.fromCurrency, request.senderPaymentMethod);
   const recipientMethod = getPaymentMethod(request.toCurrency, request.recipientPaymentMethod);
+  const s = STATUS_LABEL[request.status] ?? { label: request.status, bg: "#F3F4F6", color: "#4B5563" };
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>
-            {request.requesterName}
-          </div>
-          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>
-            {timeAgo(request.createdAt)}
-          </div>
-        </div>
-        <span
-          style={{
-            background: request.status === "completed" ? "#D1FAE5" : request.status === "pending" || request.status === "waiting_accept" ? "#FEF3C7" : "#EDE9FE",
-            color: request.status === "completed" ? "#065F46" : request.status === "pending" || request.status === "waiting_accept" ? "#92400E" : "#5B21B6",
-            borderRadius: 20,
-            padding: "2px 10px",
-            fontSize: 11,
-            fontWeight: 600,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {request.status === "completed" ? "Hoàn thành" : request.status === "pending" || request.status === "waiting_accept" ? "Chờ chấp nhận" : "Đang xử lý"}
+    <div
+      onClick={onClick}
+      className="w-full text-left bg-white rounded-2xl px-3 py-2.5 shadow-sm border border-gray-100"
+      style={{ cursor: onClick ? "pointer" : "default" }}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>{request.requesterName}</div>
+        <span style={{ background: s.bg, color: s.color, borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 600, whiteSpace: "nowrap" }}>
+          {s.label}
         </span>
       </div>
-
-      <div className="mt-3 flex items-center gap-2 text-sm" style={{ color: "#374151" }}>
-        <span>{fmt(request.amount, request.fromCurrency)}</span>
-        <ArrowRight size={14} color="#9CA3AF" />
-        <span>{fmt(request.receiveAmount, request.toCurrency)}</span>
+      <div className="flex items-center gap-1.5 mt-1" style={{ fontSize: 12, color: "#374151" }}>
+        <span style={{ fontWeight: 600 }}>{fmt(request.amount, request.fromCurrency)}</span>
+        <ArrowRight size={12} color="#9CA3AF" />
+        <span style={{ fontWeight: 600 }}>{fmt(request.receiveAmount, request.toCurrency)}</span>
+        <span style={{ color: "#9CA3AF", fontSize: 11, marginLeft: 2 }}>{timeAgo(request.createdAt)}</span>
       </div>
-
-      <div className="mt-3 flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-1 flex-wrap mt-1.5">
         {senderMethod && (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
-            <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={13} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: "#065F46" }}>{senderMethod.name}</span>
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+            <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={11} />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#065F46" }}>{senderMethod.name}</span>
           </span>
         )}
         {recipientMethod && (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-            <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={13} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: "#1E40AF" }}>{recipientMethod.name}</span>
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
+            <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={11} />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#1E40AF" }}>{recipientMethod.name}</span>
           </span>
         )}
       </div>
@@ -249,9 +230,13 @@ export function OverviewScreen({
               </p>
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {processingRequests.slice(0, 3).map((request) => (
-              <CompactRequestCard key={request.id} request={request} />
+              <CompactRequestCard
+                key={request.id}
+                request={request}
+                onClick={() => onOpenHistory?.(request)}
+              />
             ))}
             {processingRequests.length === 0 && (
               <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5 text-center" style={{ color: "#9CA3AF", fontSize: 13 }}>
@@ -272,7 +257,7 @@ export function OverviewScreen({
               </p>
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {hotDeals.slice(0, 4).map((deal) => (
               <CompactDealCard key={deal.id} deal={deal} onSelect={onOpenDeal} />
             ))}
@@ -295,16 +280,9 @@ export function OverviewScreen({
               </p>
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {recentHistory.slice(0, 4).map((request) => (
-              <button
-                key={request.id}
-                onClick={() => onOpenHistory?.(request)}
-                className="w-full text-left"
-                style={{ border: "none", background: "none", padding: 0, cursor: onOpenHistory ? "pointer" : "default" }}
-              >
-                <CompactRequestCard request={request} />
-              </button>
+              <CompactRequestCard key={request.id} request={request} onClick={() => onOpenHistory?.(request)} />
             ))}
             {recentHistory.length === 0 && (
               <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5 text-center" style={{ color: "#9CA3AF", fontSize: 13 }}>

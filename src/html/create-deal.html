@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="assets/css/app.css" rel="stylesheet">
+<title>Tạo Deal Mới</title>
+</head>
+<body data-active-tab="manageDeals">
+<div class="app-shell">
+
+  <header class="screen-toolbar">
+    <h1 class="title">Tạo Deal Mới</h1>
+    <a class="btn btn-light icon-btn" href="manage-deals.html"><i class="bi bi-x-lg"></i></a>
+  </header>
+  <main class="app-page"><div class="desktop-grid"><div class="desktop-col-5">
+    <section class="form-card">
+      <div class="row g-3">
+        <div class="col-6">
+          <label class="form-label">Tôi gửi bằng</label>
+          <select class="form-select"><option>VND</option></select>
+        </div>
+        <div class="col-6">
+          <label class="form-label">Thụ hưởng nhận qua</label>
+          <select class="form-select"><option>USD</option></select>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <label class="form-label mb-0">Tỷ giá (1 USD = ? VND)</label>
+        <button class="btn btn-sm btn-outline-primary">⚡ Tỷ giá thị trường</button>
+      </div>
+      <input class="form-control mt-2" value="25500">
+      <div class="row g-3 mt-2">
+        <div class="col-6">
+          <label class="form-label">Tối thiểu ($)</label>
+          <input class="form-control" value="99">
+        </div>
+        <div class="col-6">
+          <label class="form-label">Tối đa ($)</label>
+          <input class="form-control" value="799">
+        </div>
+      </div>
+    </section>
+
+    </div><div class="desktop-col-7">
+    <section class="method-panel green">
+      <div class="panel-title green">Tôi gửi tiền VND bằng hình thức</div>
+      <div class="chips" id="createSenderVndMethods"></div>
+    </section>
+      <section class="method-panel blue">
+      <div class="panel-title blue">Người thụ hưởng nhận USD bằng hình thức</div>
+      <div class="chips mb-3" id="createBeneficiaryUsdMethods" data-single="true"></div>
+      <div class="panel-title blue">Thông tin tài khoản người thụ hưởng</div>
+      <div id="createBeneficiaryAccount"></div>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-outline-primary flex-fill" id="openCreateBeneficiaryAccountPicker" type="button">
+          <i class="bi bi-wallet2"></i> Chọn tài khoản
+        </button>
+        <button class="btn btn-primary flex-fill" data-account-modal data-mode="add" type="button">
+          <i class="bi bi-plus"></i> Thêm mới
+        </button>
+      </div>
+    </section>
+<section class="form-card">
+      <label class="form-label">Ghi chú</label>
+      <textarea class="form-control" rows="4" placeholder="Điều kiện, lưu ý thêm..."></textarea>
+    </section>
+
+    <button class="btn btn-primary btn-lg w-100">Đăng Deal</button>
+    </div></div>
+  </main>
+
+
+  <div class="modal fade" id="createBeneficiaryAccountPickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width:520px">
+      <div class="modal-content accept-modal-card">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title fw-black">Chọn tài khoản người thụ hưởng</h5>
+            <div class="small-muted" id="createAccountPickerSubtitle">Danh sách tài khoản phù hợp với phương thức đã chọn.</div>
+          </div>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="createBeneficiaryAccountPickerList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-wrap">
+    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/create.js"></script>
+</body>
+</html>

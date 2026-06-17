@@ -44,13 +44,13 @@ import {
   timeAgo,
   getAvatarBg,
   getInitials,
-  PAYMENT_METHODS_BY_CURRENCY,
+  getPaymentMethodsByCurrency,
   getPaymentMethod,
   type Deal,
   type DealRequest,
   type ProofData,
   type ProviderAccount,
-  PROVIDER_ACCOUNTS_INIT,
+  PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY,
 } from "../../data/mockData";
 import {
   ProofModal,
@@ -62,7 +62,10 @@ import {
 import { RecipientDetails } from "../shared/RecipientDetails";
 import { MethodIcon } from "../shared/MethodIcon";
 import { AppBottomNav, OverviewScreen, type AppTab } from "../shared/AppNavigation";
-import { HomeTab as SearchDealsTab } from "../requester/RequesterApp";
+import { DealSearchTab as SearchDealsTab } from "../shared/DealSearchTab";
+import { ManageDealsTab } from "../shared/DealManagement";
+import { TransactionHistoryTab } from "../shared/TransactionHistory";
+import { PaymentAccountsTab } from "../shared/PaymentAccountsTab";
 
 function fmt(amount: number, code: string) {
   if (code === "VND") return formatVND(amount);
@@ -153,7 +156,7 @@ function PaymentMethodPicker({
   onToggle: (id: string) => void;
   label: string;
 }) {
-  const methods = PAYMENT_METHODS_BY_CURRENCY[currency] ?? [];
+  const methods = getPaymentMethodsByCurrency(currency);
   return (
     <div>
       <p
@@ -304,7 +307,7 @@ function CreateDealModal({
     }));
   };
   const changeTo = (code: string) => {
-    const methods = PAYMENT_METHODS_BY_CURRENCY[code] ?? [];
+    const methods = getPaymentMethodsByCurrency(code);
     setForm((f) => ({
       ...f,
       toCurrency: code,
@@ -424,10 +427,10 @@ function CreateDealModal({
           style={{ maxHeight: "calc(92vh - 130px)" }}
         >
           {/* Currency pair */}
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-                Người thụ hưởng nhận bằng
+                Gửi qua
               </label>
               <select
                 value={form.fromCurrency}
@@ -446,7 +449,6 @@ function CreateDealModal({
               <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 2 }}>
                 Tôi gửi bằng
               </label>
-              <p style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 6 }}>Đang ở quốc gia nào, trả bằng</p>
               <select
                 value={form.toCurrency}
                 onChange={(e) => changeTo(e.target.value)}
@@ -585,7 +587,7 @@ function CreateDealModal({
 
             {/* Radio method list */}
             <div className="flex flex-wrap gap-2">
-              {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => {
+              {getPaymentMethodsByCurrency(form.fromCurrency).map(m => {
                 const isSelected = form.selectedMethodId === m.id;
                 return (
                   <button
@@ -833,7 +835,7 @@ function CreateDealModal({
                     Hình thức thanh toán
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {(PAYMENT_METHODS_BY_CURRENCY[form.fromCurrency] ?? []).map(m => (
+                    {getPaymentMethodsByCurrency(form.fromCurrency).map(m => (
                       <button
                         key={m.id}
                         onClick={() => setAddForm(f => ({ ...f, methodId: m.id }))}
@@ -926,264 +928,6 @@ function CreateDealModal({
 }
 
 // ============================================================
-// Home Tab
-// ============================================================
-function HomeTab({
-  deals,
-  requests,
-  onTabChange,
-  onOpenRequestDetail,
-}: {
-  deals: Deal[];
-  requests: DealRequest[];
-  onTabChange: (t: Tab) => void;
-  onOpenRequestDetail: (requestId: string) => void;
-}) {
-  const activeDeals = deals.filter((d) => d.status === "active").length;
-  const pendingReqs = requests.filter((r) => r.status === "pending" || r.status === "waiting_accept").length;
-  const recentReqs = requests.filter((r) => r.status === "pending" || r.status === "waiting_accept").slice(0, 3);
-
-  return (
-    <div className="flex-1 overflow-y-auto">
-      <div
-        style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` }}
-        className="px-5 pt-12 pb-8 relative overflow-hidden"
-      >
-        <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
-        <div className="absolute bottom-0 left-20 w-24 h-24 rounded-full bg-white/5" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13 }}>
-                Xin chào 👋
-              </p>
-              <h1
-                style={{
-                  color: "white",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  marginTop: 2,
-                }}
-              >
-                Nguyễn Văn B
-              </h1>
-            </div>
-            <div className="relative">
-              <Avatar name="Nguyễn Văn B" size={46} />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-400 border-2 border-white" />
-            </div>
-          </div>
-          <div className="bg-white/20 backdrop-blur rounded-2xl p-4">
-            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
-              Thu nhập hôm nay
-            </p>
-            <p
-              style={{
-                color: "white",
-                fontSize: 28,
-                fontWeight: 800,
-                marginTop: 4,
-              }}
-            >
-              ₫15,250,000
-            </p>
-            <div className="flex items-center gap-1 mt-1">
-              <TrendingUp size={13} color="#86EFAC" />
-              <span style={{ color: "#86EFAC", fontSize: 12 }}>
-                +12% so với hôm qua
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-4 py-5 space-y-5">
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            {
-              label: "Deals đang mở",
-              value: String(activeDeals),
-              icon: "📋",
-              color: "#EFF6FF",
-              text: PRIMARY,
-            },
-            {
-              label: "Hoàn thành",
-              value: "248",
-              icon: "✅",
-              color: "#F0FDF4",
-              text: "#059669",
-            },
-            {
-              label: "Đánh giá",
-              value: "4.9★",
-              icon: "⭐",
-              color: "#FFFBEB",
-              text: "#D97706",
-            },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="rounded-2xl p-3 text-center"
-              style={{ background: s.color }}
-            >
-              <div style={{ fontSize: 22 }}>{s.icon}</div>
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: s.text,
-                  marginTop: 2,
-                }}
-              >
-                {s.value}
-              </div>
-              <div style={{ fontSize: 10, color: "#6B7280", marginTop: 2 }}>
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            {
-              icon: "➕",
-              label: "Tạo Deal",
-              color: "#EFF6FF",
-              text: PRIMARY,
-              tab: "manageDeals" as Tab,
-            },
-            {
-              icon: "📋",
-              label: "Deals",
-              color: "#F0FDF4",
-              text: "#059669",
-              tab: "manageDeals" as Tab,
-            },
-            {
-              icon: "🔔",
-              label: "Yêu cầu",
-              color: "#FFFBEB",
-              text: "#D97706",
-              tab: "history" as Tab,
-            },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => onTabChange(item.tab)}
-              className="rounded-2xl p-3 flex flex-col items-center gap-1 active:scale-95 transition-transform relative"
-              style={{
-                background: item.color,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              <span style={{ fontSize: 24 }}>{item.icon}</span>
-              <span style={{ fontSize: 11, color: item.text, fontWeight: 600 }}>
-                {item.label}
-              </span>
-              {item.label === "Yêu c��u" && pendingReqs > 0 && (
-                <span
-                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center"
-                  style={{ fontSize: 10, color: "white", fontWeight: 700 }}
-                >
-                  {pendingReqs}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {recentReqs.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>
-                Yêu cầu mới nhất
-              </h3>
-              <button
-                onClick={() => onTabChange("history")}
-                style={{
-                  color: PRIMARY,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                Xem tất cả
-              </button>
-            </div>
-            <div className="space-y-3">
-              {recentReqs.map((req) => {
-                const senderMethod = getPaymentMethod(
-                  req.fromCurrency,
-                  req.senderPaymentMethod,
-                );
-                const recipientMethod = getPaymentMethod(
-                  req.toCurrency,
-                  req.recipientPaymentMethod,
-                );
-                return (
-                  <button
-                    key={req.id}
-                    onClick={() => onOpenRequestDetail(req.id)}
-                    className="w-full bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex items-center gap-3 text-left active:scale-[0.99] transition-transform"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Avatar name={req.requesterName} size={40} />
-                    <div className="flex-1 min-w-0">
-                      <div
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: "#111827",
-                        }}
-                      >
-                        {req.requesterName}
-                      </div>
-                      <div style={{ fontSize: 12, color: "#6B7280" }}>
-                        {fmt(req.amount, req.fromCurrency)} →{" "}
-                        {fmt(req.receiveAmount, req.toCurrency)}
-                      </div>
-                      {senderMethod && recipientMethod && (
-                        <div style={{ fontSize: 11, color: "#9CA3AF" }} className="flex items-center gap-0.5 flex-wrap">
-                          <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={11} />
-                          {senderMethod.name} → <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={11} />
-                          {recipientMethod.name}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <StatusBadge status={req.status} />
-                      <div
-                        style={{ fontSize: 11, color: "#9CA3AF", marginTop: 4 }}
-                      >
-                        {timeAgo(req.createdAt)}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {recentReqs.length === 0 && (
-          <div className="flex flex-col items-center py-8 text-center">
-            <Inbox size={40} color="#D1D5DB" />
-            <p style={{ color: "#9CA3AF", marginTop: 8, fontSize: 14 }}>
-              Chưa có yêu cầu mới
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
 // Deals Tab
 // ============================================================
 function DealsTab({
@@ -1219,6 +963,12 @@ function DealsTab({
     active: deals.filter((d) => d.status === "active").length,
     completed: deals.filter((d) => d.status === "completed").length,
     expired: deals.filter((d) => d.status === "expired").length,
+  };
+  const chipLabels: Record<DealFilter, string> = {
+    all: "Tất cả",
+    active: "Đang hoạt động",
+    completed: "Đã hoàn tất",
+    expired: "Đã xoá",
   };
 
   const togglePause = (id: string) =>
@@ -1260,13 +1010,7 @@ function DealsTab({
 
       <div className="flex gap-2 px-5 py-3 border-b border-gray-100 overflow-x-auto">
         {(["all", "active", "completed", "expired"] as DealFilter[]).map((f) => {
-          const labels: Record<DealFilter, string> = {
-            all: "Tất cả",
-            active: "Hoạt động",
-            completed: "Đã hoàn tất",
-            paused: "Đã hoàn tất",
-            expired: "Hết hạn",
-          };
+          const count = counts[f] ?? 0;
           return (
             <button
               key={f}
@@ -1282,8 +1026,8 @@ function DealsTab({
                 cursor: "pointer",
                 whiteSpace: "nowrap",
               }}
-            >
-              {labels[f]} ({counts[f]})
+              >
+              {chipLabels[f]} ({count})
             </button>
           );
         })}
@@ -1340,7 +1084,7 @@ function DealsTab({
                   )}
                 </div>
                 <div className="flex items-center gap-1 flex-wrap">
-                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Tôi gửi qua:</span>
+                  <span style={{ fontSize: 10, color: "#9CA3AF" }}>Người thụ hưởng nhận bằng</span>
                   {deal.recipientPaymentMethods.map((id) => (
                     <MethodBadge key={id} currency={deal.toCurrency} methodId={id} />
                   ))}
@@ -1437,7 +1181,7 @@ function DealsTab({
               onDealsChange([d, ...deals]);
               setShowCreate(false);
             }}
-            accounts={PROVIDER_ACCOUNTS_INIT}
+            accounts={PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY}
           />
         )}
         {editingDeal && (
@@ -1447,7 +1191,7 @@ function DealsTab({
               onDealsChange(deals.map(x => x.id === d.id ? d : x));
               setEditingDeal(null);
             }}
-            accounts={PROVIDER_ACCOUNTS_INIT}
+            accounts={PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY}
             initialDeal={editingDeal}
           />
         )}
@@ -1558,20 +1302,13 @@ const TX_STATUS_CFG: Record<
   string,
   { label: string; bg: string; color: string }
 > = {
-  pending: { label: "Chờ duyệt", bg: "#FEF3C7", color: "#92400E" },
+  pending:        { label: "Chờ duyệt",     bg: "#FEF3C7", color: "#92400E" },
   waiting_accept: { label: "Chờ chấp nhận", bg: "#DBEAFE", color: "#1E40AF" },
-  accepted: { label: "Chờ thanh toán", bg: "#DBEAFE", color: "#1E40AF" },
-  payment_sent: { label: "Chờ xác nhận", bg: "#EDE9FE", color: "#5B21B6" },
-  payment_confirmed: {
-    label: "Đang chuyển tiền",
-    bg: "#FEF3C7",
-    color: "#B45309",
-  },
-  transfer_sent: { label: "Chờ hoàn tất", bg: "#D1FAE5", color: "#065F46" },
-  completed: { label: "Hoàn thành", bg: "#D1FAE5", color: "#065F46" },
-  rejected: { label: "Từ chối", bg: "#FEE2E2", color: "#991B1B" },
-  cancelled: { label: "Đã hủy", bg: "#F3F4F6", color: "#4B5563" },
-  disputed: { label: "Khiếu nại", bg: "#FFF7ED", color: "#9A3412" },
+  processing:     { label: "Đang xử lý",    bg: "#EDE9FE", color: "#5B21B6" },
+  completed:      { label: "Hoàn thành",    bg: "#D1FAE5", color: "#065F46" },
+  rejected:       { label: "Từ chối",       bg: "#FEE2E2", color: "#991B1B" },
+  cancelled:      { label: "Đã hủy",        bg: "#F3F4F6", color: "#4B5563" },
+  disputed:       { label: "Khiếu nại",     bg: "#FFF7ED", color: "#9A3412" },
 };
 function TxBadge({ status }: { status: string }) {
   const s = TX_STATUS_CFG[status] ?? {
@@ -1599,12 +1336,10 @@ function TxBadge({ status }: { status: string }) {
 function ProviderRequestCard({
   req,
   onUpdate,
-  newRequestIds,
   variant = "list",
 }: {
   req: DealRequest;
   onUpdate: (partial: Partial<DealRequest>) => void;
-  newRequestIds: string[];
   /** `list`: có thể gọn theo cờ phía trên; `detail`: luôn đầy đủ thông tin. */
   variant?: "list" | "detail";
 }) {
@@ -1618,22 +1353,17 @@ function ProviderRequestCard({
   const [showTransferUpload, setShowTransferUpload] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [showRecipient, setShowRecipient] = useState(false);
-  const senderMethod = getPaymentMethod(
-    req.fromCurrency,
-    req.senderPaymentMethod,
-  );
-  const recipientMethod = getPaymentMethod(
-    req.toCurrency,
-    req.recipientPaymentMethod,
-  );
+  const senderMethod = getPaymentMethod(req.fromCurrency, req.senderPaymentMethod);
+  const recipientMethod = getPaymentMethod(req.toCurrency, req.recipientPaymentMethod);
   const feeAmt = req.amount * req.systemFeeRate;
-  const providerFeeAmt = req.receiveAmount * req.systemFeeRate;
-  const isNew = newRequestIds.includes(req.id);
-  const canDispute =
-    !!req.transferProof &&
-    ["transfer_sent"].includes(req.status);
-  const isAwaitingAcceptance =
-    req.status === "pending" || req.status === "waiting_accept";
+
+  const isAwaitingAcceptance = req.status === "pending" || req.status === "waiting_accept";
+  const isProcessing = req.status === "processing";
+  const hasMyProof = !!req.providerProof;
+  const hasCounterpartyProof = !!req.requesterProof;
+  const canUploadProof = isProcessing && !hasMyProof;
+  const canConfirmReceived = isProcessing && hasCounterpartyProof && !req.providerConfirmedReceived;
+  const canDispute = isProcessing && hasMyProof;
 
   return (
     <motion.div
@@ -1641,7 +1371,7 @@ function ProviderRequestCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-2xl shadow-sm overflow-hidden"
-      style={{ border: isNew ? "2px solid #EF4444" : "1px solid #E5E7EB" }}
+      style={{ border: "1px solid #E5E7EB" }}
     >
       <div className="p-4 pb-3">
         {/* Header */}
@@ -1661,36 +1391,22 @@ function ProviderRequestCard({
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            {isNew && (
-              <span
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full animate-pulse"
-                style={{
-                  background: "#EF4444",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "white",
-                }}
-              >
-                🔔 MỚI
-              </span>
-            )}
             <TxBadge status={req.status} />
           </div>
         </div>
 
-        {/* Step progress — danh sách tạm ẩn; chi tiết hiện đủ */}
-        {[
-          "accepted",
-          "payment_sent",
-          "payment_confirmed",
-          "transfer_sent",
-          "completed",
-        ].includes(req.status) &&
-          isDetail && (
-            <div className="mb-3">
-              <StepProgress status={req.status} />
-            </div>
-          )}
+        {/* Step progress */}
+        {["processing", "completed", "disputed"].includes(req.status) && isDetail && (
+          <div className="mb-3">
+            <StepProgress
+              status={req.status}
+              hasRequesterProof={hasCounterpartyProof}
+              hasProviderProof={hasMyProof}
+              requesterConfirmed={!!req.requesterConfirmedReceived}
+              providerConfirmed={!!req.providerConfirmedReceived}
+            />
+          </div>
+        )}
 
         {/* Escrow info */}
         {req.escrowLocked &&
@@ -1753,7 +1469,7 @@ function ProviderRequestCard({
             <ArrowRight size={16} color="#9CA3AF" />
             <div className="text-right">
               <p style={{ fontSize: 10, color: "#9CA3AF" }}>
-                Người thụ hưởng nhận
+               Gửi qua
               </p>
               <p style={{ fontSize: 14, fontWeight: 700, color: "#059669" }}>
                 {fmt(req.receiveAmount, req.toCurrency)}
@@ -1772,25 +1488,17 @@ function ProviderRequestCard({
           </p>
         </div>
 
-        {isDetail &&
-          [
-            "accepted",
-            "payment_sent",
-            "payment_confirmed",
-            "transfer_sent",
-            "completed",
-            "disputed",
-          ].includes(req.status) && (
-            <TransactionProofSections
-              status={req.status}
-              paymentProof={req.paymentProof}
-              transferProof={req.transferProof}
-              labels={{
-                payment: "Bằng chứng thanh toán từ người gửi",
-                transfer: "Bằng chứng chuyển tiền",
-              }}
-            />
-          )}
+        {isDetail && ["processing", "completed", "disputed"].includes(req.status) && (
+          <TransactionProofSections
+            status={req.status}
+            paymentProof={req.requesterProof}
+            transferProof={req.providerProof}
+            labels={{
+              payment: "Bằng chứng bên kia (view-only)",
+              transfer: "Bằng chứng của bạn (đã gửi)",
+            }}
+          />
+        )}
 
         {/* Recipient — danh sách tạm ẩn; chi tiết hiện đủ */}
         {isDetail && (
@@ -1937,7 +1645,7 @@ function ProviderRequestCard({
                             marginBottom: 3,
                           }}
                         >
-                          Người gửi thanh toán
+                          Nhận qua
                         </p>
                         <div className="flex items-center gap-1">
                           {senderMethod && <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={15} />}
@@ -1973,7 +1681,7 @@ function ProviderRequestCard({
                             marginBottom: 3,
                           }}
                         >
-                          Bạn chuyển đến người thụ hưởng
+                          Gửi qua
                         </p>
                         <div className="flex items-center justify-end gap-1">
                           {recipientMethod && <MethodIcon id={recipientMethod.id} icon={recipientMethod.icon} size={15} />}
@@ -2128,162 +1836,82 @@ function ProviderRequestCard({
           </div>
         )}
 
-        {req.status === "accepted" && (
-          <div
-            className="flex items-center gap-2 px-3 py-3 rounded-xl"
-            style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}
-          >
-            <span style={{ fontSize: 16 }}>⏳</span>
-            <p style={{ fontSize: 13, color: "#1E40AF", fontWeight: 600 }} className="flex items-center gap-1 flex-wrap">
-              Chờ người gửi chuyển tiền qua{" "}
-              {senderMethod && <MethodIcon id={senderMethod.id} icon={senderMethod.icon} size={13} />}
-              {senderMethod?.name} và upload bằng chứng...
-            </p>
-          </div>
-        )}
-
-        {req.status === "payment_sent" && req.paymentProof && isDetail && (
+        {/* ── Parallel flow actions (processing) ──────────── */}
+        {isProcessing && (
           <div className="space-y-3">
-            <button
-              onClick={() =>
-                onUpdate({
-                  status: "payment_confirmed",
-                  paymentConfirmedAt: new Date().toISOString(),
-                })
-              }
-              className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
-              style={{
-                background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)`,
-                border: "none",
-                cursor: "pointer",
-              }}
-              >
-                <CheckCircle2 size={16} color="white" />
-                <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
-              Xác nhận đã nhận đủ {fmt(req.amount, req.fromCurrency)} qua{" "}
-                {senderMethod?.name ?? req.senderPaymentMethod}
-                </span>
-            </button>
-          </div>
-        )}
-
-        {/* Chuyển tiền + upload bằng chứng — danh sách tạm ẩn; chỉ màn chi tiết */}
-        {req.status === "payment_confirmed" &&
-          isDetail &&
-          (() => {
-          return (
-          <div className="space-y-3">
-            <div
-              className="rounded-xl p-3"
-              style={{ background: "#FEF3C7", border: "1.5px solid #FCD34D" }}
-            >
-              <p
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "#92400E",
-                  marginBottom: 10,
-                  letterSpacing: 0.2,
-                }}
-              >
-                🔄 Chuyển tiền ngay
-              </p>
-              <div
-                className="space-y-2.5"
-                style={{ fontSize: 13, color: "#78350F", lineHeight: 1.45 }}
-              >
-                <div className="flex flex-col gap-0.5">
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                    Số tiền chuyển
-                  </span>
+            {/* Recipient info + upload — always show when processing */}
+            {isDetail && (
+              <div className="rounded-xl p-3" style={{ background: "#FEF3C7", border: "1.5px solid #FCD34D" }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#92400E", marginBottom: 8 }}>
+                  🔄 Gửi {fmt(req.receiveAmount, req.toCurrency)} cho người thụ hưởng
+                </p>
+                <div className="space-y-2" style={{ fontSize: 13, color: "#78350F" }}>
                   <span style={{ fontWeight: 700, fontSize: 15, color: "#92400E" }}>
                     {fmt(req.receiveAmount, req.toCurrency)}
                   </span>
+                  <RecipientDetails
+                    mode="stacked"
+                    name={req.recipientName}
+                    method={recipientMethod}
+                    phone={req.recipientPhone}
+                    bank={req.recipientBank}
+                    account={req.recipientAccount}
+                    address={req.recipientAddress}
+                    tone={{ title: "#92400E", text: "#78350F", muted: "#6B7280", label: "#B45309", icon: "#B45309" }}
+                  />
                 </div>
-                <div
-                  className="border-t border-dashed pt-2.5"
-                  style={{ borderColor: "rgba(217, 119, 6, 0.35)" }}
-                />
-                <div className="flex flex-col gap-0.5">
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                    Người nhận
-                  </span>
-                  <span style={{ fontWeight: 700 }}>{req.recipientName}</span>
-                </div>
-                <RecipientDetails
-                  mode="stacked"
-                  name={req.recipientName}
-                  method={recipientMethod}
-                  phone={req.recipientPhone}
-                  bank={req.recipientBank}
-                  account={req.recipientAccount}
-                  address={req.recipientAddress}
-                  tone={{
-                    title: "#92400E",
-                    text: "#78350F",
-                    muted: "#6B7280",
-                    label: "#B45309",
-                    icon: "#B45309",
-                  }}
-                />
-                {(req.memo || req.id) && (
-                  <>
-                    <div
-                      className="border-t border-dashed pt-2.5 mt-0.5"
-                      style={{ borderColor: "rgba(217, 119, 6, 0.35)" }}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: 0.4 }}>
-                        Ghi chú / nội dung chuyển khoản
-                      </span>
-                      <div
-                        className="rounded-lg px-2.5 py-2"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.65)",
-                          border: "1px solid rgba(252, 211, 77, 0.9)",
-                        }}
-                      >
-                        <span style={{ fontWeight: 700, letterSpacing: 0.35, fontFamily: "ui-monospace, monospace", fontSize: 13 }}>
-                          {req.memo || req.id}
-                        </span>
-                        <p style={{ fontSize: 10, color: "#92400E", marginTop: 6, marginBottom: 0, lineHeight: 1.4 }}>
-                          Điền chính xác nội dung này khi chuyển để đối soát.
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
-            </div>
-            <button
-              onClick={() => setShowTransferUpload(true)}
-              className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
-              style={{
-                background: `linear-gradient(135deg, #059669, #047857)`,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              <span style={{ fontSize: 16 }}>📤</span>
-              <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
-                Đã chuyển {req.toCurrency} — Upload bằng chứng
-              </span>
-            </button>
-          </div>
-          );
-        })()}
+            )}
 
-        {req.status === "transfer_sent" && req.transferProof && (
-          <div className="space-y-2">
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-xl"
-              style={{ background: "#ECFDF5" }}
-            >
-              <span style={{ fontSize: 16 }}>⏳</span>
-              <p style={{ fontSize: 13, color: "#065F46", fontWeight: 600 }}>
-                Chờ người dùng xác nhận đã nhận tiền...
-              </p>
-            </div>
+            {/* Case 02 & 03: chưa upload — nút upload nổi bật */}
+            {canUploadProof && (
+              <button
+                onClick={() => setShowTransferUpload(true)}
+                className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+                style={{ background: `linear-gradient(135deg, #059669, #047857)`, border: "none", cursor: "pointer" }}
+              >
+                <span style={{ fontSize: 16 }}>📤</span>
+                <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>Upload bằng chứng chuyển tiền</span>
+              </button>
+            )}
+
+            {/* Case 04: đã upload, chờ bên kia */}
+            {hasMyProof && !hasCounterpartyProof && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#EDE9FE" }}>
+                <span style={{ fontSize: 16 }}>⏳</span>
+                <p style={{ fontSize: 13, color: "#5B21B6", fontWeight: 600 }}>Chờ người gửi upload bằng chứng...</p>
+              </div>
+            )}
+
+            {/* Case 05: cả hai đã upload — xác nhận */}
+            {canConfirmReceived && (
+              <button
+                onClick={() => {
+                  const next: Partial<DealRequest> = { providerConfirmedReceived: true };
+                  if (req.requesterConfirmedReceived) {
+                    next.status = "completed";
+                    next.completedAt = new Date().toISOString();
+                    next.escrowLocked = false;
+                  }
+                  onUpdate(next);
+                }}
+                className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+                style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)`, border: "none", cursor: "pointer" }}
+              >
+                <CheckCircle2 size={16} color="white" />
+                <span style={{ color: "white", fontSize: 14, fontWeight: 700 }}>
+                  Xác nhận đã nhận đủ {fmt(req.amount, req.fromCurrency)}
+                </span>
+              </button>
+            )}
+
+            {/* Đã xác nhận, chờ bên kia */}
+            {req.providerConfirmedReceived && !req.requesterConfirmedReceived && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#D1FAE5", border: "1px solid #6EE7B7" }}>
+                <CheckCircle2 size={15} color="#059669" />
+                <p style={{ fontSize: 13, color: "#065F46", fontWeight: 600 }}>Bạn đã xác nhận — chờ người gửi xác nhận...</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -2502,7 +2130,7 @@ function ProviderRequestCard({
                 <button
                   onClick={() => {
                     onUpdate({
-                      status: "accepted",
+                      status: "processing",
                       systemFeeRate: 0.005,
                       systemFeeAmount: req.amount * 0.005,
                       escrowLocked: true,
@@ -2535,7 +2163,7 @@ function ProviderRequestCard({
               "photo",
             ]}
             onConfirm={(proof: ProofData) => {
-              onUpdate({ status: "transfer_sent", transferProof: proof });
+              onUpdate({ providerProof: proof });
               setShowTransferUpload(false);
             }}
             onClose={() => setShowTransferUpload(false)}
@@ -2575,25 +2203,18 @@ function ProviderRequestCard({
 function RequestsTab({
   requests,
   onRequestsChange,
-  newRequestIds,
   selectedRequestId,
   onOpenDetail,
   initialFilter = "pending",
 }: {
   requests: DealRequest[];
   onRequestsChange: (r: DealRequest[]) => void;
-  newRequestIds: string[];
   selectedRequestId: string | null;
   onOpenDetail: (requestId: string) => void;
   initialFilter?: ProvReqFilter;
 }) {
   const [filter, setFilter] = useState<ProvReqFilter>(initialFilter);
-  const ACTIVE_STATUSES = [
-    "accepted",
-    "payment_sent",
-    "payment_confirmed",
-    "transfer_sent",
-  ];
+  const ACTIVE_STATUSES = ["processing"];
   const filterMap: Record<ProvReqFilter, (r: DealRequest) => boolean> = {
     pending: (r) => r.status === "pending" || r.status === "waiting_accept",
     active: (r) => ACTIVE_STATUSES.includes(r.status),
@@ -2699,7 +2320,6 @@ function RequestsTab({
               <ProviderRequestCard
                 req={req}
                 onUpdate={(p) => handleUpdate(req.id, p)}
-                newRequestIds={newRequestIds}
               />
               <button
                 onClick={() => onOpenDetail(req.id)}
@@ -2737,13 +2357,11 @@ function ProviderTransactionDetailScreen({
   request,
   requests,
   onRequestsChange,
-  newRequestIds,
   onBack,
 }: {
   request: DealRequest | null;
   requests: DealRequest[];
   onRequestsChange: (r: DealRequest[]) => void;
-  newRequestIds: string[];
   onBack: () => void;
 }) {
   if (!request) {
@@ -2818,7 +2436,6 @@ function ProviderTransactionDetailScreen({
         <ProviderRequestCard
           req={request}
           onUpdate={handleUpdate}
-          newRequestIds={newRequestIds}
           variant="detail"
         />
       </div>
@@ -3176,7 +2793,7 @@ function PaymentAccountsModal({
           <div>
             <label style={labelStyle}>Hình thức thanh toán</label>
             <div className="flex flex-wrap gap-2">
-              {(PAYMENT_METHODS_BY_CURRENCY[currency] ?? [])
+              {getPaymentMethodsByCurrency(currency)
                 .map((m) => (
                   <button
                     key={m.id}
@@ -3348,7 +2965,7 @@ function PaymentAccountsModal({
 // ============================================================
 function ProfileTab({ onRoleChange }: { onRoleChange: () => void }) {
   const [accounts, setAccounts] = useState<ProviderAccount[]>(
-    PROVIDER_ACCOUNTS_INIT,
+    PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY,
   );
   const [showAccountsModal, setShowAccountsModal] = useState(false);
 
@@ -3579,7 +3196,6 @@ export function ProviderApp({
   availableDeals,
   onDealsChange,
   onRequestsChange,
-  newRequestIds,
 }: {
   onRoleChange: () => void;
   deals: Deal[];
@@ -3587,11 +3203,10 @@ export function ProviderApp({
   availableDeals: Deal[];
   onDealsChange: (d: Deal[]) => void;
   onRequestsChange: (r: DealRequest[]) => void;
-  newRequestIds: string[];
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [accounts, setAccounts] = useState<ProviderAccount[]>(
-    PROVIDER_ACCOUNTS_INIT,
+    PROVIDER_ACCOUNTS_INIT_FROM_BENEFICIARY,
   );
   const [requestsViewMode, setRequestsViewMode] =
     useState<RequestsViewMode>("list");
@@ -3640,7 +3255,7 @@ export function ProviderApp({
             <OverviewScreen
               accent={PRIMARY}
               processingRequests={requests.filter((r) =>
-                ["pending", "waiting_accept", "accepted", "payment_sent", "payment_confirmed", "transfer_sent"].includes(r.status),
+                ["pending", "waiting_accept", "processing"].includes(r.status),
               )}
               hotDeals={availableDeals}
               recentHistory={requests
@@ -3658,55 +3273,57 @@ export function ProviderApp({
             <SearchDealsTab
               accounts={accounts}
               onAccountsChange={setAccounts}
+              displayName="Nguyễn Văn B"
               onRequestSent={(req) => {
                 onRequestsChange([req, ...requests]);
                 setSelectedRequestId(req.id);
-                setRequestsViewMode("list");
+                setRequestsViewMode("detail");
                 setTab("history");
               }}
               availableDeals={availableDeals}
             />
           )}
           {tab === "manageDeals" && (
-            <DealsTab deals={deals} onDealsChange={onDealsChange} requests={requests} onOpenRequestDetail={openRequestDetail} onTabChange={handleTabChange} />
+            <ManageDealsTab
+              title="Deals của tôi"
+              deals={deals}
+              requests={requests}
+              accounts={accounts}
+              onDealsChange={onDealsChange}
+              onAccountsChange={setAccounts}
+              ownerName="Nguyễn Văn B"
+              accent={PRIMARY}
+              onOpenRequestDetail={openRequestDetail}
+            />
           )}
           {tab === "history" &&
             (requestsViewMode === "list" ? (
-              <RequestsTab
+              <TransactionHistoryTab
                 requests={requests}
-                onRequestsChange={onRequestsChange}
-                newRequestIds={newRequestIds}
-                selectedRequestId={selectedRequestId}
                 onOpenDetail={openRequestDetail}
-                initialFilter="completed"
+                title="Lịch sử"
+                subtitle="Các giao dịch đã kết nối gần đây"
+                accent={PRIMARY}
+                getRequestTitle={(request) => request.requesterName}
               />
             ) : (
               <ProviderTransactionDetailScreen
                 request={selectedRequest}
                 requests={requests}
                 onRequestsChange={onRequestsChange}
-                newRequestIds={newRequestIds}
                 onBack={() => setRequestsViewMode("list")}
               />
             ))}
           {tab === "accounts" && (
             <div className="flex-1 overflow-hidden flex flex-col">
-              <div
-                className="px-5 pt-12 pb-4"
-                style={{ background: `linear-gradient(135deg, ${PRIMARY}, #1D4ED8)` }}
-              >
-                <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
-                  Tài khoản nhận
-                </h1>
-                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 13, marginTop: 2 }}>
-                  Danh sách tài khoản nhận tiền của bạn
-                </p>
-              </div>
-              <PaymentAccountsModal
+              <PaymentAccountsTab
                 inline
                 accounts={accounts}
                 onSave={setAccounts}
                 onClose={() => setTab("overview")}
+                accent={PRIMARY}
+                title="Tài khoản nhận"
+                subtitle="Danh sách tài khoản nhận tiền của bạn"
               />
             </div>
           )}

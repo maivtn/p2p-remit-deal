@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { ProviderApp } from './components/provider/ProviderApp';
-import { RequesterApp } from './components/requester/RequesterApp';
+import { ProviderApp } from './components/accountB/AccountB';
+import { RequesterApp } from './components/accountA/AccountA';
 import {
-  PROVIDER_DEALS_INIT, AVAILABLE_DEALS,
+  PROVIDER_DEALS_B_INIT, AVAILABLE_DEALS,
   INCOMING_REQUESTS_INIT, MY_REQUESTS_INIT,
   type Deal, type DealRequest,
 } from './data/mockData';
 
-const ALL_DEALS_INIT: Deal[] = [...PROVIDER_DEALS_INIT, ...AVAILABLE_DEALS];
+const ALL_DEALS_INIT: Deal[] = [...PROVIDER_DEALS_B_INIT, ...AVAILABLE_DEALS];
 const ALL_REQUESTS_INIT: DealRequest[] = [...INCOMING_REQUESTS_INIT, ...MY_REQUESTS_INIT];
 
 // IDs that existed at startup — anything outside this set is "new" for provider
@@ -52,8 +52,8 @@ function PhoneFrame({
       <div
         className="relative overflow-hidden shadow-2xl"
         style={{
-          width: 370,
-          height: 800,
+          width: 400,
+          height: 900,
           borderRadius: 44,
           background: '#f8fafc',
           border: `10px solid #1a1a1a`,
@@ -147,13 +147,8 @@ export default function App() {
   // ── Derived slices ──────────────────────────────────────────
   const providerDeals    = sharedDeals.filter(d => d.providerId === 'self');
   const providerRequests = sharedRequests.filter(r => r.providerId === 'self');
-  const takenDealIds = new Set(
-    sharedRequests
-      .filter(r => !['cancelled', 'rejected'].includes(r.status))
-      .map(r => r.dealId)
-  );
   const availableDeals = sharedDeals.filter(
-    d => d.status === 'active' && !takenDealIds.has(d.id)
+    d => d.status === 'active'
   );
   const myRequests       = sharedRequests.filter(r => r.requesterId === 'self');
 
