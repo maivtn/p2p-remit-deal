@@ -2,7 +2,7 @@
 const proofFileMock = {
   id: "proof_mock_001",
   name: "payment-proof.png",
-  url: "https://placehold.co/360x220/eaf2ff/2563eb?text=Payment+Proof",
+  url: "https://placehold.co/300x400/eaf2ff/2563eb?text=Proof",
   mimeType: "image/png",
   sizeText: "1.1 MB",
 };
@@ -166,7 +166,7 @@ function renderFeeHoldPanel(mode = "accepted"){
         <div class="summary-line"><span>Số phí dự kiến</span><strong>${feeText}</strong></div>
         <div class="summary-line"><span>Ví bị trừ phí</span><strong>USDV Wallet trong VLINKPAY</strong></div>
         <div class="summary-line"><span>Hold sau khi accept</span><strong>${holdText} / mỗi bên</strong></div>
-        <div class="small-muted mt-2">Phí accept sẽ bị trừ từ ví USDV của cả hai bên và không hoàn lại. Khi accept, ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch.</div>
+        <div class="small-muted mt-2">Phí accept sẽ bị trừ từ ví USDV của cả hai bên và không hoàn lại. Khi accept, ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch, và được release ngay khi hoàn tất giao dịch.</div>
       </section>
     `;
   }
@@ -363,13 +363,13 @@ function renderAcceptancePanel(data){
   if(!el) return;
   if(!data.showAcceptancePanel){ el.innerHTML = ""; return; }
   el.innerHTML = `
-    <section class="form-card">
+    <section class="form-card p-0">
       <div class="acceptance-panel">
         <div class="fw-bold">Trạng thái chấp nhận giao dịch</div>
         <div class="small mt-1">Giao dịch chỉ bắt đầu sau khi Tran *** B chấp nhận.</div>
         <div class="acceptance-users">
-          <div class="acceptance-user"><div class="avatar">Y</div><div class="fw-bold">${data.parties.me.name}</div><div class="badge-soft badge-success mt-2">${data.parties.me.statusLabel}</div></div>
-          <div class="acceptance-user waiting"><div class="avatar">B</div><div class="fw-bold">${data.parties.counterparty.name}</div><div class="badge-soft badge-waiting mt-2">${data.parties.counterparty.statusLabel}</div></div>
+          <div class="acceptance-user"><div class="fw-bold">${data.parties.me.name}</div><div class="badge-soft badge-success">${data.parties.me.statusLabel}</div></div>
+          <div class="acceptance-user waiting"><div class="fw-bold">${data.parties.counterparty.name}</div><div class="badge-soft badge-waiting">${data.parties.counterparty.statusLabel}</div></div>
         </div>
       </div>
     </section>
@@ -415,11 +415,10 @@ function applyV45CancelFeeHoldRules(caseKey){
     if(!document.getElementById("cancelWaitingAcceptanceBtn")){
       const cancelBtnHtml = `
         <section class="form-card case-cancel-card" id="cancelCase1ActionCard">
-          <h2 class="section-title mt-0"><i class="bi bi-x-circle"></i> Huỷ giao dịch</h2>
           <div class="case-summary-note success">
             Tran *** B chưa accept nên bạn có thể huỷ giao dịch ở bước này và <strong>không mất phí</strong>.
           </div>
-          <button class="btn btn-outline-danger btn-lg w-100 mt-3" id="cancelWaitingAcceptanceBtn" data-bs-toggle="modal" data-bs-target="#cancelWaitingAcceptanceModal">
+          <button class="btn btn-outline-danger mt-3" id="cancelWaitingAcceptanceBtn" data-bs-toggle="modal" data-bs-target="#cancelWaitingAcceptanceModal">
             <i class="bi bi-x-circle"></i> Huỷ giao dịch
           </button>
         </section>
@@ -562,7 +561,7 @@ function renderFlowProofAndActions(flow, transaction){
     return `
       <div class="flow-action-title">Hành động của bạn</div>
       <div class="action-row">
-        <button class="btn btn-success" data-confirm-paid data-flow-id="${flow.id}" data-flow-title="${flow.title}" data-flow-amount="${flow.amount}" data-flow-method="${flow.method}">
+        <button class="btn btn-outline-primary" data-confirm-paid data-flow-id="${flow.id}" data-flow-title="${flow.title}" data-flow-amount="${flow.amount}" data-flow-method="${flow.method}">
           <i class="bi bi-upload"></i> Upload bằng chứng chuyển tiền
         </button>
       </div>
@@ -573,7 +572,7 @@ function renderFlowProofAndActions(flow, transaction){
     return `
       ${renderProofView(flow.proof, "Bằng chứng Tran *** B đã upload")}
       ${flow.confirmed ? `<div class="case-summary-note success mt-3">Bạn đã xác nhận nhận tiền từ Tran *** B.</div>` : `
-        <div class="flow-action-title">Đây là bằng chứng do Tran *** B upload. Bạn chỉ được xem và xác nhận sau khi kiểm tra tiền đã vào tài khoản. </div>
+        <div class="flow-action-title">Đây là bằng chứng do Tran *** B upload. Bạn hãy xem và xác nhận sau khi kiểm tra tiền đã vào tài khoản. </div>
         <div class="action-row">
           <button class="btn btn-success" data-confirm-received data-flow-id="${flow.id}">✅ Xác nhận đã nhận tiền</button>
         </div>
@@ -594,18 +593,24 @@ function renderComplaintButton(){
 }
 
 function renderProofView(proof, title){
-  const preview = `<img class="proof-view-thumb" src="${proof?.url || "https://placehold.co/360x220/eaf2ff/2563eb?text=Payment+Proof"}" alt="${proof?.name || "proof"}">`;
+  const preview = `<img class="proof-view-thumb" src="${proof?.url || "https://placehold.co/300x400/eaf2ff/2563eb?text=Proof"}" alt="${proof?.name || "proof"}">`;
   return `
     <div class="proof-view-card mt-3">
-      <div class="d-flex gap-3 align-items-start">
+    <div class="fw-bold mb-2">${title}</div>
+     <div class="d-flex align-items-start gap-3">
+      <div class="d-flex align-items-start flex-column">
         ${preview}
         <div class="flex-grow-1">
-          <div class="fw-bold">${title}</div>
-          <div class="small-muted">${proof?.name || "payment-proof"} · ${proof?.sizeText || ""}</div>
-          <div class="small-muted mt-1">${proof?.note || ""}</div>
           <a class="btn btn-sm btn-outline-primary mt-2" href="${proof?.url || "#"}" target="_blank"><i class="bi bi-eye"></i> View</a>
         </div>
       </div>
+      <div class="d-flex align-items-start flex-column">
+        ${preview}
+        <div class="flex-grow-1">
+          <a class="btn btn-sm btn-outline-primary mt-2" href="${proof?.url || "#"}" target="_blank"><i class="bi bi-eye"></i> View</a>
+        </div>
+      </div>
+     </div>
     </div>
   `;
 }
@@ -621,7 +626,7 @@ function renderRatingSection(data){
         <div class="small-muted mt-1">Giao dịch đã hoàn tất. Hãy đánh giá trải nghiệm với đối tác.</div>
         <div class="rating-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i></div>
         <textarea class="form-control mb-3" rows="3" placeholder="Nhập nhận xét nếu có..."></textarea>
-        <button class="btn btn-warning fw-bold" data-submit-rating><i class="bi bi-star-fill"></i> Đánh giá</button>
+        <button class="btn btn-outline-primary fw-bold" data-submit-rating><i class="bi bi-star-fill"></i> Đánh giá</button>
       </div>
     </section>
   `;
@@ -648,7 +653,6 @@ function renderDisputeSection(data){
         <div class="dispute-reason mt-3">
           <div class="small-muted">Lý do</div>
           <div class="fw-bold">${data.dispute.reason}</div>
-          <div class="small-muted mt-2">${data.dispute.description}</div>
         </div>
         <div class="action-row">
           ${isMyDispute ? `<button class="btn btn-outline-danger" data-withdraw-complaint><i class="bi bi-x-circle"></i> Rút khiếu nại</button>` : ""}

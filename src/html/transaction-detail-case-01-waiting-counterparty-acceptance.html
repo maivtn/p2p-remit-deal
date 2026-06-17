@@ -45,11 +45,11 @@
       <div class="summary-line"><span>Phí accept / mỗi bên</span><strong>0.5%</strong></div>
       <div class="summary-line"><span>Ví trừ phí</span><strong>USDV Wallet trong VLINKPAY</strong></div>
       <div class="summary-line"><span>Hold sau accept</span><strong>Bằng số tiền giao dịch / mỗi bên</strong></div>
-      <div class="small-muted mt-2">Phí 0.5% thu của mỗi bên, trừ bằng ví USDV trong VLINKPAY và không hoàn lại. Khi giao dịch được accept, ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch.</div>
+      <div class="small-muted mt-2">Phí 0.5% thu của mỗi bên, trừ bằng ví USDV trong VLINKPAY và không hoàn lại. Khi giao dịch được accept, ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch, và được release ngay khi hoàn tất giao dịch.</div>
     </section>
 
 
-    <section class="form-card case-cancel-card" id="cancelCase1ActionCardStatic">
+    <!-- <section class="form-card case-cancel-card" id="cancelCase1ActionCardStatic">
       <h2 class="section-title mt-0"><i class="bi bi-x-circle"></i> Huỷ giao dịch</h2>
       <div class="case-summary-note success">
         Tran *** B chưa accept nên bạn có thể huỷ giao dịch ở bước này và <strong>không mất phí</strong>.
@@ -57,12 +57,12 @@
       <button class="btn btn-outline-danger btn-lg w-100 mt-3" id="cancelWaitingAcceptanceBtnStatic" data-bs-toggle="modal" data-bs-target="#cancelWaitingAcceptanceModal">
         <i class="bi bi-x-circle"></i> Huỷ giao dịch
       </button>
-    </section>
+    </section> -->
 
  
 
-    <div id="paymentFlows"></div>
-    <div id="ratingSection"></div>
+    <div id="paymentFlows" style="display: none;"></div>
+    <div id="ratingSection" style="display: none;"></div>
     <div id="disputeSection"></div>
 
     <section class="form-card" id="cardHistory">

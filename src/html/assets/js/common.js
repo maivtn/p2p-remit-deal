@@ -75,7 +75,10 @@ function badgeClass(status){
   }
 }
 function methodTag(method, variant = ""){
-  return `<span class="method-tag ${variant}">${paymentIcon(method)}${method}</span>`;
+  const cls = variant === "green"
+    ? "badge bg-success-subtle text-success border border-success-subtle"
+    : "badge bg-primary-subtle text-primary border border-primary-subtle";
+  return `<span class="${cls} d-inline-flex align-items-center gap-1 me-1 mt-1">${paymentIcon(method)}${method}</span>`;
 }
 function chip(method, active = false, radio = false, blue = false){
   return `
