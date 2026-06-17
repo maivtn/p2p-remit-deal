@@ -1,0 +1,4 @@
+{
+  "buildCommand": "vite build && mkdir -p dist/src && cp -r src/html dist/src/html",
+  "outputDirectory": "dist"
+}
