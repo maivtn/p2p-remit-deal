@@ -1,6 +1,6 @@
 
 const dealTabs = [
-  { key: "overview", label: "Overview", icon: "bi-house-door", href: "overview.html" },
+  { key: "overview", label: "Overview", icon: "bi-window-dock", href: "overview.html" },
   { key: "searchDeals", label: "Tìm deal", icon: "bi-search", href: "search-deal.html" },
   { key: "manageDeals", label: "Quản lý deals", icon: "bi-briefcase", href: "manage-deals.html" },
   { key: "history", label: "Lịch sử", icon: "bi-clock-history", href: "history.html" },
