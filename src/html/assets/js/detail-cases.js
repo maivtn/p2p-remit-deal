@@ -346,7 +346,7 @@ function renderMyAcceptancePanel(data){
         </div>
 
         <div class="case-summary-note mt-3">
-          Nếu chấp nhận, bạn sẽ gửi <strong>$500 USD</strong> qua <strong>Zelle</strong> cho người thụ hưởng của Tran *** B và nhận <strong>12.750.000đ VND</strong> qua <strong>MoMo</strong> từ Tran *** B.
+          Nếu chấp nhận, bạn sẽ gửi <strong>$500 USD</strong> qua <strong>Zelle</strong> cho người thụ hưởng của Tran *** B và người thụ hưởng của bạn sẽ nhận <strong>12.750.000đ VND</strong> qua <strong>MoMo</strong> từ Tran *** B.
         </div>
 
         <div class="action-row">
@@ -624,8 +624,25 @@ function renderRatingSection(data){
       <div class="rating-card">
         <div class="fw-bold">Đánh giá giao dịch</div>
         <div class="small-muted mt-1">Giao dịch đã hoàn tất. Hãy đánh giá trải nghiệm với đối tác.</div>
-        <div class="rating-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i></div>
-        <textarea class="form-control mb-3" rows="3" placeholder="Nhập nhận xét nếu có..."></textarea>
+        <div class="rating-stars interactive" id="interactiveStars">
+          <i class="bi bi-star-fill" data-star="1"></i>
+          <i class="bi bi-star-fill" data-star="2"></i>
+          <i class="bi bi-star-fill" data-star="3"></i>
+          <i class="bi bi-star-fill" data-star="4"></i>
+          <i class="bi bi-star" data-star="5"></i>
+        </div>
+        <div class="mb-3">
+          <div class="small text-muted mb-2">Gợi ý nhận xét:</div>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Giao dịch nhanh chóng">Nhanh chóng</button>
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Đúng hẹn cam kết">Đúng hẹn</button>
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Uy tín, đáng tin cậy">Uy tín</button>
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Giao tiếp tốt, phản hồi nhanh">Giao tiếp tốt</button>
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Tỷ giá hợp lý">Tỷ giá tốt</button>
+            <button type="button" class="btn btn-sm btn-outline-warning rounded-pill rating-chip" data-suggestion="Rất chuyên nghiệp">Chuyên nghiệp</button>
+          </div>
+        </div>
+        <textarea class="form-control mb-3" rows="3" id="ratingTextarea" placeholder="Nhập nhận xét hoặc chọn gợi ý bên trên..."></textarea>
         <button class="btn btn-outline-primary fw-bold" data-submit-rating><i class="bi bi-star-fill"></i> Đánh giá</button>
       </div>
     </section>
@@ -735,6 +752,40 @@ function bindComplaintActions(){
 }
 
 function bindRatingActions(){
+  const starsContainer = document.getElementById("interactiveStars");
+  if(starsContainer && !starsContainer.dataset.bound){
+    starsContainer.dataset.bound = "true";
+    const stars = starsContainer.querySelectorAll("[data-star]");
+    let selectedRating = 4;
+
+    function paintStars(n){
+      stars.forEach(s => {
+        const v = parseInt(s.dataset.star);
+        s.className = v <= n ? "bi bi-star-fill" : "bi bi-star";
+      });
+    }
+
+    stars.forEach(s => {
+      s.style.cursor = "pointer";
+      s.addEventListener("mouseenter", () => paintStars(parseInt(s.dataset.star)));
+      s.addEventListener("click", () => { selectedRating = parseInt(s.dataset.star); paintStars(selectedRating); });
+    });
+    starsContainer.addEventListener("mouseleave", () => paintStars(selectedRating));
+  }
+
+  document.querySelectorAll(".rating-chip").forEach(chip => {
+    if(chip.dataset.bound === "true") return;
+    chip.dataset.bound = "true";
+    chip.addEventListener("click", () => {
+      const isActive = chip.classList.toggle("active");
+      chip.classList.toggle("btn-warning", isActive);
+      chip.classList.toggle("btn-outline-warning", !isActive);
+      const textarea = document.getElementById("ratingTextarea");
+      const active = document.querySelectorAll(".rating-chip.active");
+      textarea.value = Array.from(active).map(c => c.dataset.suggestion).join(", ");
+    });
+  });
+
   document.querySelectorAll("[data-submit-rating]").forEach(btn => {
     if(btn.dataset.bound === "true") return;
     btn.dataset.bound = "true";

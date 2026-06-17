@@ -458,7 +458,7 @@ function createUploadControl(root){
   const maxSizeMb = Number(root.dataset.maxSizeMb || 5);
   const accept = root.dataset.accept || "image/png,image/jpeg,image/webp,application/pdf";
   const label = root.dataset.label || "Upload bằng chứng gửi tiền";
-  const formatsLabel = root.dataset.formatsLabel || "Hỗ trợ PNG, JPG, WEBP, PDF.";
+  const formatsLabel = root.dataset.formatsLabel || "Hỗ trợ PNG, JPG, JPEG.";
   const cameraLabel = root.dataset.cameraLabel || "Take Photo";
   const fileLabel = root.dataset.fileLabel || "Choose File";
 
@@ -481,7 +481,7 @@ function createUploadControl(root){
     <input id="${uploadId}_file" type="file" accept="${accept}" multiple class="d-none">
 
     <div class="upload-help-text">
-      ${label}. Tối đa ${maxFiles} file, ${maxSizeMb}MB/file. ${formatsLabel}
+      ${label} ${maxSizeMb}MB/file. ${formatsLabel}
     </div>
 
     <div class="upload-preview-grid" id="${uploadId}_preview"></div>

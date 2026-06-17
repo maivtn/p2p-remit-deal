@@ -113,14 +113,14 @@
           <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
               <h5 class="dispute-action-title"><i class="bi bi-exclamation-triangle"></i><span>Gửi khiếu nại</span></h5>
-              <div class="dispute-action-subtitle">Upload hình ảnh, video hoặc audio làm bằng chứng. Tối đa 6 file.</div>
+              <div class="dispute-action-subtitle">Upload hình ảnh, video hoặc audio làm bằng chứng.</div>
             </div>
             <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
           </div>
         </div>
         <div class="dispute-action-body">
-          <div class="dispute-upload-note">Bằng chứng có thể là ảnh chụp màn hình, video quay màn hình, hoặc audio ghi âm. Hỗ trợ nhiều file, tối đa 6 file.</div>
-          <div data-upload-control data-upload-id="create_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh, video hoặc audio. Tối đa 6 file." class="compact" id="createDisputeUpload"></div>
+          <div class="dispute-upload-note">Upload hình ảnh để làm bằng chứng. Hỗ trợ nhiều file, tối đa 6 file.</div>
+          <div data-upload-control data-upload-id="create_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh bằng chứng. Tối đa 6 file." class="compact" id="createDisputeUpload"></div>
           <label class="form-label mt-3">Ghi chú khiếu nại</label>
           <textarea class="form-control" rows="4" placeholder="Mô tả vấn đề: chưa nhận tiền, nhận thiếu, proof không đúng..."></textarea>
         </div>
@@ -132,47 +132,28 @@
     </div>
   </div>
 
-    <section class="form-card dispute-action-card" id="case9ActionButtonsStatic">
-      <h2 class="section-title mt-0"><i class="bi bi-chat-left-text"></i> Phản hồi khiếu nại</h2>
-      <div class="case-summary-note warning">
-        Tran *** B đã gửi khiếu nại. Bạn cần giải thích và bổ sung bằng chứng nếu có.
-      </div>
-      <div class="case-action-grid mt-3">
-        <button class="btn btn-outline-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#explainDisputeModal" type="button">
-          <i class="bi bi-pencil-square"></i> Giải thích về khiếu nại
-        </button>
-        <a class="btn btn-outline-primary btn-lg w-100" href="mailto:support@vlinkpay.com">
-          <i class="bi bi-headset"></i> Liên hệ hỗ trợ
-        </a>
-      </div>
-    </section>
-
 
   <div class="modal fade" id="explainDisputeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width:520px">
-      <div class="modal-content accept-modal-card">
-        <div class="modal-header">
-          <div>
-            <h5 class="modal-title fw-black">Giải thích về khiếu nại</h5>
-            <div class="small-muted">Bổ sung ghi chú và bằng chứng để đội hỗ trợ xử lý.</div>
-          </div>
-          <button class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <label class="form-label">Ghi chú giải thích</label>
-          <textarea class="form-control mb-3" rows="4" placeholder="Nhập nội dung giải thích..."></textarea>
-
-          <label class="form-label">Upload bằng chứng bổ sung</label>
-          <div class="upload-box">
-            <i class="bi bi-cloud-arrow-up"></i>
-            <div class="fw-bold">Upload image / video / audio</div>
-            <div class="small-muted">Hỗ trợ nhiều file, tối đa 6 file.</div>
-            <input class="form-control mt-3" type="file" multiple accept="image/*,video/*,audio/*">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable dispute-action-dialog">
+      <div class="modal-content dispute-action-modal">
+        <div class="dispute-action-header explain">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h5 class="dispute-action-title"><i class="bi bi-chat-square-text"></i><span>Giải thích về khiếu nại</span></h5>
+              <div class="dispute-action-subtitle">Bổ sung ghi chú và bằng chứng để đội hỗ trợ xử lý.</div>
+            </div>
+            <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Đóng</button>
-          <button class="btn btn-primary flex-fill" data-bs-dismiss="modal">Gửi giải thích</button>
+        <div class="dispute-action-body">
+          <div class="dispute-upload-note">Bạn có thể upload hình ảnh bằng chứng để giải thích về khiếu nại của bên Tran ** B.</div>
+          <div data-upload-control data-upload-id="explain_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh bằng chứng. Tối đa 6 file." class="compact" id="explainDisputeUpload"></div>
+          <label class="form-label mt-3">Ghi chú giải thích</label>
+          <textarea class="form-control" rows="4" placeholder="Nhập nội dung giải thích..."></textarea>
+        </div>
+        <div class="modal-footer dispute-action-footer">
+          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Hủy</button>
+          <button class="btn btn-primary flex-fill" id="explainDisputeSubmitBtn" disabled><i class="bi bi-send"></i> Gửi giải thích</button>
         </div>
       </div>
     </div>

@@ -1073,6 +1073,15 @@ body{
   margin:8px 0 12px;
 }
 
+.rating-stars.interactive [data-star]{
+  cursor:pointer;
+  transition:transform 0.1s ease;
+}
+
+.rating-stars.interactive [data-star]:hover{
+  transform:scale(1.2);
+}
+
 @media (max-width: 640px){
   .acceptance-user{
     flex-direction: column;

@@ -43,7 +43,7 @@
 
    
 
-    <div id="paymentFlows"></div>
+    <div id="paymentFlows" style="display: none;"></div>
     <div id="ratingSection"></div>
     <div id="disputeSection"></div>
 
@@ -125,14 +125,14 @@
           <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
               <h5 class="dispute-action-title"><i class="bi bi-exclamation-triangle"></i><span>Gửi khiếu nại</span></h5>
-              <div class="dispute-action-subtitle">Upload hình ảnh, video hoặc audio làm bằng chứng. Tối đa 6 file.</div>
+              <div class="dispute-action-subtitle">Upload hình ảnh làm bằng chứng.</div>
             </div>
             <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
           </div>
         </div>
         <div class="dispute-action-body">
-          <div class="dispute-upload-note">Bằng chứng có thể là ảnh chụp màn hình, video quay màn hình, hoặc audio ghi âm. Hỗ trợ nhiều file, tối đa 6 file.</div>
-          <div data-upload-control data-upload-id="create_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh, video hoặc audio. Tối đa 6 file." class="compact" id="createDisputeUpload"></div>
+          <div class="dispute-upload-note">Upload hình ảnh để làm bằng chứng. Hỗ trợ nhiều file, tối đa 6 file.</div>
+          <div data-upload-control data-upload-id="create_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh bằng chứng. Tối đa 6 file." class="compact" id="createDisputeUpload"></div>
           <label class="form-label mt-3">Ghi chú khiếu nại</label>
           <textarea class="form-control" rows="4" placeholder="Mô tả vấn đề: chưa nhận tiền, nhận thiếu, proof không đúng..."></textarea>
         </div>
@@ -152,14 +152,14 @@
           <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
               <h5 class="dispute-action-title"><i class="bi bi-chat-square-text"></i><span>Giải thích về khiếu nại</span></h5>
-              <div class="dispute-action-subtitle">Bổ sung giải thích và bằng chứng khi bên kia mở khiếu nại. Tối đa 6 file.</div>
+              <div class="dispute-action-subtitle">Bổ sung giải thích và bằng chứng khi bên kia mở khiếu nại.</div>
             </div>
             <button class="btn-close bg-white rounded-circle p-2" data-bs-dismiss="modal"></button>
           </div>
         </div>
         <div class="dispute-action-body">
-          <div class="dispute-upload-note">Bạn có thể upload hình ảnh, video hoặc audio để giải thích về khiếu nại của bên kia. Tối đa 6 file.</div>
-          <div data-upload-control data-upload-id="explain_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh, video hoặc audio. Tối đa 6 file." class="compact" id="explainDisputeUpload"></div>
+          <div class="dispute-upload-note">Bạn có thể upload hình ảnh bằng chứng để giải thích về khiếu nại của bên Tran *** B. </div>
+          <div data-upload-control data-upload-id="explain_dispute_upload" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload hình ảnh bằng chứng. Tối đa 6 file." class="compact" id="explainDisputeUpload"></div>
           <label class="form-label mt-3">Ghi chú giải thích</label>
           <textarea class="form-control" rows="4" placeholder="Giải thích chi tiết: đã chuyển lúc nào, mã giao dịch, bằng chứng bổ sung..."></textarea>
         </div>
