@@ -1,79 +1,384 @@
+/*
+  P2P Remit â€” Emerald Trust Theme
+  Bootstrap 5.3 variable overrides + shared foundation tokens
+  Load order:
+  1. bootstrap.min.css
+  2. bootstrap-icons.css
+  3. theme.css
+  4. p2p-remit.css
+*/
+
 :root {
-  /* Bootstrap override */
+  color-scheme: light;
+
+  /* ------------------------------------------------------------
+   * Bootstrap color system override
+   * ------------------------------------------------------------ */
   --bs-primary: #009B72;
   --bs-primary-rgb: 0, 155, 114;
-
+  --bs-secondary: #4B5563;
+  --bs-secondary-rgb: 75, 85, 99;
   --bs-success: #12B76A;
   --bs-success-rgb: 18, 183, 106;
-
-  --bs-warning: #F79009;
-  --bs-warning-rgb: 247, 144, 9;
-
-  --bs-danger: #F04438;
-  --bs-danger-rgb: 240, 68, 56;
-
   --bs-info: #2563EB;
   --bs-info-rgb: 37, 99, 235;
+  --bs-warning: #F79009;
+  --bs-warning-rgb: 247, 144, 9;
+  --bs-danger: #F04438;
+  --bs-danger-rgb: 240, 68, 56;
+  --bs-light: #F6FAF8;
+  --bs-light-rgb: 246, 250, 248;
+  --bs-dark: #111827;
+  --bs-dark-rgb: 17, 24, 39;
 
+  --bs-blue: #2563EB;
+  --bs-indigo: #7A5AF8;
+  --bs-purple: #7A5AF8;
+  --bs-pink: #E84393;
+  --bs-red: #F04438;
+  --bs-orange: #F79009;
+  --bs-yellow: #FFC107;
+  --bs-green: #009B72;
+  --bs-teal: #00B386;
+  --bs-cyan: #0EA5E9;
+
+  /* ------------------------------------------------------------
+   * Bootstrap body, type, border, link
+   * ------------------------------------------------------------ */
+  --bs-body-font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --bs-font-sans-serif: var(--bs-body-font-family);
   --bs-body-bg: #F6FAF8;
+  --bs-body-bg-rgb: 246, 250, 248;
   --bs-body-color: #111827;
+  --bs-body-color-rgb: 17, 24, 39;
+  --bs-emphasis-color: #111827;
+  --bs-emphasis-color-rgb: 17, 24, 39;
+  --bs-secondary-color: #4B5563;
+  --bs-secondary-color-rgb: 75, 85, 99;
+  --bs-tertiary-color: #8A94A6;
+  --bs-tertiary-color-rgb: 138, 148, 166;
   --bs-border-color: #DDE5E2;
+  --bs-border-color-translucent: rgba(0, 63, 45, 0.12);
+  --bs-link-color: #009B72;
+  --bs-link-color-rgb: 0, 155, 114;
+  --bs-link-hover-color: #007F5F;
+  --bs-link-hover-color-rgb: 0, 127, 95;
+  --bs-code-color: #7A5AF8;
+  --bs-highlight-bg: #E6F8F1;
 
-  --bs-font-sans-serif: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* ------------------------------------------------------------
+   * Bootstrap radius + focus ring
+   * ------------------------------------------------------------ */
+  --bs-border-radius: 0.875rem;
+  --bs-border-radius-sm: 0.625rem;
+  --bs-border-radius-lg: 1.25rem;
+  --bs-border-radius-xl: 1.75rem;
+  --bs-border-radius-xxl: 2rem;
+  --bs-border-radius-pill: 999px;
+  --bs-focus-ring-color: rgba(0, 155, 114, 0.22);
+  --bs-focus-ring-width: 0.25rem;
+  --bs-focus-ring-opacity: 0.22;
 
-  --bs-border-radius: 12px;
-  --bs-border-radius-sm: 8px;
-  --bs-border-radius-lg: 20px;
-  --bs-border-radius-xl: 28px;
-
-  /* P2P Remit tokens */
+  /* ------------------------------------------------------------
+   * P2P Remit semantic tokens
+   * ------------------------------------------------------------ */
   --p2p-primary: #009B72;
-  --p2p-primary-dark: #003F2D;
+  --p2p-primary-rgb: 0, 155, 114;
   --p2p-primary-hover: #007F5F;
+  --p2p-primary-active: #006B4F;
+  --p2p-primary-deep: #003F2D;
+  --p2p-primary-deep-rgb: 0, 63, 45;
+  --p2p-primary-weak: #E6F8F1;
+  --p2p-primary-weak-rgb: 230, 248, 241;
 
   --p2p-mint: #E6F8F1;
   --p2p-mint-strong: #65E4A3;
-
+  --p2p-mint-border: #BFEBDD;
   --p2p-bg: #F6FAF8;
   --p2p-surface: #FFFFFF;
+  --p2p-surface-rgb: 255, 255, 255;
   --p2p-surface-soft: #F1F7F5;
+  --p2p-surface-strong: #EEF7F3;
+  --p2p-border: #DDE5E2;
+  --p2p-border-strong: #BFD8CF;
 
   --p2p-text: #111827;
-  --p2p-text-muted: #4B5563;
-  --p2p-border: #DDE5E2;
+  --p2p-text-rgb: 17, 24, 39;
+  --p2p-text-secondary: #4B5563;
+  --p2p-text-muted: #8A94A6;
+  --p2p-text-inverse: #FFFFFF;
 
+  --p2p-success: #12B76A;
+  --p2p-success-rgb: 18, 183, 106;
+  --p2p-success-weak: #E7F8EF;
+  --p2p-warning: #F79009;
+  --p2p-warning-rgb: 247, 144, 9;
+  --p2p-warning-weak: #FFF4E5;
+  --p2p-danger: #F04438;
+  --p2p-danger-rgb: 240, 68, 56;
+  --p2p-danger-weak: #FEECEC;
+  --p2p-info: #2563EB;
+  --p2p-info-rgb: 37, 99, 235;
+  --p2p-info-weak: #EFF6FF;
   --p2p-hold: #7A5AF8;
+  --p2p-hold-rgb: 122, 90, 248;
+  --p2p-hold-weak: #F1EDFF;
 
+  --p2p-gradient-primary: linear-gradient(135deg, #003F2D 0%, #006B4F 45%, #009B72 100%);
+  --p2p-gradient-hero: radial-gradient(circle at 20% 10%, rgba(101, 228, 163, 0.34), transparent 32%), linear-gradient(135deg, #003F2D 0%, #007F5F 58%, #00A878 100%);
+  --p2p-gradient-mint: linear-gradient(135deg, rgba(230, 248, 241, 0.9), rgba(255, 255, 255, 0.98));
+
+  --p2p-space-1: 0.25rem;
+  --p2p-space-2: 0.5rem;
+  --p2p-space-3: 0.75rem;
+  --p2p-space-4: 1rem;
+  --p2p-space-5: 1.25rem;
+  --p2p-space-6: 1.5rem;
+  --p2p-space-8: 2rem;
+  --p2p-space-10: 2.5rem;
+  --p2p-space-12: 3rem;
+
+  --p2p-radius-xs: 0.5rem;
+  --p2p-radius-sm: 0.75rem;
+  --p2p-radius-md: 1rem;
+  --p2p-radius-lg: 1.25rem;
+  --p2p-radius-xl: 1.5rem;
+  --p2p-radius-2xl: 2rem;
+  --p2p-radius-pill: 999px;
+
+  --p2p-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
   --p2p-shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
   --p2p-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
   --p2p-shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+  --p2p-shadow-focus: 0 0 0 4px rgba(0, 155, 114, 0.14);
+
+  --p2p-header-height: 4.25rem;
+  --p2p-bottom-nav-height: 4.75rem;
 }
 
+/* ------------------------------------------------------------
+ * Bootstrap component variable overrides
+ * ------------------------------------------------------------ */
 .btn-primary {
+  --bs-btn-color: #fff;
   --bs-btn-bg: var(--p2p-primary);
   --bs-btn-border-color: var(--p2p-primary);
+  --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: var(--p2p-primary-hover);
   --bs-btn-hover-border-color: var(--p2p-primary-hover);
-  --bs-btn-active-bg: var(--p2p-primary-dark);
-  --bs-btn-active-border-color: var(--p2p-primary-dark);
+  --bs-btn-focus-shadow-rgb: var(--p2p-primary-rgb);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--p2p-primary-active);
+  --bs-btn-active-border-color: var(--p2p-primary-active);
+  --bs-btn-disabled-color: rgba(0, 63, 45, 0.48);
   --bs-btn-disabled-bg: #BFEBDD;
   --bs-btn-disabled-border-color: #BFEBDD;
 }
 
+.btn-outline-primary {
+  --bs-btn-color: var(--p2p-primary);
+  --bs-btn-border-color: rgba(var(--p2p-primary-rgb), 0.36);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--p2p-primary);
+  --bs-btn-hover-border-color: var(--p2p-primary);
+  --bs-btn-focus-shadow-rgb: var(--p2p-primary-rgb);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--p2p-primary-active);
+  --bs-btn-active-border-color: var(--p2p-primary-active);
+  --bs-btn-disabled-color: rgba(var(--p2p-primary-rgb), 0.45);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: rgba(var(--p2p-primary-rgb), 0.18);
+}
+
+.btn-success {
+  --bs-btn-bg: var(--p2p-success);
+  --bs-btn-border-color: var(--p2p-success);
+  --bs-btn-hover-bg: #0EA35D;
+  --bs-btn-hover-border-color: #0EA35D;
+  --bs-btn-focus-shadow-rgb: var(--p2p-success-rgb);
+  --bs-btn-active-bg: #0B8F51;
+  --bs-btn-active-border-color: #0B8F51;
+}
+
+.btn-warning {
+  --bs-btn-color: #5B3200;
+  --bs-btn-bg: var(--p2p-warning);
+  --bs-btn-border-color: var(--p2p-warning);
+  --bs-btn-hover-color: #4A2800;
+  --bs-btn-hover-bg: #E47E00;
+  --bs-btn-hover-border-color: #E47E00;
+  --bs-btn-focus-shadow-rgb: var(--p2p-warning-rgb);
+}
+
+.btn-danger {
+  --bs-btn-bg: var(--p2p-danger);
+  --bs-btn-border-color: var(--p2p-danger);
+  --bs-btn-hover-bg: #D92D20;
+  --bs-btn-hover-border-color: #D92D20;
+  --bs-btn-focus-shadow-rgb: var(--p2p-danger-rgb);
+}
+
+.btn-info {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--p2p-info);
+  --bs-btn-border-color: var(--p2p-info);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1D4ED8;
+  --bs-btn-hover-border-color: #1D4ED8;
+  --bs-btn-focus-shadow-rgb: var(--p2p-info-rgb);
+}
+
+.card {
+  --bs-card-border-color: var(--p2p-border);
+  --bs-card-border-radius: var(--p2p-radius-lg);
+  --bs-card-bg: var(--p2p-surface);
+  --bs-card-color: var(--p2p-text);
+  box-shadow: var(--p2p-shadow-sm);
+}
+
+.modal {
+  --bs-modal-border-radius: var(--p2p-radius-xl);
+  --bs-modal-border-color: var(--p2p-border);
+  --bs-modal-box-shadow: var(--p2p-shadow-lg);
+  --bs-modal-header-border-color: var(--p2p-border);
+  --bs-modal-footer-border-color: var(--p2p-border);
+}
+
+.dropdown-menu {
+  --bs-dropdown-border-color: var(--p2p-border);
+  --bs-dropdown-border-radius: var(--p2p-radius-md);
+  --bs-dropdown-link-hover-bg: var(--p2p-primary-weak);
+  --bs-dropdown-link-active-bg: var(--p2p-primary);
+  box-shadow: var(--p2p-shadow-md);
+}
+
+.nav-pills {
+  --bs-nav-pills-border-radius: var(--p2p-radius-pill);
+  --bs-nav-pills-link-active-bg: var(--p2p-primary);
+}
+
+.nav-tabs {
+  --bs-nav-tabs-border-color: var(--p2p-border);
+  --bs-nav-tabs-link-hover-border-color: transparent transparent var(--p2p-border);
+  --bs-nav-tabs-link-active-color: var(--p2p-primary);
+  --bs-nav-tabs-link-active-bg: transparent;
+  --bs-nav-tabs-link-active-border-color: transparent transparent var(--p2p-primary);
+}
+
+.alert-primary {
+  --bs-alert-color: var(--p2p-primary-deep);
+  --bs-alert-bg: var(--p2p-primary-weak);
+  --bs-alert-border-color: rgba(var(--p2p-primary-rgb), 0.2);
+  --bs-alert-link-color: var(--p2p-primary-deep);
+}
+
+.alert-success {
+  --bs-alert-color: #087044;
+  --bs-alert-bg: var(--p2p-success-weak);
+  --bs-alert-border-color: rgba(var(--p2p-success-rgb), 0.22);
+}
+
+.alert-warning {
+  --bs-alert-color: #9A5200;
+  --bs-alert-bg: var(--p2p-warning-weak);
+  --bs-alert-border-color: rgba(var(--p2p-warning-rgb), 0.24);
+}
+
+.alert-danger {
+  --bs-alert-color: #B42318;
+  --bs-alert-bg: var(--p2p-danger-weak);
+  --bs-alert-border-color: rgba(var(--p2p-danger-rgb), 0.2);
+}
+
+.badge {
+  --bs-badge-font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.bg-primary-subtle { background-color: var(--p2p-primary-weak) !important; }
+.text-primary { color: var(--p2p-primary) !important; }
+.border-primary { border-color: rgba(var(--p2p-primary-rgb), 0.36) !important; }
+
+/* ------------------------------------------------------------
+ * Bootstrap form normalization
+ * ------------------------------------------------------------ */
+.form-label {
+  color: var(--p2p-text-secondary);
+  font-weight: 650;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+  border-color: var(--p2p-border);
+  border-radius: var(--p2p-radius-md);
+  color: var(--p2p-text);
+}
+
 .form-control,
 .form-select {
-  border-color: var(--p2p-border);
-  border-radius: 14px;
+  background-color: var(--p2p-surface);
+  min-height: 3rem;
+}
+
+.form-control::placeholder {
+  color: var(--p2p-text-muted);
 }
 
 .form-control:focus,
-.form-select:focus {
+.form-select:focus,
+.form-check-input:focus {
   border-color: var(--p2p-primary);
-  box-shadow: 0 0 0 4px rgba(0, 155, 114, 0.12);
+  box-shadow: var(--p2p-shadow-focus);
 }
 
-.nav-pills .nav-link.active {
-  background-color: var(--p2p-mint);
-  color: var(--p2p-primary);
-  border: 1px solid rgba(0, 155, 114, 0.24);
+.form-check-input:checked {
+  background-color: var(--p2p-primary);
+  border-color: var(--p2p-primary);
 }
+
+.form-switch .form-check-input:checked {
+  background-color: var(--p2p-primary);
+  border-color: var(--p2p-primary);
+}
+
+.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+  margin-left: 0;
+  border-left: 0;
+}
+
+.input-group > .form-control:not(:last-child),
+.input-group > .form-select:not(:last-child),
+.input-group > .input-group-text:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.input-group > .form-control:not(:first-child),
+.input-group > .form-select:not(:first-child),
+.input-group > .input-group-text:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* ------------------------------------------------------------
+ * Accessibility helpers
+ * ------------------------------------------------------------ */
+:focus-visible {
+  outline: 3px solid rgba(var(--p2p-primary-rgb), 0.28);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+ 

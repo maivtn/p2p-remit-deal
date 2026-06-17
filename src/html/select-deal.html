@@ -110,13 +110,6 @@
         </div>
       </section>
 
-      <section class="form-card">
-        <h2 class="section-title mt-0">Tài khoản nhận của Tran *** B</h2>
-        <div class="hidden-until-accept">
-          <i class="bi bi-lock"></i>
-          Thông tin tài khoản nhận của Tran *** B sẽ bị ẩn cho đến khi giao dịch được Tran *** B chấp nhận.
-        </div>
-      </section>
 
       <section class="form-card">
         <label class="form-label">Ghi chú</label>
@@ -148,27 +141,146 @@
   </div>
 
   <div class="modal fade" id="confirmCreateDealModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width:460px">
-      <div class="modal-content accept-modal-card">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+      <div class="modal-content rounded-4">
+
+        <!-- Header -->
         <div class="modal-header">
-          <div>
-            <h5 class="modal-title fw-black">Xác nhận tạo deal</h5>
-            <div class="small-muted">Sau khi xác nhận, giao dịch sẽ chờ Tran *** B chấp nhận trong 15 phút.</div>
-          </div>
+          <h5 class="modal-title fw-bold">Xác nhận thông tin deal</h5>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
-          <div class="summary-line"><span>Bạn gửi</span><strong>$500 USD</strong></div>
-          <div class="summary-line"><span>Người thụ hưởng nhận</span><strong>12.750.000đ VND</strong></div>
-          <div class="summary-line"><span>Bạn gửi qua</span><strong>Zelle</strong></div>
-          <div class="summary-line"><span>Người thụ hưởng nhận qua</span><strong>MoMo</strong></div>
-          <div class="summary-line"><span>Đối tác</span><strong>Tran *** B</strong></div>
-          <div class="alert alert-warning mt-3 small mb-0">Hai bên sẽ không thấy tài khoản nhận của nhau cho đến khi giao dịch được chấp nhận.</div>
+
+        <!-- Info banner -->
+        <div class="alert alert-info rounded-0 border-start-0 border-end-0 border-top-0 mb-0 d-flex align-items-center gap-2 py-2 px-3">
+          <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+          <span class="small">Vui lòng kiểm tra kỹ thông tin trước khi gửi yêu cầu</span>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Huỷ</button>
+
+        <div class="modal-body">
+
+          <!-- Provider card -->
+          <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-primary text-white fs-5" style="width:48px;height:48px">
+                <i class="bi bi-person-fill"></i>
+              </div>
+              <div>
+                <p class="mb-1 small text-muted">Nhà cung cấp đã chọn</p>
+                <p class="mb-1 fw-bold small text-primary d-flex align-items-center gap-1">
+                  Tran *** B
+                  <i class="bi bi-check-circle-fill text-info"></i>
+                </p>
+                <p class="mb-0 d-flex align-items-center gap-1 text-muted" style="font-size:0.75rem">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <span class="fw-semibold text-dark">4.8</span>
+                  <span>•</span>
+                  <span class="text-primary">93 deals</span>
+                </p>
+              </div>
+            </div>
+            <div class="text-end px-3 py-2 rounded-3 flex-shrink-0 ms-2 bg-light border">
+              <p class="mb-1 text-muted text-nowrap" style="font-size:0.7rem">Tỷ giá đã chọn</p>
+              <p class="mb-0 fw-bold text-primary text-nowrap">25.500 VND</p>
+            </div>
+          </div>
+
+          <!-- Transaction details -->
+          <ul class="list-group list-group-flush border rounded-3 overflow-hidden mb-3">
+            <li class="list-group-item fw-semibold small bg-light">Chi tiết giao dịch</li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-info-subtle" style="width:32px;height:32px">
+                  <i class="bi bi-arrow-up-circle text-info"></i>
+                </div>
+                <span class="small">Bạn gửi</span>
+              </div>
+              <span class="fw-medium small">500.00 USD</span>
+            </li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-success-subtle" style="width:32px;height:32px">
+                  <i class="bi bi-arrow-down-circle text-success"></i>
+                </div>
+                <span class="small">Người thụ hưởng nhận</span>
+              </div>
+              <span class="fw-medium small text-success">12.750.000đ VND</span>
+            </li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:32px;height:32px;background:#f5f3ff">
+                  <i class="bi bi-percent" style="color:#7c3aed"></i>
+                </div>
+                <span class="small">Phí nền tảng (0.5%)</span>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="fw-medium small">2.50 USDV</span>
+                <i class="bi bi-info-circle text-secondary small" role="button"></i>
+              </div>
+            </li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-warning-subtle" style="width:32px;height:32px">
+                  <i class="bi bi-lock-fill text-warning"></i>
+                </div>
+                <span class="small">USDV Hold khi giao dịch được accept</span>
+              </div>
+              <div class="d-flex align-items-center gap-1 ms-2 flex-shrink-0">
+                <span class="fw-bold small">500.00 USDV</span>
+                <i class="bi bi-info-circle text-secondary small" role="button"></i>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Beneficiary info -->
+          <ul class="list-group list-group-flush border rounded-3 overflow-hidden mb-3">
+            <li class="list-group-item fw-semibold small text-success bg-light">Thông tin người thụ hưởng</li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-wallet2 flex-shrink-0 text-success" style="width:18px"></i>
+                <span class="small text-muted">Nhận qua</span>
+              </div>
+              <span class="small fw-medium">MoMo</span>
+            </li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-person flex-shrink-0 text-primary" style="width:18px"></i>
+                <span class="small text-muted">Tên tài khoản</span>
+              </div>
+              <span class="small fw-medium">NGUYEN VAN A</span>
+            </li>
+
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-phone flex-shrink-0 text-primary" style="width:18px"></i>
+                <span class="small text-muted">Số điện thoại</span>
+              </div>
+              <span class="small fw-medium">**** **** 890</span>
+            </li>
+          </ul>
+
+          <!-- Warning box -->
+          <div class="alert alert-warning d-flex gap-2 mb-0">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+            <ul class="mb-0 ps-3 small">
+              <li>Phí Requester 0.5% (2.50 USDV) sẽ chỉ được trừ khi nhà cung cấp chấp nhận yêu cầu.</li>
+              <li class="mt-1">Vui lòng đảm bảo bạn có đủ số dư USDV để thực hiện giao dịch.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 gap-2">
+          <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Huỷ</button>
           <a class="btn btn-primary flex-fill" href="transaction-detail-case-01-waiting-counterparty-acceptance.html">Xác nhận tạo deal</a>
         </div>
+
       </div>
     </div>
   </div>

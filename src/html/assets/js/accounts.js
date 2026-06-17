@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="mb-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="section-title m-0">${title}</h2>
-        <button class="btn btn-sm btn-success" data-account-modal data-mode="add"><i class="bi bi-plus"></i> Thêm</button>
       </div>
       ${accounts.map(acc => `
         <div class="account-card mb-2">
