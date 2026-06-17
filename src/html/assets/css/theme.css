@@ -1,0 +1,79 @@
+:root {
+  /* Bootstrap override */
+  --bs-primary: #009B72;
+  --bs-primary-rgb: 0, 155, 114;
+
+  --bs-success: #12B76A;
+  --bs-success-rgb: 18, 183, 106;
+
+  --bs-warning: #F79009;
+  --bs-warning-rgb: 247, 144, 9;
+
+  --bs-danger: #F04438;
+  --bs-danger-rgb: 240, 68, 56;
+
+  --bs-info: #2563EB;
+  --bs-info-rgb: 37, 99, 235;
+
+  --bs-body-bg: #F6FAF8;
+  --bs-body-color: #111827;
+  --bs-border-color: #DDE5E2;
+
+  --bs-font-sans-serif: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --bs-border-radius: 12px;
+  --bs-border-radius-sm: 8px;
+  --bs-border-radius-lg: 20px;
+  --bs-border-radius-xl: 28px;
+
+  /* P2P Remit tokens */
+  --p2p-primary: #009B72;
+  --p2p-primary-dark: #003F2D;
+  --p2p-primary-hover: #007F5F;
+
+  --p2p-mint: #E6F8F1;
+  --p2p-mint-strong: #65E4A3;
+
+  --p2p-bg: #F6FAF8;
+  --p2p-surface: #FFFFFF;
+  --p2p-surface-soft: #F1F7F5;
+
+  --p2p-text: #111827;
+  --p2p-text-muted: #4B5563;
+  --p2p-border: #DDE5E2;
+
+  --p2p-hold: #7A5AF8;
+
+  --p2p-shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --p2p-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --p2p-shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--p2p-primary);
+  --bs-btn-border-color: var(--p2p-primary);
+  --bs-btn-hover-bg: var(--p2p-primary-hover);
+  --bs-btn-hover-border-color: var(--p2p-primary-hover);
+  --bs-btn-active-bg: var(--p2p-primary-dark);
+  --bs-btn-active-border-color: var(--p2p-primary-dark);
+  --bs-btn-disabled-bg: #BFEBDD;
+  --bs-btn-disabled-border-color: #BFEBDD;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--p2p-border);
+  border-radius: 14px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--p2p-primary);
+  box-shadow: 0 0 0 4px rgba(0, 155, 114, 0.12);
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--p2p-mint);
+  color: var(--p2p-primary);
+  border: 1px solid rgba(0, 155, 114, 0.24);
+}

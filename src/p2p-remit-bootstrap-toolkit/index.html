@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P2P Remit — Emerald Trust Toolkit</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/p2p-remit.css" rel="stylesheet">
+</head>
+<body class="p2p-body" data-bs-spy="scroll" data-bs-target="#toolkitNav" data-bs-smooth-scroll="true" tabindex="0">
+  <main class="p2p-container">
+    <section class="p2p-hero">
+      <div class="row g-4 align-items-center position-relative z-1">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="p2p-logo-mark"><i class="bi bi-send-check-fill"></i></div>
+            <div>
+              <div class="p2p-eyebrow">P2P Remit</div>
+              <h1 class="p2p-title display-5 mb-0">Emerald Trust System</h1>
+            </div>
+          </div>
+          <p class="p2p-subtitle fs-5 mb-0">Bộ HTML toolkit base trên Bootstrap 5 cho tính năng tìm deal, chọn deal, quản lý giao dịch, upload bằng chứng, dispute và account picker.</p>
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-p2p-primary px-4" href="screen-patterns.html"><i class="bi bi-phone me-2"></i>Xem screen patterns</a>
+            <a class="btn btn-p2p-outline px-4" href="#components"><i class="bi bi-grid-1x2 me-2"></i>Xem components</a>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="row g-3">
+            <div class="col-6"><div class="p2p-principle"><div class="icon mb-2"><i class="bi bi-shield-lock-fill"></i></div><div class="fw-bold">An toàn</div><div class="small text-muted">Bảo vệ bằng hold, proof, dispute</div></div></div>
+            <div class="col-6"><div class="p2p-principle"><div class="icon mb-2"><i class="bi bi-gem"></i></div><div class="fw-bold">Minh bạch</div><div class="small text-muted">Rõ tỷ giá, phí, trạng thái</div></div></div>
+            <div class="col-6"><div class="p2p-principle"><div class="icon mb-2"><i class="bi bi-lightning-charge-fill"></i></div><div class="fw-bold">Nhanh</div><div class="small text-muted">Tối ưu flow 15 phút / 1 giờ</div></div></div>
+            <div class="col-6"><div class="p2p-principle"><div class="icon mb-2"><i class="bi bi-person-check-fill"></i></div><div class="fw-bold">Tin cậy</div><div class="small text-muted">Mask tên, ẩn account trước accept</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav id="toolkitNav" class="p2p-toolbar">
+      <ul class="nav gap-1">
+        <li class="nav-item"><a class="nav-link" href="#colors">Colors</a></li>
+        <li class="nav-item"><a class="nav-link" href="#type">Typography</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tokens">Tokens</a></li>
+        <li class="nav-item"><a class="nav-link" href="#buttons">Buttons</a></li>
+        <li class="nav-item"><a class="nav-link" href="#forms">Forms</a></li>
+        <li class="nav-item"><a class="nav-link" href="#components">Cards</a></li>
+        <li class="nav-item"><a class="nav-link" href="#modals">Modals</a></li>
+        <li class="nav-item"><a class="nav-link" href="#mobile">Mobile</a></li>
+      </ul>
+    </nav>
+
+    <section id="colors" class="p2p-section">
+      <div class="p2p-panel">
+        <div class="p2p-panel-title"><span class="number">1</span>Color palette</div>
+        <div class="row g-3">
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#009B72"></div><div class="swatch-label">Primary Emerald</div><div class="swatch-hex">#009B72</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#003F2D"></div><div class="swatch-label">Deep Green</div><div class="swatch-hex">#003F2D</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#E6F8F1"></div><div class="swatch-label">Soft Mint</div><div class="swatch-hex">#E6F8F1</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#65E4A3"></div><div class="swatch-label">Strong Mint</div><div class="swatch-hex">#65E4A3</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#F6FAF8"></div><div class="swatch-label">Background</div><div class="swatch-hex">#F6FAF8</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#FFFFFF"></div><div class="swatch-label">Surface</div><div class="swatch-hex">#FFFFFF</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#111827"></div><div class="swatch-label">Text</div><div class="swatch-hex">#111827</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#4B5563"></div><div class="swatch-label">Muted</div><div class="swatch-hex">#4B5563</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#DDE5E2"></div><div class="swatch-label">Border</div><div class="swatch-hex">#DDE5E2</div></div>
+          <div class="col-6 col-md-3 col-lg"><div class="color-swatch" style="background:#2563EB"></div><div class="swatch-label">Info</div><div class="swatch-hex">#2563EB</div></div>
+        </div>
+        <div class="row g-3 mt-1">
+          <div class="col-6 col-md-3"><div class="color-swatch" style="background:#12B76A"></div><div class="swatch-label">Success</div><div class="swatch-hex">#12B76A</div></div>
+          <div class="col-6 col-md-3"><div class="color-swatch" style="background:#F79009"></div><div class="swatch-label">Warning</div><div class="swatch-hex">#F79009</div></div>
+          <div class="col-6 col-md-3"><div class="color-swatch" style="background:#F04438"></div><div class="swatch-label">Danger</div><div class="swatch-hex">#F04438</div></div>
+          <div class="col-6 col-md-3"><div class="color-swatch" style="background:#7A5AF8"></div><div class="swatch-label">Hold / Escrow</div><div class="swatch-hex">#7A5AF8</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="p2p-section">
+      <div class="row g-4">
+        <div id="type" class="col-lg-7">
+          <div class="p2p-panel">
+            <div class="p2p-panel-title"><span class="number">2</span>Typography</div>
+            <div class="row gy-3 align-items-center border-bottom pb-3 mb-3"><div class="col-4 small text-muted">Display<br><strong>40/48 · Bold</strong></div><div class="col-8"><h2 class="fw-bold mb-0">Chuyển tiền an toàn</h2></div></div>
+            <div class="row gy-3 align-items-center border-bottom pb-3 mb-3"><div class="col-4 small text-muted">Heading<br><strong>28/36 · Bold</strong></div><div class="col-8"><h4 class="fw-bold mb-0">Tìm deal tốt nhất cho bạn</h4></div></div>
+            <div class="row gy-3 align-items-center border-bottom pb-3 mb-3"><div class="col-4 small text-muted">Title<br><strong>20/28 · Semibold</strong></div><div class="col-8"><div class="fs-5 fw-semibold">USD → VND · Tỷ giá thị trường</div></div></div>
+            <div class="row gy-3 align-items-center border-bottom pb-3 mb-3"><div class="col-4 small text-muted">Body<br><strong>16/24 · Regular</strong></div><div class="col-8"><p class="mb-0">Chọn đối tác phù hợp và gửi tiền dễ dàng với nhiều phương thức bảo mật.</p></div></div>
+            <div class="row gy-3 align-items-center"><div class="col-4 small text-muted">Caption<br><strong>12/16 · Regular</strong></div><div class="col-8"><small class="text-muted">Giao dịch được bảo vệ bởi hệ thống Emerald Trust.</small></div></div>
+          </div>
+        </div>
+        <div id="tokens" class="col-lg-5">
+          <div class="p2p-panel h-100">
+            <div class="p2p-panel-title"><span class="number">3</span>Foundation tokens</div>
+            <div class="mb-4">
+              <div class="fw-bold small mb-2">Spacing · 8px grid</div>
+              <div class="token-bar">
+                <div class="token-square" style="width:4px;height:4px"></div><div class="token-square" style="width:8px;height:8px"></div><div class="token-square" style="width:12px;height:12px"></div><div class="token-square" style="width:16px;height:16px"></div><div class="token-square" style="width:24px;height:24px"></div><div class="token-square" style="width:32px;height:32px"></div><div class="token-square" style="width:40px;height:40px"></div><div class="token-square" style="width:48px;height:48px"></div>
+              </div>
+              <div class="d-flex justify-content-between small text-muted mt-2"><span>4</span><span>8</span><span>12</span><span>16</span><span>24</span><span>32</span><span>40</span><span>48</span></div>
+            </div>
+            <div class="row g-4">
+              <div class="col-6"><div class="fw-bold small mb-2">Radius</div><div class="d-flex gap-2"><div class="radius-token" style="border-radius:4px"></div><div class="radius-token" style="border-radius:8px"></div><div class="radius-token" style="border-radius:12px"></div><div class="radius-token" style="border-radius:18px"></div></div><div class="small text-muted mt-2">4 / 8 / 12 / 18 / 24</div></div>
+              <div class="col-6"><div class="fw-bold small mb-2">Elevation</div><div class="d-flex gap-2"><div class="shadow-token"></div><div class="shadow-token s1"></div><div class="shadow-token s2"></div><div class="shadow-token s3"></div></div><div class="small text-muted mt-2">0 / 1 / 2 / 3</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="buttons" class="p2p-section">
+      <div class="p2p-panel">
+        <div class="p2p-panel-title"><span class="number">4</span>Buttons</div>
+        <div class="table-responsive">
+          <table class="table table-p2p align-middle mb-0">
+            <thead><tr><th>Type</th><th>Default</th><th>Hover / active</th><th>Disabled</th></tr></thead>
+            <tbody>
+              <tr><td class="fw-bold">Primary</td><td><button class="btn btn-p2p-primary px-4">Chọn deal này</button></td><td><button class="btn btn-p2p-primary px-4 active">Chọn deal này</button></td><td><button class="btn btn-p2p-primary px-4" disabled>Chọn deal này</button></td></tr>
+              <tr><td class="fw-bold">Secondary</td><td><button class="btn btn-p2p-secondary px-4">Tạm dừng</button></td><td><button class="btn btn-p2p-secondary px-4 active">Tạm dừng</button></td><td><button class="btn btn-p2p-secondary px-4" disabled>Tạm dừng</button></td></tr>
+              <tr><td class="fw-bold">Outline</td><td><button class="btn btn-p2p-outline px-4">Nhắn tin</button></td><td><button class="btn btn-p2p-outline px-4 active">Nhắn tin</button></td><td><button class="btn btn-p2p-outline px-4" disabled>Nhắn tin</button></td></tr>
+              <tr><td class="fw-bold">Ghost</td><td><button class="btn btn-p2p-ghost">Xem chi tiết</button></td><td><button class="btn btn-p2p-ghost active">Xem chi tiết</button></td><td><button class="btn btn-p2p-ghost" disabled>Xem chi tiết</button></td></tr>
+              <tr><td class="fw-bold">Destructive</td><td><button class="btn btn-p2p-danger px-4">Huỷ deal</button></td><td><button class="btn btn-p2p-danger px-4 active">Huỷ deal</button></td><td><button class="btn btn-p2p-danger px-4" disabled>Huỷ deal</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="forms" class="p2p-section">
+      <div class="p2p-panel">
+        <div class="p2p-panel-title"><span class="number">5</span>Form controls</div>
+        <div class="row g-4">
+          <div class="col-lg-4"><label class="form-label">Text Input</label><div class="input-group"><span class="input-group-text"><i class="bi bi-person"></i></span><input class="form-control" placeholder="Nhập họ và tên"></div></div>
+          <div class="col-lg-4"><label class="form-label">Amount Input</label><div class="input-group"><span class="input-group-text">🇺🇸</span><input class="form-control p2p-amount-input" value="500"><span class="input-group-text fw-bold">USD</span></div></div>
+          <div class="col-lg-4"><label class="form-label">Search</label><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input class="form-control" placeholder="Tìm kiếm deal, người dùng..."><span class="input-group-text"><i class="bi bi-sliders"></i></span></div></div>
+          <div class="col-lg-6"><label class="form-label">Segmented tabs</label><div class="d-flex flex-wrap gap-2" data-filter-group><button class="p2p-chip active" data-filter-value="all">Tất cả</button><button class="p2p-chip" data-filter-value="usd-vnd">USD → VND</button><button class="p2p-chip" data-filter-value="eur-vnd">EUR → VND</button><button class="p2p-chip" data-filter-value="other">Khác</button></div></div>
+          <div class="col-lg-6"><label class="form-label">Payment method chips</label><div class="d-flex flex-wrap gap-2"><span class="p2p-method active"><span class="method-icon method-momo">mo</span>MoMo <i class="bi bi-check-circle-fill"></i></span><span class="p2p-method"><span class="method-icon method-bank"><i class="bi bi-bank2"></i></span>Chuyển khoản NH</span><span class="p2p-method"><span class="method-icon method-zelle">Z</span>Zelle</span><span class="p2p-method"><span class="method-icon method-paypal">P</span>PayPal</span></div></div>
+          <div class="col-lg-4"><label class="form-label">Dropdown</label><select class="form-select"><option>Chọn quốc gia</option><option>United States</option><option>Việt Nam</option></select></div>
+          <div class="col-lg-4"><label class="form-label">Filter chip</label><div><span class="p2p-chip active">Tất cả phương thức <i class="bi bi-x"></i></span></div></div>
+          <div class="col-lg-4"><label class="form-label d-block">Toggle</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" checked style="width:3rem;height:1.5rem"><label class="form-check-label fw-bold ms-2">Đang hoạt động</label></div></div>
+          <div class="col-lg-6"><label class="form-label">Textarea</label><textarea class="form-control" rows="3" placeholder="Ghi chú cho nhà cung cấp..."></textarea><div class="text-end small text-muted mt-1">0/120</div></div>
+          <div class="col-lg-6"><label class="form-label d-block">Checkbox / Radio</label><div class="form-check mb-2"><input class="form-check-input" type="checkbox" checked><label class="form-check-label">Tôi đã đọc và đồng ý</label></div><div class="form-check"><input class="form-check-input" type="radio" name="type" checked><label class="form-check-label">Cá nhân</label></div><div class="form-check"><input class="form-check-input" type="radio" name="type"><label class="form-check-label">Doanh nghiệp</label></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="components" class="p2p-section">
+      <div class="p2p-panel">
+        <div class="p2p-panel-title"><span class="number">6</span>Status, method tags & cards</div>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <span class="p2p-status p2p-status-success"><i class="bi bi-circle-fill"></i> Đang hoạt động</span>
+          <span class="p2p-status p2p-status-warning"><i class="bi bi-clock"></i> Chờ xử lý</span>
+          <span class="p2p-status p2p-status-success"><i class="bi bi-check-circle"></i> Hoàn tất</span>
+          <span class="p2p-status p2p-status-danger"><i class="bi bi-x-circle"></i> Đã huỷ</span>
+          <span class="p2p-status p2p-status-muted"><i class="bi bi-clock-history"></i> Hết hạn</span>
+          <span class="p2p-status p2p-status-hold"><i class="bi bi-lock"></i> Tạm giữ USDV</span>
+          <span class="p2p-status p2p-status-success"><i class="bi bi-star-fill"></i> Tỷ giá tốt nhất</span>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="small fw-bold text-muted mb-2">Deal Card</div>
+            <div class="p2p-card p2p-deal-card">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="d-flex align-items-center gap-2 fw-bold fs-5"><span class="currency-flag">🇺🇸</span> USD <i class="bi bi-arrow-right"></i><span class="currency-flag">🇻🇳</span> VND</div>
+                <span class="p2p-status p2p-status-success">Đang hoạt động</span>
+              </div>
+              <div class="mt-3"><div class="muted-label">Tỷ giá</div><div class="rate-value">25.600 <span class="fs-6">VND/USD</span></div></div>
+              <div class="row g-3 mt-1"><div class="col-6"><div class="muted-label">Bạn gửi</div><div class="amount-value">100 USD</div></div><div class="col-6"><div class="muted-label">Bạn nhận</div><div class="amount-value">2.560.000 VND</div></div></div>
+              <div class="p2p-divider"></div>
+              <div class="d-flex flex-wrap gap-2"><span class="p2p-method"><span class="method-icon method-momo">mo</span>MoMo</span><span class="p2p-method"><span class="method-icon method-bank"><i class="bi bi-bank2"></i></span>Bank</span><span class="p2p-chip"><i class="bi bi-clock"></i>15 phút</span></div>
+              <button class="btn btn-p2p-primary w-100 mt-3"><i class="bi bi-send me-2"></i>Chọn deal này</button>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="small fw-bold text-muted mb-2">Request History Card</div>
+            <div class="p2p-card p-3">
+              <div class="d-flex justify-content-between gap-3"><div><div class="fw-bold">REQ-20240521-00123 <button class="btn btn-sm btn-p2p-ghost p-0" data-copy="REQ-20240521-00123"><i class="bi bi-copy"></i></button></div><div class="small text-muted">Người yêu cầu</div><div class="fw-bold">Tran H***** <i class="bi bi-patch-check-fill text-primary"></i></div></div><span class="p2p-status p2p-status-warning align-self-start">Chờ xử lý</span></div>
+              <div class="row g-2 align-items-center mt-3"><div class="col"><div class="muted-label">Nhận từ người yêu cầu</div><div class="amount-value">5.000.000 VND</div></div><div class="col-auto"><span class="p2p-chip active"><i class="bi bi-arrow-right"></i></span></div><div class="col text-end"><div class="muted-label">Bạn sẽ gửi</div><div class="amount-value">194,58 USD</div></div></div>
+              <div class="p2p-divider"></div><a href="screen-patterns.html#history" class="fw-bold">Xem chi tiết <i class="bi bi-chevron-right float-end"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="small fw-bold text-muted mb-2">Summary Card</div>
+            <div class="p2p-card p2p-card-soft p-3">
+              <div class="d-flex align-items-center justify-content-between"><div><div class="muted-label">Bạn gửi</div><div class="amount-value">🇺🇸 500 USD</div></div><button class="btn btn-p2p-secondary rounded-circle"><i class="bi bi-arrow-left-right"></i></button></div>
+              <div class="p2p-divider"></div><div><div class="muted-label">Bạn nhận (ước tính)</div><div class="rate-value fs-2">🇻🇳 12.750.000 VND</div></div>
+              <div class="row g-3 mt-2"><div class="col-6"><div class="muted-label">Tỷ giá</div><div class="fw-bold">25.500 VND/USD</div></div><div class="col-6"><div class="muted-label">Phí giao dịch</div><div class="fw-bold">Miễn phí</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modals" class="p2p-section">
+      <div class="row g-4">
+        <div class="col-lg-6"><div class="p2p-panel"><div class="p2p-panel-title"><span class="number">7</span>Upload proof control</div><div class="file-drop" data-upload-control data-upload-id="confirm_paid_proof" data-max-files="6" data-max-size-mb="10" data-accept="image/*,video/*,audio/*"><div class="fs-1 text-success"><i class="bi bi-cloud-arrow-up"></i></div><div class="fw-bold">Upload bằng chứng đã gửi tiền</div><div class="small text-muted">Hỗ trợ image, video, audio · tối đa 6 file · 10MB/file</div></div></div></div>
+        <div class="col-lg-6"><div class="p2p-panel"><div class="p2p-panel-title"><span class="number">8</span>Modal templates</div><div class="d-flex flex-wrap gap-2"><button class="btn btn-p2p-primary" data-bs-toggle="modal" data-bs-target="#acceptModal">Accept modal</button><button class="btn btn-p2p-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Huỷ giao dịch</button><button class="btn btn-p2p-outline" data-bs-toggle="modal" data-bs-target="#accountPickerModal">Account picker</button></div><div class="code-block mt-3">data-upload-control<br>data-max-files="6"<br>data-max-size-mb="10"<br>data-accept="image/*,video/*,audio/*"</div></div></div>
+      </div>
+    </section>
+
+    <section id="mobile" class="p2p-section">
+      <div class="p2p-panel">
+        <div class="p2p-panel-title"><span class="number">9</span>Mobile preview</div>
+        <div class="row g-4">
+          <div class="col-lg-4"><div class="p2p-app-frame"><div class="p2p-app-header"><div class="d-flex justify-content-between align-items-center"><i class="bi bi-arrow-left fs-4"></i><h5 class="mb-0 fw-bold">Tìm deal</h5><i class="bi bi-search fs-5"></i></div></div><div class="p2p-app-content"><div class="p2p-card p-3 mb-3"><label class="form-label">Bạn gửi</label><div class="input-group"><input class="form-control fw-bold" value="100"><span class="input-group-text">🇺🇸 USD</span></div><label class="form-label mt-3">Bạn nhận</label><div class="input-group"><input class="form-control fw-bold" value="2.550.000"><span class="input-group-text">🇻🇳 VND</span></div></div><button class="btn btn-p2p-primary w-100">Tìm deal tốt nhất</button></div><div class="p2p-bottom-nav"><a><i class="bi bi-house"></i>Home</a><a class="active"><i class="bi bi-search"></i>Tìm deal</a><a><i class="bi bi-clock-history"></i>Lịch sử</a></div></div></div>
+          <div class="col-lg-4"><div class="p2p-app-frame"><div class="p2p-app-header"><div class="d-flex justify-content-between align-items-center"><i class="bi bi-arrow-left fs-4"></i><h5 class="mb-0 fw-bold">Kết quả</h5><i class="bi bi-sliders fs-5"></i></div></div><div class="p2p-app-content"><div class="d-flex gap-2 mb-3"><span class="p2p-chip active">Tất cả</span><span class="p2p-chip">Tỷ giá tốt nhất</span></div><div class="p2p-card p-3"><div class="d-flex justify-content-between"><div class="fw-bold">Nguyen V** B <i class="bi bi-patch-check-fill text-primary"></i></div><span class="p2p-status p2p-status-success">Tốt nhất</span></div><div class="rate-value fs-3 mt-2">25.600</div><div class="small text-muted">VND/USD · 4.9 ⭐</div><button class="btn btn-p2p-primary w-100 mt-3">Chọn deal này</button></div></div><div class="p2p-bottom-nav"><a><i class="bi bi-house"></i>Home</a><a class="active"><i class="bi bi-search"></i>Tìm deal</a><a><i class="bi bi-clock-history"></i>Lịch sử</a></div></div></div>
+          <div class="col-lg-4"><div class="p2p-app-frame"><div class="p2p-app-header"><div class="d-flex justify-content-between align-items-center"><i class="bi bi-arrow-left fs-4"></i><h5 class="mb-0 fw-bold">Lịch sử</h5><i class="bi bi-clock fs-5"></i></div></div><div class="p2p-app-content"><div class="d-flex gap-2 mb-3"><span class="p2p-chip active">Đang xử lý 3</span><span class="p2p-chip">Hoàn tất 12</span></div><div class="p2p-card p-3 mb-2"><div class="d-flex justify-content-between"><div class="fw-bold small">REQ-20240521-00123</div><span class="p2p-status p2p-status-warning">Chờ xử lý</span></div><div class="small text-muted">Tran H*****</div><div class="d-flex justify-content-between mt-2 fw-bold"><span>5.000.000 VND</span><span>194,58 USD</span></div></div></div><div class="p2p-bottom-nav"><a><i class="bi bi-house"></i>Home</a><a><i class="bi bi-search"></i>Tìm deal</a><a class="active"><i class="bi bi-clock-history"></i>Lịch sử</a></div></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="acceptModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p2p-card border-0"><div class="modal-header"><h5 class="modal-title fw-bold">Chấp nhận giao dịch</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="p2p-summary-box mb-3"><div class="fw-bold">USD → VND · 25.600 VND/USD</div><div class="small text-muted">Mỗi bên bị thu phí 0.5%, trừ bằng ví USDV và không hoàn lại.</div></div><ul class="small text-muted mb-0"><li>USDV của cả hai bên sẽ bị hold bằng số tiền giao dịch.</li><li>Sau accept, hai bên có 1 giờ để upload proof.</li></ul></div><div class="modal-footer"><button class="btn btn-p2p-outline" data-bs-dismiss="modal">Đóng</button><button class="btn btn-p2p-primary">Chấp nhận</button></div></div></div></div>
+  <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p2p-card border-0"><div class="modal-header"><h5 class="modal-title fw-bold">Huỷ giao dịch</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="alert alert-warning">Bạn có thể huỷ trước khi bên B accept. Phí huỷ: <strong>$0.00</strong>. USDV bị hold: <strong>Chưa hold</strong>.</div><textarea class="form-control" rows="3" placeholder="Lý do huỷ nếu có..."></textarea></div><div class="modal-footer"><button class="btn btn-p2p-outline" data-bs-dismiss="modal">Đóng</button><button class="btn btn-p2p-danger">Xác nhận huỷ</button></div></div></div></div>
+  <div class="modal fade" id="accountPickerModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content p2p-card border-0"><div class="modal-header"><h5 class="modal-title fw-bold">Chọn tài khoản người thụ hưởng</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row g-3 mb-3"><div class="col-md-6"><select class="form-select"><option>VND</option></select></div><div class="col-md-6"><select class="form-select"><option>MoMo</option><option>Chuyển khoản NH</option></select></div></div><div class="p2p-card p-3"><div class="d-flex align-items-center gap-3"><span class="p2p-method active"><span class="method-icon method-momo">mo</span>MoMo</span><div class="flex-grow-1"><div class="fw-bold">Trần Văn C</div><div class="small text-muted">0901234567 · Active</div></div><button class="btn btn-p2p-primary" data-select-account="#selectedAccount" data-bs-dismiss="modal">Chọn</button></div></div><div id="selectedAccount"></div></div></div></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/p2p-remit.js"></script>
+</body>
+</html>
