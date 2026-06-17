@@ -76,8 +76,8 @@ function badgeClass(status){
 }
 function methodTag(method, variant = ""){
   const cls = variant === "green"
-    ? "badge bg-success-subtle text-success border border-success-subtle"
-    : "badge bg-primary-subtle text-primary border border-primary-subtle";
+    ? "badge text-success border border-success-subtle"
+    : "badge text-info border border-primary-subtle";
   return `<span class="${cls} d-inline-flex align-items-center gap-1 me-1 mt-1">${paymentIcon(method)}${method}</span>`;
 }
 function chip(method, active = false, radio = false, blue = false){
@@ -582,6 +582,31 @@ function createUploadControl(root){
 
 function initUploadControls(){
   document.querySelectorAll("[data-upload-control]").forEach(createUploadControl);
+}
+
+(function loadSweetAlert2(){
+  if(window.__swal2Loaded) return;
+  window.__swal2Loaded = true;
+  const s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js";
+  document.head.appendChild(s);
+})();
+
+function showConfirmReceived(amount, method){
+  if(typeof Swal !== "undefined"){
+    return Swal.fire({
+      title: "Xác nhận nhận tiền?",
+      html: `Bạn xác nhận đã nhận đủ số tiền <strong>${amount}</strong> bằng hình thức <strong>${method}</strong> từ Tran ** B.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#198754",
+      cancelButtonColor: "#6c757d",
+      reverseButtons: true,
+    }).then(r => r.isConfirmed);
+  }
+  return Promise.resolve(window.confirm(`Bạn xác nhận đã nhận đủ số tiền ${amount} bằng hình thức ${method} từ Tran ** B?`));
 }
 
 document.addEventListener("DOMContentLoaded", () => {

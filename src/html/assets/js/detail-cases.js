@@ -574,7 +574,7 @@ function renderFlowProofAndActions(flow, transaction){
       ${flow.confirmed ? `<div class="case-summary-note success mt-3">Bạn đã xác nhận nhận tiền từ Tran *** B.</div>` : `
         <div class="flow-action-title">Đây là bằng chứng do Tran *** B upload. Bạn hãy xem và xác nhận sau khi kiểm tra tiền đã vào tài khoản. </div>
         <div class="action-row">
-          <button class="btn btn-success" data-confirm-received data-flow-id="${flow.id}">✅ Xác nhận đã nhận tiền</button>
+          <button class="btn btn-success" data-confirm-received data-flow-id="${flow.id}" data-amount="${flow.amount}" data-method="${flow.method}">✅ Xác nhận đã nhận tiền</button>
         </div>
       `}
     `;
@@ -732,10 +732,15 @@ function bindConfirmReceivedActions(){
     if(btn.dataset.bound === "true") return;
     btn.dataset.bound = "true";
     btn.addEventListener("click", () => {
-      btn.classList.remove("btn-success");
-      btn.classList.add("btn-outline-success");
-      btn.innerHTML = "✅ Đã xác nhận nhận tiền";
-      btn.disabled = true;
+      const amount = btn.dataset.amount || "số tiền";
+      const method = btn.dataset.method || "phương thức";
+      showConfirmReceived(amount, method).then(confirmed => {
+        if(!confirmed) return;
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-outline-success");
+        btn.innerHTML = "✅ Đã xác nhận nhận tiền";
+        btn.disabled = true;
+      });
     });
   });
 }
