@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="d-flex justify-content-between align-items-center mt-2">
           <div>${methodTag(deal.beneficiaryReceiveMethod)}</div>
-          <a href="deal-detail.html" class="btn btn-sm btn-outline-success fw-bold text-decoration-none small"><i class="bi bi-eye"></i> Xem</a>
+          <a href="deal-detail.html" class="btn btn-sm btn-outline-primary small"><i class="bi bi-eye"></i> Xem</a>
         </div>
       </div>
     `).join("");
