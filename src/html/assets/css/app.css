@@ -1438,14 +1438,7 @@ body{
 }
 
 @media (max-width: 420px){
-  .txn-method-action-row{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .txn-method-action-row .btn{
-    width:100%;
-  }
+ 
 }
 
 
