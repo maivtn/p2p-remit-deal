@@ -88,9 +88,9 @@ function methodTag(method, variant = ""){
     : "badge text-info border border-primary-subtle";
   return `<span class="${cls} d-inline-flex align-items-center gap-1 me-1 mt-1">${paymentIcon(method)}${method}</span>`;
 }
-function chip(method, active = false, radio = false, blue = false){
+function chip(method, active = false, radio = false, blue = false, value = method){
   return `
-    <span class="chip ${radio ? "radio" : ""} ${active ? "active" : ""} ${blue && active ? "blue" : ""}" data-chip data-method="${method}">
+    <span class="chip ${radio ? "radio" : ""} ${active ? "active" : ""} ${blue && active ? "blue" : ""}" data-chip data-method="${value}" data-blue="${blue ? "true" : "false"}">
       <span class="check">${active ? "✓" : ""}</span>
       ${paymentIcon(method)}
       <span>${method}</span>
@@ -129,7 +129,7 @@ function renderMethodChips(containerId, currency, selected = [], options = {}){
   const el = document.getElementById(containerId);
   if(!el) return;
   const methods = paymentMethodMatrix.find(x => x.currency === currency)?.methods || [];
-  el.innerHTML = methods.map(m => chip(m.label, selected.includes(m.method), options.single, options.blue)).join("");
+  el.innerHTML = methods.map(m => chip(m.label, selected.includes(m.method), options.single, options.blue, m.method)).join("");
 }
 
 /* ==============================
