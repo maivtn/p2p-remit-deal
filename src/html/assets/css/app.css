@@ -2452,7 +2452,7 @@ body{
   min-height:112px;
   background:#fff;
   border:1px solid #dde5e2;
-  border-radius:12px;
+  border-radius:16px;
   box-shadow:0 6px 18px rgba(15,23,42,.07);
   padding:22px 20px;
   display:flex;
@@ -2595,7 +2595,7 @@ body{
   align-items:center;
   padding:18px 20px;
   border:1px solid #dde5e2;
-  border-radius:12px;
+  border-radius:16px;
   background:#fff;
   box-shadow:0 6px 18px rgba(15,23,42,.07);
   overflow:hidden;
@@ -2725,6 +2725,20 @@ body{
   max-width:100%;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
+}
+
+#hotDeals .deal-table-wrap{
+  background:#fff;
+  border:1px solid #dde5e2;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(15,23,42,.07);
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+#hotDeals .deal-table-wrap:hover{
+  border-color:#cbd5e1;
+  box-shadow:0 10px 24px rgba(15,23,42,.1);
+  transform:translateY(-1px);
 }
 
 .deal-highlight-table{
@@ -2880,7 +2894,7 @@ body{
   align-items:start;
   padding:14px;
   border:1px solid #dde5e2;
-  border-radius:12px;
+  border-radius:16px;
   background:#fff;
   box-shadow:0 6px 18px rgba(15,23,42,.07);
   overflow:hidden;
@@ -3217,7 +3231,7 @@ body{
 
   .overview-metric-card{
     min-height:78px;
-    border-radius:10px;
+    border-radius:12;
     padding:10px;
     gap:9px;
     box-shadow:0 3px 10px rgba(15,23,42,.05);
@@ -3262,7 +3276,6 @@ body{
     width:100%;
     min-width:0;
     border-radius:11px;
-    box-shadow:0 3px 12px rgba(15,23,42,.05);
     margin-bottom:12px;
   }
 
@@ -3424,7 +3437,6 @@ body{
     grid-column:2;
     grid-row:6;
     align-self:end;
-    text-align:right;
   }
 
   .deal-owner{
@@ -3568,7 +3580,7 @@ body{
     width:100%;
     min-width:0;
     margin-bottom:16px;
-    border-radius:12px;
+    border-radius:16px;
   }
 
   .overview-side-col .overview-metrics{order:1}
@@ -3755,7 +3767,6 @@ body{
   .deal-highlight-table td[data-label="Thao tác"]{
     grid-column:7;
     grid-row:1 / span 2;
-    text-align:right;
   }
 
   .deal-owner{

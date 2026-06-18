@@ -521,7 +521,7 @@ Cấu trúc: `HTML dùng class Bootstrap → theme.css override bằng `--color-
 
 ```css
 .p2p-dropzone {
-  border: 1.5px dashed #dddfeb; border-radius: 12px;
+  border: 1.5px dashed #dddfeb; ;
   background: #f5f6f8; padding: 24px; text-align: center;
   color: #808080; cursor: pointer;
   transition: border-color var(--transition-base),
