@@ -345,6 +345,22 @@ body{
   font-weight:700;
   margin:0;
 }
+.overview-title-with-back{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  min-width:0;
+}
+.overview-title-with-back .title{
+  min-width:0;
+}
+.overview-title-with-back .btn{
+  flex:0 0 auto;
+  margin-top:0;
+  padding-left:0;
+  border:0;
+  font-size:80%;
+}
 .segmented{
   display:flex;
   overflow-x:auto;

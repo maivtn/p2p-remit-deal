@@ -107,8 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <div class="recent-history-card-amount history-amount">
-        <strong>${txn.sendAmount} ${txn.sendCurrency}</strong>
-        <span>${txn.receiveAmount} ${txn.receiveCurrency}</span>
+        <span class="text-dark">- ${txn.sendAmount} ${txn.sendCurrency}</span>
+        <span>+ ${txn.receiveAmount} ${txn.receiveCurrency}</span>
       </div>
 
       <div class="recent-history-card-status">
