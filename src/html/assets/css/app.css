@@ -303,6 +303,7 @@ body{
   overflow-x:auto;
 }
 .deal-tab{
+  border-bottom:2px solid transparent;
   color:var(--p2p-text-secondary);
   text-decoration:none;
   display:flex;
@@ -315,6 +316,7 @@ body{
   color:var(--p2p-primary);
 }
 .deal-tab.active{
+  border-bottom-color:var(--p2p-primary);
   background:var(--p2p-primary-weak);
   color:var(--p2p-primary);
 }
@@ -457,22 +459,23 @@ body{
 
 @media (min-width:768px){
   .tabs-wrap{
-    position:sticky;
+    /* position:sticky; */
     top:0;
     left:auto;
     transform:none;
     max-width:none;
     z-index:30;
     border-top:0;
+    background-color: transparent;
+    padding:  0 ;
     border-bottom:1px solid var(--p2p-border);
-    box-shadow:0 6px 18px rgba(15,23,42,.06);
+    /* box-shadow:0 6px 18px rgba(15,23,42,.06); */
     border-radius:0;
-    padding:0 24px;
+    /* padding:0 24px; */
   }
 
   .deal-tabs{
     gap:8px;
-    height:64px;
   }
 
   .deal-tab{
@@ -481,10 +484,14 @@ body{
     flex-direction:row;
     padding:0 16px;
     gap:8px;
-    height:42px;
-    border-radius:999px;
+    border-radius:0;
     font-size:14px;
     font-weight:800;
+    transition: all 0.3s;
+    padding:16px;
+    &:hover{
+      transform: translateY(-2px);
+    }
   }
 
   .deal-tab i{
