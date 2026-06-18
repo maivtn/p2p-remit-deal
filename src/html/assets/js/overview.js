@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hotEl = document.getElementById("hotDeals");
   if(hotEl){
     hotEl.innerHTML = `
-      <div class="table-responsive deal-table-wrap">
+      <div class="table-responsive deal-table-wrap rounded">
         <table class="table table-sm table-hover align-middle mb-0 deal-highlight-table">
           <thead class="table-light">
             <tr>

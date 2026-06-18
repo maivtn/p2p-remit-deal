@@ -23,7 +23,7 @@
 
       <main class="app-page overview-page container-fluid p-0">
         <section
-          class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3 mt-3">
+          class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-4 mt-3">
           <div>
             <h1 class="overview-title">Tổng quan hoạt động</h1>
             <p class="overview-subtitle">Theo dõi giao dịch, deal nổi bật và lịch sử giao dịch gần đây</p>
@@ -36,24 +36,24 @@
           </div>
         </section>
 
-        <section class="overview-content-grid row g-3 align-items-start">
+        <section class="overview-content-grid row g-3 g-md-5 align-items-start">
           <div class="overview-main-col col-12 col-xl-8 d-flex flex-column gap-3">
-            <section class="card overview-panel processing-panel">
-              <div
-                class="card-header overview-section-head bg-white d-flex align-items-center justify-content-between gap-2">
+            <section class="overview-panel processing-panel">
+              <!-- <div class="d-flex align-items-center justify-content-between gap-2">
                 <h2 class="overview-section-title">Đang xử lý</h2>
-              </div>
+                <a class="btn btn-link overview-section-link p-0" href="history.html">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+              </div> -->
               <div class="card-body p-0">
                 <div id="processingList" class="processing-list"></div>
               </div>
             </section>
 
-            <section class="card overview-panel deal-highlight-panel">
+            <section class=" overview-panel deal-highlight-panel">
               <div
-                class="card-header overview-section-head bg-white d-flex align-items-center justify-content-between gap-2">
+                class="d-flex align-items-center justify-content-between gap-2 mb-3 mt-2">
                 <h2 class="overview-section-title">Deal nổi bật</h2>
-                <a class="overview-section-link" href="search-deal.html">Tìm deal <i
-                    class="bi bi-chevron-right"></i></a>
+                <a class="btn btn-link btn-sm text-decoration-none" href="search-deal.html">Tìm deal <i
+                    class="bi bi-arrow-right"></i></a>
               </div>
               <div class="card-body p-0" id="hotDeals"></div>
             </section>
