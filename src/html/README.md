@@ -178,19 +178,18 @@ Tab navigation được render chung trong `common.js`.
   - người tạo deal dạng mask tên;
   - tỷ giá;
   - giới hạn;
-  - available amount;
   - hình thức nhận USD của người tạo deal;
   - hình thức gửi VND của người tạo deal.
 - Payment method trong summary dùng `method-tag` để đồng bộ UI.
 
 
 ## v3.4 updates
-- `select-deal.html`: remove field `Available` khỏi khung `Thông tin tổng quát của deal`.
+- `select-deal.html`: khung `Thông tin tổng quát của deal` chỉ giữ các field thuộc schema deal hiện tại.
 
 
 ## v3.5 updates
 - `select-deal.html`: tối ưu lại khung `Thông tin tổng quát của deal` theo dạng slim compact.
-- Remove hoàn toàn `Available`.
+- Summary deal chỉ giữ dữ liệu tỷ giá, giới hạn và phương thức thanh toán.
 - Summary chỉ giữ thông tin cốt lõi:
   - người tạo deal mask tên;
   - tỷ giá;

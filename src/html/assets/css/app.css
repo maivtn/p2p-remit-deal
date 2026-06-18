@@ -2405,73 +2405,34 @@ body{
 
 /* ==============================
    v3.0 Pagination
+   Base: Bootstrap .pagination component, themed via --bs-pagination-* vars
 ============================== */
-.pager{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-top:8px;
-  padding:4px 0 10px;
-}
-.pager-info{
-  font-size:13px;
-  font-weight:700;
-  color:#64748b;
-}
-.pager-info strong{color:#1e293b}
-.pager-nav{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
+.pager-nav.pagination{
+  --bs-pagination-color:#334155;
+  --bs-pagination-bg:#fff;
+  --bs-pagination-border-color:#e5e7eb;
+  --bs-pagination-hover-color:#1e293b;
+  --bs-pagination-hover-bg:#f1f5f9;
+  --bs-pagination-hover-border-color:#cbd5e1;
+  --bs-pagination-focus-box-shadow:0 0 0 .2rem rgba(37,99,235,.25);
+  --bs-pagination-active-bg:#2563eb;
+  --bs-pagination-active-border-color:#2563eb;
+  --bs-pagination-disabled-color:#94a3b8;
+  --bs-pagination-disabled-bg:#fff;
+  --bs-pagination-disabled-border-color:#e5e7eb;
   gap:6px;
 }
-.pager-btn,
-.pager-num{
+.pager-nav .page-link{
   min-width:40px;
   height:40px;
-  padding:0 10px;
-  border-radius:12px;
-  border:1px solid #e5e7eb;
-  background:#fff;
-  color:#334155;
-  font-weight:900;
-  font-size:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
-  transition:background .15s ease,border-color .15s ease,color .15s ease;
-}
-.pager-btn:hover:not(:disabled),
-.pager-num:hover{
-  background:#f1f5f9;
-  border-color:#cbd5e1;
-}
-.pager-num.active{
-  background:#2563eb;
-  border-color:#2563eb;
-  color:#fff;
-  box-shadow:0 6px 16px rgba(37,99,235,.28);
-}
-.pager-btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-.pager-btn:focus-visible,
-.pager-num:focus-visible{
-  outline:2px solid #2563eb;
-  outline-offset:2px;
-}
-.pager-gap{
-  min-width:24px;
-  text-align:center;
-  color:#94a3b8;
+  border-radius:12px;
+  margin-left:0;           /* cancel Bootstrap's -1px collapse so pills sit apart */
   font-weight:900;
+  font-size:14px;
 }
-@media (max-width:420px){
-  .pager{justify-content:center}
-  .pager-info{width:100%;text-align:center;order:2}
-  .pager-nav{order:1}
+.pager-nav .page-item.active .page-link{
+  box-shadow:0 6px 16px rgba(37,99,235,.28);
 }

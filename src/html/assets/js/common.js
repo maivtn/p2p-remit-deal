@@ -159,25 +159,26 @@ function renderPager(el, { page, pageSize, total, onPage }){
     return;
   }
 
-  const from = (current - 1) * pageSize + 1;
-  const to = Math.min(current * pageSize, total);
+  // Bootstrap pagination component (.pagination/.page-item/.page-link) as base.
+  const pageItem = (inner, { active = false, disabled = false, attr = "" } = {}) => `
+    <li class="page-item ${active ? "active" : ""} ${disabled ? "disabled" : ""}">
+      <button class="page-link" type="button" ${attr} ${active ? 'aria-current="page"' : ""}>${inner}</button>
+    </li>
+  `;
+
+  const numbers = pagerRange(current, pageCount).map(p => p === "…"
+    ? `<li class="page-item disabled"><span class="page-link">…</span></li>`
+    : pageItem(p, { active: p === current, attr: `data-pager-page="${p}"` })
+  ).join("");
 
   el.innerHTML = `
-    <div class="pager">
-      <div class="pager-info">Hiển thị <strong>${from}–${to}</strong> / ${total}</div>
-      <nav class="pager-nav" aria-label="Phân trang">
-        <button class="pager-btn" type="button" data-pager-prev ${current === 1 ? "disabled" : ""} aria-label="Trang trước">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-        ${pagerRange(current, pageCount).map(p => p === "…"
-          ? `<span class="pager-gap" aria-hidden="true">…</span>`
-          : `<button class="pager-num ${p === current ? "active" : ""}" type="button" data-pager-page="${p}" ${p === current ? 'aria-current="page"' : ""}>${p}</button>`
-        ).join("")}
-        <button class="pager-btn" type="button" data-pager-next ${current === pageCount ? "disabled" : ""} aria-label="Trang sau">
-          <i class="bi bi-chevron-right"></i>
-        </button>
-      </nav>
-    </div>
+    <nav class="pager d-flex justify-content-center pt-1 pb-2" aria-label="Phân trang">
+      <ul class="pagination pager-nav mb-0 flex-wrap">
+        ${pageItem('<i class="bi bi-chevron-left"></i>', { disabled: current === 1, attr: 'data-pager-prev aria-label="Trang trước"' })}
+        ${numbers}
+        ${pageItem('<i class="bi bi-chevron-right"></i>', { disabled: current === pageCount, attr: 'data-pager-next aria-label="Trang sau"' })}
+      </ul>
+    </nav>
   `;
 
   const go = p => {

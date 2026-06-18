@@ -1305,10 +1305,10 @@ export const dealStatusOptions = [
 
 ---
 
-### 7.2 Available deals from Account B
+### 7.2 Deals from Account B
 
 ```ts
-export const availableDealsFromB = [
+export const dealsFromB = [
   {
     id: "deal_b_001",
     dealCode: "DL-B-USD-VND-001",
@@ -1344,8 +1344,6 @@ export const availableDealsFromB = [
       minUsd: 100,
       maxUsd: 5000,
     },
-
-    availableAmountUsd: 3000,
 
     note: "Có thể thanh toán VND qua MoMo hoặc chuyển khoản ngân hàng.",
     createdAt: "2026-06-16T08:00:00Z",
@@ -1388,8 +1386,6 @@ export const availableDealsFromB = [
       maxUsd: 2000,
     },
 
-    availableAmountUsd: 1200,
-
     note: "Chỉ hỗ trợ ZaloPay.",
     createdAt: "2026-06-16T09:15:00Z",
     updatedAt: "2026-06-16T11:20:00Z",
@@ -1430,8 +1426,6 @@ export const availableDealsFromB = [
       minUsd: 300,
       maxUsd: 10000,
     },
-
-    availableAmountUsd: 8000,
 
     note: "Ưu tiên giao dịch số tiền lớn.",
     createdAt: "2026-06-15T15:00:00Z",
@@ -1594,7 +1588,6 @@ B.senderPaymentMethods = ["Bank Transfer"]
 ```ts
 A.amount.value >= B.amountLimit.minUsd
 A.amount.value <= B.amountLimit.maxUsd
-A.amount.value <= B.availableAmountUsd
 ```
 
 ---
@@ -1608,8 +1601,7 @@ const isMatched =
   A.senderPaymentMethods.includes(B.beneficiaryReceiveMethod) &&
   B.senderPaymentMethods.includes(A.beneficiaryReceiveMethod) &&
   A.amount.value >= B.amountLimit.minUsd &&
-  A.amount.value <= B.amountLimit.maxUsd &&
-  A.amount.value <= B.availableAmountUsd;
+  A.amount.value <= B.amountLimit.maxUsd;
 ```
 
 ---
@@ -2107,8 +2099,7 @@ export const searchDeals = (searchRequest: any, deals: any[]) => {
 
       const isAmountValid =
         searchRequest.amount.value >= deal.amountLimit.minUsd &&
-        searchRequest.amount.value <= deal.amountLimit.maxUsd &&
-        searchRequest.amount.value <= deal.availableAmountUsd;
+        searchRequest.amount.value <= deal.amountLimit.maxUsd;
 
       return (
         isCurrencyPairMatched &&
