@@ -936,6 +936,7 @@ body{
   gap:8px;
   overflow-x:auto;
   padding:10px 0 14px;
+  margin-bottom: 16px;
 }
 
 .case-switcher a{
@@ -2399,4 +2400,78 @@ body{
   .incoming-deal-grid{
     grid-template-columns:1fr;
   }
+}
+
+
+/* ==============================
+   v3.0 Pagination
+============================== */
+.pager{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:8px;
+  padding:4px 0 10px;
+}
+.pager-info{
+  font-size:13px;
+  font-weight:700;
+  color:#64748b;
+}
+.pager-info strong{color:#1e293b}
+.pager-nav{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.pager-btn,
+.pager-num{
+  min-width:40px;
+  height:40px;
+  padding:0 10px;
+  border-radius:12px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  color:#334155;
+  font-weight:900;
+  font-size:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+.pager-btn:hover:not(:disabled),
+.pager-num:hover{
+  background:#f1f5f9;
+  border-color:#cbd5e1;
+}
+.pager-num.active{
+  background:#2563eb;
+  border-color:#2563eb;
+  color:#fff;
+  box-shadow:0 6px 16px rgba(37,99,235,.28);
+}
+.pager-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.pager-btn:focus-visible,
+.pager-num:focus-visible{
+  outline:2px solid #2563eb;
+  outline-offset:2px;
+}
+.pager-gap{
+  min-width:24px;
+  text-align:center;
+  color:#94a3b8;
+  font-weight:900;
+}
+@media (max-width:420px){
+  .pager{justify-content:center}
+  .pager-info{width:100%;text-align:center;order:2}
+  .pager-nav{order:1}
 }

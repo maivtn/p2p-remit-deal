@@ -990,7 +990,7 @@ function DealsTab({
       >
         <div className="flex items-center justify-between">
           <h1 style={{ color: "white", fontSize: 22, fontWeight: 700 }}>
-            Deals của tôi
+            Quản lý deal
           </h1>
           <button
             onClick={() => setShowCreate(true)}
@@ -3285,7 +3285,7 @@ export function ProviderApp({
           )}
           {tab === "manageDeals" && (
             <ManageDealsTab
-              title="Deals của tôi"
+              title="Quản lý deal"
               deals={deals}
               requests={requests}
               accounts={accounts}

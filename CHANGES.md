@@ -37,7 +37,7 @@
 | `completed` | Đã hoàn tất | Xanh lá |
 | `expired` | Hết hạn | Xám |
 
-### Tab filter Deals của tôi
+### Tab filter Quản lý deal
 **Trước:** Tất cả / Hoạt động / Tạm dừng / Hết hạn
 **Sau:** Tất cả / Hoạt động / Đã hoàn tất / Hết hạn
 
@@ -55,7 +55,7 @@
 
 ---
 
-## Deals của tôi – Action buttons
+## Quản lý deal – Action buttons
 
 | Điều kiện | Nút hiển thị |
 |---|---|

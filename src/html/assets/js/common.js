@@ -123,6 +123,74 @@ function renderMethodChips(containerId, currency, selected = [], options = {}){
   const methods = paymentMethodMatrix.find(x => x.currency === currency)?.methods || [];
   el.innerHTML = methods.map(m => chip(m.label, selected.includes(m.method), options.single, options.blue)).join("");
 }
+
+/* ==============================
+   v3.0 Shared Pagination
+   Usage:
+   renderPager(document.getElementById("xPager"), {
+     page: currentPage, pageSize: 5, total: items.length,
+     onPage: p => { currentPage = p; render(); }
+   });
+============================== */
+function pagerRange(current, count){
+  // Show every page when small; otherwise first, last, current ±1 with ellipses.
+  if(count <= 7) return Array.from({ length: count }, (_, i) => i + 1);
+  const wanted = new Set([1, count, current, current - 1, current + 1]);
+  const visible = [...wanted].filter(p => p >= 1 && p <= count).sort((a, b) => a - b);
+  const out = [];
+  let prev = 0;
+  for(const p of visible){
+    if(p - prev > 1) out.push("…");
+    out.push(p);
+    prev = p;
+  }
+  return out;
+}
+
+function renderPager(el, { page, pageSize, total, onPage }){
+  if(!el) return;
+
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const current = Math.min(Math.max(1, page), pageCount);
+
+  // Single page (or empty) → no pagination chrome needed.
+  if(total === 0 || pageCount === 1){
+    el.innerHTML = "";
+    return;
+  }
+
+  const from = (current - 1) * pageSize + 1;
+  const to = Math.min(current * pageSize, total);
+
+  el.innerHTML = `
+    <div class="pager">
+      <div class="pager-info">Hiển thị <strong>${from}–${to}</strong> / ${total}</div>
+      <nav class="pager-nav" aria-label="Phân trang">
+        <button class="pager-btn" type="button" data-pager-prev ${current === 1 ? "disabled" : ""} aria-label="Trang trước">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        ${pagerRange(current, pageCount).map(p => p === "…"
+          ? `<span class="pager-gap" aria-hidden="true">…</span>`
+          : `<button class="pager-num ${p === current ? "active" : ""}" type="button" data-pager-page="${p}" ${p === current ? 'aria-current="page"' : ""}>${p}</button>`
+        ).join("")}
+        <button class="pager-btn" type="button" data-pager-next ${current === pageCount ? "disabled" : ""} aria-label="Trang sau">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </nav>
+    </div>
+  `;
+
+  const go = p => {
+    const next = Math.min(Math.max(1, p), pageCount);
+    if(next !== current) onPage(next);
+  };
+
+  el.querySelector("[data-pager-prev]")?.addEventListener("click", () => go(current - 1));
+  el.querySelector("[data-pager-next]")?.addEventListener("click", () => go(current + 1));
+  el.querySelectorAll("[data-pager-page]").forEach(btn => {
+    btn.addEventListener("click", () => go(Number(btn.dataset.pagerPage)));
+  });
+}
 document.addEventListener("DOMContentLoaded", () => {
   const active = document.body.dataset.activeTab;
   if(active) renderTabs(active);

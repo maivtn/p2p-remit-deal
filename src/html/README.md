@@ -125,7 +125,7 @@ Tab navigation được render chung trong `common.js`.
 - Deal nổi bật / Kết quả tìm deal đi qua màn chi tiết deal trước khi chọn deal.
 - Overview: Giao dịch đang xử lý và Lịch sử gần đây đều có `View detail`.
 - Lịch sử giao dịch: chip có count và filter đúng data.
-- Deals của tôi: mỗi chip có count và click chip sẽ filter data.
+- Quản lý deal: mỗi chip có count và click chip sẽ filter data.
 
 
 ## v2.8 updates
