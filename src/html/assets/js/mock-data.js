@@ -355,11 +355,11 @@ const overviewData = {
     },
   ],
   recentHistory: [
-    { id: "txn_004", transactionCode: "TXN-20260617-001", name: "Huy *** A", status: "completed", statusLabel: "Hoàn tất", sendAmount: "500", sendCurrency: "USD", receiveAmount: "12,800,000", receiveCurrency: "VND", time: "Hôm qua, 14:32", method: "Bank Transfer" },
-    { id: "txn_005", transactionCode: "TXN-20260616-004", name: "Minh *** B", status: "waiting_for_payment", statusLabel: "Chờ gửi tiền", sendAmount: "300", sendCurrency: "USD", receiveAmount: "7,650,000", receiveCurrency: "VND", time: "Hôm qua, 10:18", method: "Zelle" },
-    { id: "txn_006", transactionCode: "TXN-20260615-009", name: "Tuấn *** C", status: "completed", statusLabel: "Hoàn tất", sendAmount: "1,000", sendCurrency: "USD", receiveAmount: "25,700,000", receiveCurrency: "VND", time: "16/06/2026, 21:05", method: "MoMo" },
-    { id: "txn_007", transactionCode: "TXN-20260614-003", name: "Lan *** H", status: "cancelled", statusLabel: "Đã huỷ", sendAmount: "200", sendCurrency: "USD", receiveAmount: "5,110,000", receiveCurrency: "VND", time: "15/06/2026, 17:22", method: "ZaloPay" },
-    { id: "txn_008", transactionCode: "TXN-20260613-002", name: "Duy *** K", status: "completed", statusLabel: "Hoàn tất", sendAmount: "400", sendCurrency: "USD", receiveAmount: "10,280,000", receiveCurrency: "VND", time: "14/06/2026, 15:40", method: "PayPal" },
+    { id: "txn_004", transactionCode: "TXN-20260617-001", name: "Huy *** A", status: "completed", statusLabel: "Hoàn tất", sendAmount: "500", sendCurrency: "USD", receiveAmount: "12,800,000", receiveCurrency: "VND", time: "Hôm qua, 14:32", senderMethod: "Bank Transfer", beneficiaryMethod: "MoMo" },
+    { id: "txn_005", transactionCode: "TXN-20260616-004", name: "Minh *** B", status: "waiting_for_payment", statusLabel: "Chờ gửi tiền", sendAmount: "300", sendCurrency: "USD", receiveAmount: "7,650,000", receiveCurrency: "VND", time: "Hôm qua, 10:18", senderMethod: "Zelle", beneficiaryMethod: "Bank Transfer" },
+    { id: "txn_006", transactionCode: "TXN-20260615-009", name: "Tuấn *** C", status: "completed", statusLabel: "Hoàn tất", sendAmount: "1,000", sendCurrency: "USD", receiveAmount: "25,700,000", receiveCurrency: "VND", time: "16/06/2026, 21:05", senderMethod: "PayPal", beneficiaryMethod: "MoMo" },
+    { id: "txn_007", transactionCode: "TXN-20260614-003", name: "Lan *** H", status: "cancelled", statusLabel: "Đã huỷ", sendAmount: "200", sendCurrency: "USD", receiveAmount: "5,110,000", receiveCurrency: "VND", time: "15/06/2026, 17:22", senderMethod: "Venmo", beneficiaryMethod: "ZaloPay" },
+    { id: "txn_008", transactionCode: "TXN-20260613-002", name: "Duy *** K", status: "completed", statusLabel: "Hoàn tất", sendAmount: "400", sendCurrency: "USD", receiveAmount: "10,280,000", receiveCurrency: "VND", time: "14/06/2026, 15:40", senderMethod: "PayPal", beneficiaryMethod: "Bank Transfer" },
   ]
 };
 

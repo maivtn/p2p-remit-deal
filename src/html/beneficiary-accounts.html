@@ -10,23 +10,27 @@
 <title>Tài khoản nhận</title>
 </head>
 <body data-active-tab="beneficiaryAccounts">
+<div class="container">
 <div class="app-shell">
-
-  <header class="screen-toolbar">
-    <h1 class="title">Tài khoản nhận</h1>
-    <button class="btn btn-success btn-sm" data-account-modal data-mode="add"><i class="bi bi-plus"></i> Thêm</button>
-  </header>
-  <main class="app-page">
-    <div class="alert alert-success border-0 rounded-4">
-      <div class="fw-bold">Tài khoản nhận</div>
-      <div class="small">Danh sách tài khoản nhận tiền của bạn.</div>
-    </div>
-    <div id="accountsList"></div>
-  </main>
 
   <div class="tabs-wrap">
     <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
   </div>
+
+  <section class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3 mt-3">
+    <div>
+      <h1 class="overview-title">Tài khoản nhận</h1>
+      <p class="overview-subtitle">Quản lý danh sách tài khoản nhận tiền dùng cho các giao dịch.</p>
+    </div>
+    <div class="overview-actions d-flex align-items-center gap-2">
+      <button class="btn btn-primary" data-account-modal data-mode="add"><i class="bi bi-plus"></i> Thêm</button>
+    </div>
+  </section>
+  <main class="app-page">
+    <div class="account-chip-row" id="accountCurrencyFilters"></div>
+    <div id="accountsList"></div>
+  </main>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/mock-data.js"></script>

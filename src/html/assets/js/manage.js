@@ -143,9 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
             </div>
             <div class="manage-deal-actions">
-              <a class="btn btn-outline-success btn-sm fw-bold" href="deal-detail-owner.html?isOwner=true"><i class="bi bi-eye"></i> Xem</a>
+              <a class="btn btn-outline-info btn-sm" href="deal-detail-owner.html?isOwner=true"><i class="bi bi-eye"></i> Xem</a>
               <a class="btn btn-outline-primary btn-sm" href="create-deal.html"><i class="bi bi-pencil"></i> Sửa</a>
-              <button class="btn btn-outline-danger btn-sm " type="button" aria-label="Xoá deal">Xoá <i class="bi bi-trash"></i></button>
+              <button class="btn btn-outline-danger btn-sm " type="button" aria-label="Xoá deal"><i class="bi bi-trash"></i> Xoá </button>
             </div>
           </div>
         </div>

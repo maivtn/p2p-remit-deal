@@ -6,6 +6,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const PAGE_SIZE = 5;
 
+  // Overview and History share the same source records but were authored with two
+  // field shapes. Normalize each record into the shape History renders so both the
+  // overviewData items (sendAmount/sendCurrency, canonical BA statuses) and the
+  // inline/extra rows (send/receive strings, simple statuses) display correctly.
+  const STATUS_BUCKET = {
+    processing: "processing",
+    accepted: "processing",
+    waiting_for_payment: "processing",
+    proof_submitted: "processing",
+    partially_confirmed: "processing",
+    waiting: "waiting",
+    pending_acceptance: "waiting",
+    waiting_acceptance: "waiting",
+    completed: "completed",
+    dispute: "dispute",
+    disputed: "dispute",
+    cancelled: "cancelled",
+    rejected: "cancelled",
+    expired: "cancelled",
+  };
+  const statusBucket = status => STATUS_BUCKET[status] || status;
+
+  const fmtSend = txn => txn.send
+    || (txn.sendCurrency === "USD" ? `$${txn.sendAmount}` : `${txn.sendAmount} ${txn.sendCurrency}`);
+  const fmtReceive = txn => txn.receive
+    || (txn.receiveCurrency === "VND"
+      ? `${String(txn.receiveAmount).replace(/,/g, ".")}đ`
+      : `${txn.receiveAmount} ${txn.receiveCurrency}`);
+
+  const normalizeTxn = txn => ({
+    ...txn,
+    send: fmtSend(txn),
+    receive: fmtReceive(txn),
+    senderMethod: txn.senderMethod || txn.method,
+    beneficiaryMethod: txn.beneficiaryMethod || txn.method,
+    bucket: statusBucket(txn.status),
+  });
+
   // Extra rows so history spans multiple pages (demo only).
   const extraHistory = [
     { name:"Lê Thị F",      send:"$450", receive:"11.475.000đ", senderMethod:"Venmo",         beneficiaryMethod:"MoMo",          status:"completed",  statusLabel:"Hoàn thành",     time:"4 ngày trước" },
@@ -24,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ...overviewData.recentHistory,
     { id:"txn_dispute_001", name:"Nguyễn Văn E", send:"$700", receive:"17.850.000đ", senderMethod:"PayPal", beneficiaryMethod:"MoMo", status:"dispute", statusLabel:"Khiếu nại", time:"Hôm qua" },
     ...extraHistory,
-  ];
+  ].map(normalizeTxn);
 
   const filters = [
     {key:"all",label:"Tất cả"},
@@ -34,11 +72,11 @@ document.addEventListener("DOMContentLoaded", () => {
     {key:"dispute",label:"Khiếu nại"},
   ];
 
-  const getDetailLink = txn => txn.status==="completed"
+  const getDetailLink = txn => txn.bucket==="completed"
     ? "transaction-detail-case-06-completed-rating.html"
-    : txn.status==="waiting"
+    : txn.bucket==="waiting"
       ? "transaction-detail-case-01-waiting-counterparty-acceptance.html"
-      : txn.status==="dispute"
+      : txn.bucket==="dispute"
         ? "transaction-detail-case-07-my-dispute.html"
         : "transaction-detail-case-02-accepted-upload-proof.html";
 
@@ -46,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentPage = 1;
 
   const filterItems = key =>
-    key==="all" ? historyItems : historyItems.filter(x => x.status===key);
+    key==="all" ? historyItems : historyItems.filter(x => x.bucket===key);
 
   const count = key => filterItems(key).length;
 

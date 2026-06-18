@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="summary-line"><span>Thông tin</span><strong>${flow.details.phoneNumber}</strong></div>
         <div class="mt-3" data-upload-control data-upload-id="proof_${flow.id}" data-max-files="5" data-max-size-mb="5" data-camera-label="Chụp ảnh" data-file-label="Chọn file" data-label="Upload ảnh chụp màn hình, biên lai hoặc file xác nhận giao dịch"></div>
         <div class="d-grid gap-2 mt-3">
-          <button class="btn btn-success" data-confirm-paid data-flow-id="${flow.id}" data-flow-title="${flow.title}" data-flow-amount="${flow.amount}" data-flow-method="${flow.method}">Tôi đã gửi tiền</button>
+          <button class="btn btn-primary" data-confirm-paid data-flow-id="${flow.id}" data-flow-title="${flow.title}" data-flow-amount="${flow.amount}" data-flow-method="${flow.method}">Tôi đã gửi tiền</button>
           <button class="btn btn-outline-primary">Tôi đã nhận tiền</button>
         </div>
       </div>

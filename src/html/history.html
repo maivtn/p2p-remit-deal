@@ -10,20 +10,25 @@
 <title>Lịch sử</title>
 </head>
 <body data-active-tab="history">
+<div class="container">
 <div class="app-shell">
 
-  <header class="screen-toolbar blue">
-    <h1 class="title">Lịch sử</h1>
-  </header>
+  <div class="tabs-wrap">
+    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+  </div>
+
+  <section class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3 mt-3">
+    <div>
+      <h1 class="overview-title">Lịch sử</h1>
+      <p class="overview-subtitle">Theo dõi toàn bộ giao dịch theo trạng thái và thời gian xử lý.</p>
+    </div>
+  </section>
   <main class="app-page">
     <div class="history-chip-row" id="historyFilterChips"></div>
 <div id="historyList"></div>
 <div id="historyPager"></div>
   </main>
-
-  <div class="tabs-wrap">
-    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
-  </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/mock-data.js"></script>

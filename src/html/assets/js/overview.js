@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="processing-action">
         <a class="btn btn-sm btn-outline-primary overview-detail-btn" href="${getTxnDetailLink(txn)}" aria-label="Xem chi tiết">
           <i class="bi bi-eye"></i>
-          <span class="overview-detail-text">Xem chi tiết</span>
+          <span class="overview-detail-text">Xem</span>
         </a>
       </div>
     </article>
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ${deal.senderPaymentMethods.map(method => methodTag(method, "green")).join("")}
         </div>
       </td>
-      <td data-label="Thao tác"><a href="deal-detail.html" class="btn btn-sm btn-outline-primary overview-small-btn">Xem</a></td>
+      <td data-label="Thao tác"><a href="deal-detail.html" class="btn btn-sm btn-outline-primary overview-small-btn"><i class="bi bi-eye"></i> Xem</a></td>
     </tr>
   `;
 
@@ -92,25 +92,34 @@ document.addEventListener("DOMContentLoaded", () => {
     return "bi-clock";
   };
 
-  const renderHistoryRow = txn => `
-    <tr>
-      <td class="history-icon-cell"><span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span></td>
-      <td>
+  const renderHistoryCard = txn => `
+    <article class="recent-history-card" role="listitem">
+      <div class="recent-history-card-icon">
+        <span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span>
+      </div>
+
+      <div class="recent-history-card-main">
         <div class="history-main">
-        <div class="history-code">${txn.transactionCode}</div>
-        <div class="small-muted">với ${txn.name}</div>
-        <small>${txn.time}</small>
+          <div class="history-code">${txn.transactionCode}</div>
+          <div class="small-muted">với ${txn.name}</div>
+          <small>${txn.time}</small>
         </div>
-      </td>
-      <td>
-        <div class="history-amount">
-          <strong>${txn.sendAmount} ${txn.sendCurrency}</strong>
-          <span>${txn.receiveAmount} ${txn.receiveCurrency}</span>
-        </div>
-      </td>
-      <td><span class="badge-soft ${badgeClass(txn.status)}">${txn.statusLabel}</span></td>
-      <td><a href="${getTxnDetailLink(txn)}" class="history-link">Xem</a></td>
-    </tr>
+      </div>
+
+      <div class="recent-history-card-amount history-amount">
+        <strong>${txn.sendAmount} ${txn.sendCurrency}</strong>
+        <span>${txn.receiveAmount} ${txn.receiveCurrency}</span>
+      </div>
+
+      <div class="recent-history-card-status">
+        <span class="badge-soft ${badgeClass(txn.status)}">${txn.statusLabel}</span>
+      </div>
+
+      <a href="${getTxnDetailLink(txn)}" class="recent-history-card-action btn btn-sm btn-outline-success" aria-label="Xem ${txn.transactionCode}">
+        <i class="bi bi-eye"></i>
+        <span>Xem</span>
+      </a>
+    </article>
   `;
 
   const metricsEl = document.getElementById("overviewMetrics");
@@ -131,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if(hotEl){
     hotEl.innerHTML = `
       <div class="table-responsive deal-table-wrap">
-        <table class="table table-sm table-hover align-middle mb-0 deal-highlight-table" style="min-width: 900px">
+        <table class="table table-sm table-hover align-middle mb-0 deal-highlight-table">
           <thead class="table-light">
             <tr>
               <th>Cặp tiền tệ</th>
@@ -153,21 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyEl = document.getElementById("recentHistory");
   if(historyEl){
     historyEl.innerHTML = `
-      <div class="table-responsive history-table-wrap">
-        <table class="table table-hover align-middle mb-0 recent-history-table" style="min-width: 500px">
-          <thead class="table-light">
-            <tr>
-              <th></th>
-              <th>Giao dịch</th>
-              <th>Số tiền</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${overviewData.recentHistory.map(renderHistoryRow).join("")}
-          </tbody>
-        </table>
+      <div class="recent-history-cards" role="list">
+        ${overviewData.recentHistory.map(renderHistoryCard).join("")}
       </div>
     `;
   }

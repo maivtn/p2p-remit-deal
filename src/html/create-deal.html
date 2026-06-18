@@ -10,12 +10,22 @@
 <title>Tạo Deal Mới</title>
 </head>
 <body data-active-tab="manageDeals">
+<div class="container">
 <div class="app-shell">
 
-  <header class="screen-toolbar">
-    <h1 class="title">Tạo Deal Mới</h1>
-    <a class="btn btn-light icon-btn" href="manage-deals.html"><i class="bi bi-x-lg"></i></a>
-  </header>
+  <div class="tabs-wrap">
+    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+  </div>
+
+  <section class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3 mt-3">
+    <div>
+      <h1 class="overview-title">Tạo Deal Mới</h1>
+      <p class="overview-subtitle">Thiết lập tỷ giá, hạn mức và phương thức thanh toán để đăng deal mới.</p>
+    </div>
+    <div class="overview-actions d-flex align-items-center gap-2">
+      <a class="btn overview-btn overview-btn-outline" href="manage-deals.html"><i class="bi bi-x-lg"></i></a>
+    </div>
+  </section>
   <main class="app-page"><div class="desktop-grid"><div class="desktop-col-5">
     <section class="form-card">
       <div class="row g-3">
@@ -90,10 +100,7 @@
       </div>
     </div>
   </div>
-
-  <div class="tabs-wrap">
-    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
-  </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/mock-data.js"></script>

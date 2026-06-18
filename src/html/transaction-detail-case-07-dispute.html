@@ -12,11 +12,21 @@
 <title>Case 07 - Mình khiếu nại</title>
 </head>
 <body data-active-tab="history" data-detail-case="case-07">
+<div class="container">
 <div class="app-shell">
-  <header class="screen-toolbar blue">
-    <a class="text-white text-decoration-none" href="history.html"><i class="bi bi-chevron-left"></i> Quay lại</a>
-    <h1 class="title">Chi tiết giao dịch</h1>
-  </header>
+  <div class="tabs-wrap">
+    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
+  </div>
+
+  <section class="overview-intro d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3 mt-3">
+    <div>
+      <h1 class="overview-title">Chi tiết giao dịch</h1>
+      <p class="overview-subtitle">Theo dõi trạng thái, bằng chứng, SLA và các thao tác xử lý giao dịch.</p>
+    </div>
+    <div class="overview-actions d-flex align-items-center gap-2">
+      <a class="btn overview-btn overview-btn-outline" href="history.html"><i class="bi bi-chevron-left"></i> Quay lại</a>
+    </div>
+  </section>
 
   <main class="app-page">
     <div class="case-switcher" id="caseSwitcher"></div>
@@ -73,7 +83,7 @@
         </div>
         <div class="modal-footer confirm-paid-footer">
           <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Hủy</button>
-          <button class="btn btn-success flex-fill" id="confirmPaidSubmitBtn" disabled>✅ Xác nhận gửi</button>
+          <button class="btn btn-primary flex-fill" id="confirmPaidSubmitBtn" disabled>✅ Xác nhận gửi</button>
         </div>
       </div>
     </div>
@@ -99,7 +109,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-light flex-fill" data-bs-dismiss="modal">Huỷ</button>
-          <a class="btn btn-success flex-fill" href="transaction-detail-case-02-accepted-upload-proof.html">Đồng ý & Chấp nhận</a>
+          <a class="btn btn-primary flex-fill" href="transaction-detail-case-02-accepted-upload-proof.html">Đồng ý & Chấp nhận</a>
         </div>
       </div>
     </div>
@@ -188,10 +198,7 @@
       </div>
     </div>
   </div>
-
-  <div class="tabs-wrap">
-    <nav class="deal-tabs" id="dealTabs" aria-label="Deal tabs"></nav>
-  </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/mock-data.js"></script>

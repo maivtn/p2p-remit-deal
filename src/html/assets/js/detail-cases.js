@@ -351,7 +351,7 @@ function renderMyAcceptancePanel(data){
 
         <div class="action-row">
           <button class="btn btn-outline-danger" data-decline-incoming-deal><i class="bi bi-x-circle"></i> Từ chối</button>
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#acceptIncomingDealModal"><i class="bi bi-check-circle"></i> Chấp nhận</button>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptIncomingDealModal"><i class="bi bi-check-circle"></i> Chấp nhận</button>
         </div>
       </div>
     </section>
@@ -574,7 +574,7 @@ function renderFlowProofAndActions(flow, transaction){
       ${flow.confirmed ? `<div class="case-summary-note success mt-3">Bạn đã xác nhận nhận tiền từ Tran *** B.</div>` : `
         <div class="flow-action-title">Đây là bằng chứng do Tran *** B upload. Bạn hãy xem và xác nhận sau khi kiểm tra tiền đã vào tài khoản. </div>
         <div class="action-row">
-          <button class="btn btn-success" data-confirm-received data-flow-id="${flow.id}" data-amount="${flow.amount}" data-method="${flow.method}">✅ Xác nhận đã nhận tiền</button>
+          <button class="btn btn-primary" data-confirm-received data-flow-id="${flow.id}" data-amount="${flow.amount}" data-method="${flow.method}">✅ Xác nhận đã nhận tiền</button>
         </div>
       `}
     `;

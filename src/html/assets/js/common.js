@@ -15,10 +15,13 @@ function renderTabs(activeKey){
   const shell = document.querySelector(".app-shell");
 
   // v1.2: this is tab navigation, not bottom navigation.
-  // Move the shared tab container to the top of the module, right after header/hero.
+  // App headers sit below tabs across all HTML screens.
   if(wrap && shell){
-    const topAnchor = shell.querySelector(".hero") || shell.querySelector(".screen-toolbar") || shell.querySelector(".app-header");
-    if(topAnchor && topAnchor.nextSibling !== wrap){
+    const appHeader = shell.querySelector(".app-header");
+    const topAnchor = shell.querySelector(".hero") || shell.querySelector(".screen-toolbar");
+    if(appHeader && appHeader.previousElementSibling !== wrap){
+      appHeader.insertAdjacentElement("beforebegin", wrap);
+    }else if(topAnchor && topAnchor.nextSibling !== wrap){
       topAnchor.insertAdjacentElement("afterend", wrap);
     }else if(!topAnchor && shell.firstElementChild !== wrap){
       shell.insertAdjacentElement("afterbegin", wrap);
@@ -390,7 +393,7 @@ function injectAccountModal(){
           </div>
           <div class="modal-footer">
             <button class="btn btn-light" data-bs-dismiss="modal">Huỷ</button>
-            <button class="btn btn-success" id="saveBeneficiaryAccountBtn">
+            <button class="btn btn-primary" id="saveBeneficiaryAccountBtn">
               <i class="bi bi-check2-circle"></i> Lưu tài khoản
             </button>
           </div>
@@ -461,6 +464,8 @@ function bindAccountModalEvents(){
   injectAccountModal();
 
   document.querySelectorAll("[data-account-modal]").forEach(btn => {
+    if(btn.dataset.accountModalBound) return;
+    btn.dataset.accountModalBound = "true";
     btn.addEventListener("click", () => {
       openBeneficiaryAccountModal(btn.dataset.mode || "add", btn.dataset.accountId || "");
     });
