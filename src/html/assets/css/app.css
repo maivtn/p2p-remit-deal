@@ -2836,6 +2836,7 @@ body{
   border-bottom:1px solid #e5e7eb;
   vertical-align:middle;
   white-space:normal;
+  font-size: 13px;
 }
 
 .deal-highlight-table th:nth-child(1),
@@ -2855,7 +2856,6 @@ body{
   color:#475569;
   background:#fbfdfc;
   font-size:13px;
-  font-weight:900;
   white-space:nowrap;
 }
 
@@ -2865,7 +2865,6 @@ body{
 
 .deal-index{
   color:#475569;
-  font-weight:900;
   text-align:center;
 }
 
@@ -2874,24 +2873,20 @@ body{
   align-items:center;
   gap:9px;
   color:#334155;
-  font-weight:850;
 }
 
 .deal-rate{
   color:#111827;
-  font-weight:950;
   white-space:nowrap;
 }
 
 .deal-pair{
   color:#006b4f;
-  font-weight:950;
   white-space:nowrap;
 }
 
 .deal-limit{
   color:#334155;
-  font-weight:850;
   white-space:nowrap;
 }
 
