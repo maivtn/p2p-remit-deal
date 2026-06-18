@@ -62,12 +62,17 @@ function paymentIcon(method, className = "pay-icon"){
 
 function badgeClass(status){
   switch(status){
-    case "processing":
+    case "accepted":
     case "waiting_for_payment":
+    case "proof_submitted":
+    case "partially_confirmed":
+    case "processing":
     case "active": return "badge-processing";
+    case "pending_acceptance":
     case "waiting":
     case "waiting_acceptance": return "badge-waiting";
     case "completed": return "badge-success";
+    case "disputed":
     case "rejected":
     case "deleted":
     case "cancelled": return "badge-danger-soft";

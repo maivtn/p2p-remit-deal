@@ -86,6 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const countByFilter = (key) => filterDeals(key).length;
 
+  const formatDealRate = deal => `${Number(deal.exchangeRate.rate).toLocaleString("vi-VN", {
+    maximumFractionDigits: Number(deal.exchangeRate.rate) < 100 ? 4 : 0,
+  })} ${deal.exchangeRate.to}/${deal.exchangeRate.from}`;
+
   const renderChips = () => {
     if(!chipsEl) return;
     chipsEl.innerHTML = filters.map(filter => `
@@ -120,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="row g-2 mt-2">
             <div class="col-6">
               <div class="small-muted">Tỷ giá</div>
-              <div class="fw-bold">${deal.exchangeRate.rate.toLocaleString("vi-VN")}đ/USD</div>
+              <div class="fw-bold">${formatDealRate(deal)}</div>
             </div>
             <div class="col-6 text-end">
               <div class="small-muted">Giới hạn</div>

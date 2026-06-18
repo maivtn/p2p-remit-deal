@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (el) el.textContent = text;
   };
 
+  const formatDealRate = deal => `1 ${deal.exchangeRate.from} = ${Number(deal.exchangeRate.rate).toLocaleString("vi-VN", {
+    maximumFractionDigits: Number(deal.exchangeRate.rate) < 100 ? 4 : 0,
+  })} ${deal.exchangeRate.to}`;
+
   setText("dealCode", deal.dealCode);
 
   setText(
@@ -23,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setText(
     "dealRate",
-    `1 USD = ${deal.exchangeRate.rate.toLocaleString("vi-VN")}đ`
+    formatDealRate(deal)
   );
 
   const methodEl = document.getElementById("dealMethods");

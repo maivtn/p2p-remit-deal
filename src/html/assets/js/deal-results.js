@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const results = document.getElementById("dealResultsList");
   if(!results) return;
 
+  const formatDealRate = deal => `${Number(deal.exchangeRate.rate).toLocaleString("vi-VN", {
+    maximumFractionDigits: Number(deal.exchangeRate.rate) < 100 ? 4 : 0,
+  })} ${deal.exchangeRate.to}/${deal.exchangeRate.from}`;
+
   results.innerHTML = mockDealsB.map(deal => `
     <div class="deal-card">
       <div class="name-line">
@@ -21,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="result-rate-action-row mt-2">
         <div>
           <div class="small-muted">Tỷ giá</div>
-          <div class="rate-blue">${deal.exchangeRate.rate.toLocaleString("vi-VN")}đ/USD</div>
+          <div class="rate-blue">${formatDealRate(deal)}</div>
         </div>
         <a href="deal-detail.html" class="btn btn-primary btn-sm">Xem chi tiết</a>
       </div>
