@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const senderCurrencySelect = document.getElementById("createSenderCurrency");
   const beneficiaryCurrencySelect = document.getElementById("createBeneficiaryCurrency");
+  const rateLabel = document.getElementById("createRateLabel");
+  const marketRateToggle = document.getElementById("createMarketRateToggle");
+  const exchangeRateInput = document.getElementById("createExchangeRateInput");
   const senderMethodsTitle = document.getElementById("createSenderMethodsTitle");
   const beneficiaryMethodsTitle = document.getElementById("createBeneficiaryMethodsTitle");
   const selectedAccountEl = document.getElementById("createBeneficiaryAccount");
@@ -20,6 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const getMethodsByCurrency = currency => paymentMethodMatrix.find(item => item.currency === currency)?.methods || [];
   const getSelectedSenderCurrency = () => senderCurrencySelect?.value || DEFAULT_SENDER_CURRENCY;
   const getSelectedBeneficiaryCurrency = () => beneficiaryCurrencySelect?.value || DEFAULT_BENEFICIARY_CURRENCY;
+  const formatRateInput = value => {
+    const rate = Number(value);
+    if(!Number.isFinite(rate)) return "";
+    return rate >= 100 ? String(Math.round(rate)) : String(Number(rate.toFixed(4)));
+  };
+  const findMarketRate = (fromCurrency, toCurrency) => {
+    const exactDeals = mockDealsB.filter(deal =>
+      deal.exchangeRate?.from === fromCurrency &&
+      deal.exchangeRate?.to === toCurrency
+    );
+    const exactMarketDeal = exactDeals.find(deal => deal.exchangeRate.source === "market");
+    if(exactMarketDeal) return exactMarketDeal.exchangeRate.rate;
+    if(exactDeals[0]) return exactDeals[0].exchangeRate.rate;
+
+    const reverseDeals = mockDealsB.filter(deal =>
+      deal.exchangeRate?.from === toCurrency &&
+      deal.exchangeRate?.to === fromCurrency
+    );
+    const reverseMarketDeal = reverseDeals.find(deal => deal.exchangeRate.source === "market");
+    const reverseRate = reverseMarketDeal?.exchangeRate.rate || reverseDeals[0]?.exchangeRate.rate;
+    return reverseRate ? 1 / Number(reverseRate) : null;
+  };
   const getDefaultBeneficiaryMethod = currency => {
     const defaultAccount = beneficiaryAccountsB.find(account =>
       account.currency === currency &&
@@ -42,6 +67,26 @@ document.addEventListener("DOMContentLoaded", () => {
   function getSelectedChipMethod(selector, fallback){
     const activeChip = document.querySelector(`${selector} [data-chip].active`);
     return activeChip?.dataset?.method || fallback;
+  }
+
+  function renderExchangeRate(){
+    const senderCurrency = getSelectedSenderCurrency();
+    const beneficiaryCurrency = getSelectedBeneficiaryCurrency();
+    const marketRate = findMarketRate(beneficiaryCurrency, senderCurrency);
+
+    if(rateLabel){
+      rateLabel.textContent = `Tỷ giá (1 ${beneficiaryCurrency} = ? ${senderCurrency})`;
+    }
+    if(exchangeRateInput){
+      exchangeRateInput.placeholder = marketRate
+        ? `Thị trường: ${formatRateInput(marketRate)}`
+        : "Nhập tỷ giá";
+      exchangeRateInput.readOnly = !!marketRateToggle?.checked;
+      exchangeRateInput.classList.toggle("bg-light", !!marketRateToggle?.checked);
+      if(marketRateToggle?.checked){
+        exchangeRateInput.value = marketRate ? formatRateInput(marketRate) : "";
+      }
+    }
   }
 
   function renderAccountPickerList({ listEl, subtitleEl, accounts, selectedAccount, currency, method, onSelect }){
@@ -192,6 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initChipToggle();
     bindBeneficiaryMethodChanges();
     renderSelectedAccount();
+    renderExchangeRate();
   }
 
   function openAccountPicker(){
@@ -216,12 +262,19 @@ document.addEventListener("DOMContentLoaded", () => {
   populateCurrencySelect(senderCurrencySelect, DEFAULT_SENDER_CURRENCY);
   populateCurrencySelect(beneficiaryCurrencySelect, DEFAULT_BENEFICIARY_CURRENCY);
 
+  if(marketRateToggle) marketRateToggle.checked = true;
+
   senderCurrencySelect?.addEventListener("change", renderMethodPanels);
   beneficiaryCurrencySelect?.addEventListener("change", () => {
     selectedBeneficiaryAccount = null;
     renderMethodPanels();
   });
+  marketRateToggle?.addEventListener("change", renderExchangeRate);
   pickerButton?.addEventListener("click", openAccountPicker);
+
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    bootstrap.Tooltip.getOrCreateInstance(el);
+  });
 
   renderMethodPanels();
 });

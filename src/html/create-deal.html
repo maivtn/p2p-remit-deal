@@ -39,10 +39,14 @@
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <label class="form-label mb-0">Tỷ giá (1 USD = ? VND)</label>
-        <button class="btn btn-sm btn-outline-primary">⚡ Tỷ giá thị trường</button>
+        <label class="form-label mb-0" id="createRateLabel">Tỷ giá (1 USD = ? VND)</label>
+        <div class="form-check d-flex align-items-center gap-2 mb-0">
+          <input class="form-check-input mt-0" type="checkbox" id="createMarketRateToggle">
+          <label class="form-check-label small" for="createMarketRateToggle">Tỷ giá thị trường</label>
+          <i class="bi bi-info-circle text-muted" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Bật để hệ thống tự lấy tỷ giá thị trường theo cặp tiền đang chọn. Tắt để nhập tỷ giá thủ công."></i>
+        </div>
       </div>
-      <input class="form-control mt-2" value="25500">
+      <input class="form-control mt-2" id="createExchangeRateInput" inputmode="decimal">
       <div class="row g-3 mt-2">
         <div class="col-6">
           <label class="form-label">Tối thiểu ($)</label>
