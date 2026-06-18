@@ -1,7 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   renderMethodChips("createSenderVndMethods", "VND", ["MoMo", "ZaloPay", "Bank Transfer"], { single:false });
-  renderMethodChips("createBeneficiaryUsdMethods", "USD", ["Zelle", "PayPal", "Bank Transfer"], { single:true, blue:true });
+  renderMethodChips("createBeneficiaryUsdMethods", "USD", ["Zelle"], { single:true, blue:true });
 
   initChipToggle();
 

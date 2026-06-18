@@ -23,7 +23,7 @@
       <p class="overview-subtitle">Thiết lập tỷ giá, hạn mức và phương thức thanh toán để đăng deal mới.</p>
     </div>
     <div class="overview-actions d-flex align-items-center gap-2">
-      <a class="btn overview-btn overview-btn-outline" href="manage-deals.html"><i class="bi bi-x-lg"></i></a>
+      <a class="btn btn-outline-primary" href="manage-deals.html"><i class="bi bi-chevron-left"></i> Quay lại</a>
     </div>
   </section>
   <main class="app-page"><div class="desktop-grid"><div class="desktop-col-5">
@@ -31,11 +31,11 @@
       <div class="row g-3">
         <div class="col-6">
           <label class="form-label">Tôi gửi bằng</label>
-          <select class="form-select"><option>VND</option></select>
+          <select class="form-select" id="createSenderCurrency"></select>
         </div>
         <div class="col-6">
           <label class="form-label">Thụ hưởng nhận qua</label>
-          <select class="form-select"><option>USD</option></select>
+          <select class="form-select" id="createBeneficiaryCurrency"></select>
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center mt-3">
@@ -57,11 +57,11 @@
 
     </div><div class="desktop-col-7">
     <section class="method-panel green">
-      <div class="panel-title green">Tôi gửi tiền VND bằng hình thức</div>
+      <div class="panel-title green" id="createSenderMethodsTitle">Tôi gửi tiền VND bằng hình thức</div>
       <div class="chips" id="createSenderVndMethods"></div>
     </section>
       <section class="method-panel blue">
-      <div class="panel-title blue">Người thụ hưởng nhận USD bằng hình thức</div>
+      <div class="panel-title blue" id="createBeneficiaryMethodsTitle">Người thụ hưởng nhận USD bằng hình thức</div>
       <div class="chips mb-3" id="createBeneficiaryUsdMethods" data-single="true"></div>
       <div class="panel-title blue">Thông tin tài khoản người thụ hưởng</div>
       <div id="createBeneficiaryAccount"></div>
