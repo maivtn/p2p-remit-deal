@@ -256,6 +256,48 @@ function fieldLabel(field){
   return labels[field] || field;
 }
 
+function fieldTooltip(field){
+  const tooltips = {
+    name: "Tên chủ tài khoản nhận. Nên trùng với tên hiển thị trên ví hoặc ngân hàng.",
+    phoneNumber: "Số điện thoại đăng ký với ví hoặc dịch vụ nhận tiền.",
+    email: "Email đăng ký với ví hoặc dịch vụ nhận tiền.",
+    handle: "Username hoặc handle dùng để định danh tài khoản nhận.",
+    cashtag: "Cashtag của Cash App, thường bắt đầu bằng ký tự $.",
+    bankName: "Tên ngân hàng nơi người thụ hưởng nhận tiền.",
+    bankCode: "Mã ngân hàng dùng để định tuyến giao dịch nội địa.",
+    routingNumber: "Routing number dùng cho chuyển khoản ngân hàng tại Mỹ.",
+    accountNumber: "Số tài khoản nhận tiền. Kiểm tra kỹ để tránh gửi nhầm.",
+    accountType: "Loại tài khoản ngân hàng, ví dụ checking hoặc savings.",
+    branchName: "Tên chi nhánh ngân hàng nếu phương thức nhận yêu cầu.",
+    branchCode: "Mã chi nhánh ngân hàng nếu phương thức nhận yêu cầu.",
+    iban: "IBAN dùng cho chuyển khoản ngân hàng quốc tế hoặc SEPA.",
+    bic: "BIC/SWIFT code giúp định danh ngân hàng nhận.",
+    sortCode: "Sort code dùng cho chuyển khoản ngân hàng tại UK.",
+    payNowType: "Loại định danh PayNow: số điện thoại, email hoặc UEN.",
+    payNowValue: "Giá trị định danh PayNow tương ứng với loại đã chọn.",
+    payIdType: "Loại định danh PayID: số điện thoại, email hoặc ABN.",
+    payIdValue: "Giá trị PayID tương ứng với loại định danh đã chọn.",
+    paypayId: "PayPay ID hoặc thông tin định danh PayPay của người nhận.",
+    promptPayType: "Loại định danh PromptPay: số điện thoại hoặc national ID.",
+    promptPayValue: "Giá trị PromptPay tương ứng với loại định danh đã chọn.",
+    wechatId: "WeChat ID của người nhận để nhận tiền qua WeChat Pay.",
+    alipayId: "Alipay ID, số điện thoại hoặc email liên kết tài khoản Alipay.",
+    city: "Thành phố của ngân hàng hoặc tài khoản nhận nếu cần.",
+    province: "Tỉnh/bang của ngân hàng hoặc tài khoản nhận nếu cần.",
+  };
+  return tooltips[field] || `Thông tin ${fieldLabel(field)} của tài khoản nhận.`;
+}
+
+function labelHelpIcon(text){
+  return `<i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="${text}"></i>`;
+}
+
+function initTooltips(root = document){
+  root.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    bootstrap.Tooltip.getOrCreateInstance(el);
+  });
+}
+
 function fieldPlaceholder(field){
   const placeholders = {
     name: "Ví dụ: Tran Van B",
@@ -292,7 +334,7 @@ function buildFieldInput(field, value = "", required = true){
   const requiredMark = required ? '<span class="text-danger">*</span>' : '<span class="small-muted"></span>';
   return `
     <div class="col-12">
-      <label class="form-label">${fieldLabel(field)} ${requiredMark}</label>
+      <label class="form-label">${fieldLabel(field)} ${requiredMark} ${labelHelpIcon(fieldTooltip(field))}</label>
       <input class="form-control" name="${field}" value="${value || ""}" placeholder="${fieldPlaceholder(field)}" ${required ? "required" : ""}>
     </div>
   `;
@@ -352,6 +394,7 @@ function renderAccountDynamicFields({ currency, method, details = {} }){
   });
 
   fieldsEl.innerHTML = html;
+  initTooltips(fieldsEl);
 
   if(noteEl){
     noteEl.textContent = `Fields được render theo : ${currency} / ${method}`;
@@ -377,11 +420,11 @@ function injectAccountModal(){
 
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label">Loại tiền nhận <span class="text-danger">*</span></label>
+                  <label class="form-label">Loại tiền nhận <span class="text-danger">*</span> ${labelHelpIcon("Chọn loại tiền mà tài khoản này dùng để nhận. Danh sách phương thức sẽ được lọc theo loại tiền này.")}</label>
                   <select class="form-select" id="accountCurrencySelect" required></select>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Phương thức nhận <span class="text-danger">*</span></label>
+                  <label class="form-label">Phương thức nhận <span class="text-danger">*</span> ${labelHelpIcon("Chọn kênh nhận tiền như ví điện tử, bank transfer hoặc dịch vụ thanh toán. Các field bên dưới sẽ đổi theo phương thức này.")}</label>
                   <select class="form-select" id="accountMethodSelect" required></select>
                 </div>
               </div>
@@ -403,6 +446,7 @@ function injectAccountModal(){
   `;
 
   document.body.insertAdjacentHTML("beforeend", modalHtml);
+  initTooltips(document.getElementById("beneficiaryAccountModal"));
 }
 
 function populateAccountCurrencySelect(selectedCurrency = "VND"){

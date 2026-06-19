@@ -1673,7 +1673,7 @@ body{
 .countdown-card.danger{border-color:#fecaca;background:#fff7f7;color:#991b1b}
 .countdown-timer{font-size:28px;line-height:1;font-weight:700;margin-top:8px;letter-spacing:.5px}
 .countdown-label{font-size:13px;font-weight:700}
-.history-toolbar,.manage-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.history-toolbar,.manage-toolbar,.results-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
 .history-chip-row,.manage-chip-row,.account-chip-row{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
 .history-toolbar .history-chip-row,.manage-toolbar .manage-chip-row{flex:1;min-width:0;padding-bottom:0}
 .history-filter-chip,.manage-filter-chip,.account-filter-chip{border:1px solid #e5e7eb;background:#fff;color:#64748b;border-radius:999px;padding:8px 12px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;cursor:pointer;flex:0 0 auto}
@@ -1681,10 +1681,10 @@ body{
 .history-filter-chip .count,.manage-filter-chip .count,.account-filter-chip .count{min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:#f1f5f9;color:#334155;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
 .history-filter-chip.active .count,.manage-filter-chip.active .count,.account-filter-chip.active .count{background:#dbeafe;color:#1d4ed8}
 .history-empty,.manage-empty{border:1px dashed #cbd5e1;background:#f8fafc;border-radius:16px;padding:24px;text-align:center;color:#64748b}
-.history-view-toggle,.manage-view-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px;border:1px solid #dde5e2;background:#fff;border-radius:14px;box-shadow:0 4px 12px rgba(15,23,42,.05);flex:0 0 auto}
-.history-view-btn,.manage-view-btn{height:36px;border:0;border-radius:10px;background:transparent;color:#64748b;padding:0 11px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;white-space:nowrap}
-.history-view-btn.active,.manage-view-btn.active{background:#e6f8f1;color:#007f5f;box-shadow:0 3px 10px rgba(0,155,114,.12)}
-.history-view-btn:focus-visible,.manage-view-btn:focus-visible{outline:3px solid rgba(0,155,114,.18);outline-offset:2px}
+.history-view-toggle,.manage-view-toggle,.results-view-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px;border:1px solid #dde5e2;background:#fff;border-radius:14px;box-shadow:0 4px 12px rgba(15,23,42,.05);flex:0 0 auto}
+.history-view-btn,.manage-view-btn,.results-view-btn{height:36px;border:0;border-radius:10px;background:transparent;color:#64748b;padding:0 11px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;white-space:nowrap}
+.history-view-btn.active,.manage-view-btn.active,.results-view-btn.active{background:#e6f8f1;color:#007f5f;box-shadow:0 3px 10px rgba(0,155,114,.12)}
+.history-view-btn:focus-visible,.manage-view-btn:focus-visible,.results-view-btn:focus-visible{outline:3px solid rgba(0,155,114,.18);outline-offset:2px}
 .detail-cta-sticky{position:sticky;bottom:20px;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid rgba(226,232,240,.9);border-radius:18px;padding:12px;box-shadow:0 16px 34px rgba(15,23,42,.14)}
 @media (max-width:640px){.deal-detail-title{font-size:24px}.countdown-timer{font-size:24px}}
 
@@ -2224,6 +2224,200 @@ body{
 /* ==============================
    v4.2 Split deal result methods
 ============================== */
+.result-deal-card{
+  border-color:#e5edf8;
+  box-shadow:0 8px 22px rgba(15,23,42,.07);
+  padding:16px;
+}
+
+.result-card-top{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:16px;
+  align-items:start;
+}
+
+.result-card-identity{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  min-width:0;
+}
+
+.result-card-avatar{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#e0f2fe,#dcfce7);
+  color:#0f766e;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:15px;
+  font-weight:900;
+  box-shadow:inset 0 0 0 1px rgba(15,118,110,.08);
+}
+
+.result-card-avatar.small{
+  width:32px;
+  height:32px;
+  font-size:12px;
+}
+
+.result-card-title-block{
+  min-width:0;
+}
+
+.result-card-title-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.result-card-title-row .card-name{
+  font-size:16px;
+}
+
+.result-card-rate-action{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:14px;
+}
+
+.result-card-rate{
+  min-width:150px;
+  border:1px solid #dbeafe;
+  background:#eff6ff;
+  border-radius:14px;
+  padding:10px 12px;
+}
+
+.result-card-info-grid{
+  margin-top:14px;
+}
+
+.result-info-box{
+  min-width:0;
+  border:1px solid #edf2f7;
+  background:#fbfdff;
+  border-radius:14px;
+  padding:10px;
+}
+
+.result-info-box.availability{
+  background:#f8fbff;
+  border-color:#e0e7ff;
+}
+
+.result-info-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.result-info-label .bi-clock{
+  color:#2563eb;
+}
+
+.result-info-value{
+  color:#0f172a;
+  font-size:13px;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.result-table-wrap{
+  width:100%;
+}
+
+.result-deal-table{
+  min-width:1280px;
+  width:100%;
+  table-layout:fixed;
+}
+
+.result-deal-table th,
+.result-deal-table td{
+  padding:13px 10px;
+  border-bottom:1px solid #e5e7eb;
+  vertical-align:middle;
+  white-space:normal;
+}
+
+.result-deal-table th{
+  color:#475569;
+  font-size:12px;
+  font-weight:800;
+}
+
+.result-deal-table tbody tr:last-child td{
+  border-bottom:0;
+}
+
+.result-deal-table .history-table-amount,
+.result-table-availability,
+.result-table-actions{
+  white-space:nowrap;
+}
+
+.result-deal-table th:nth-child(1),
+.result-deal-table td:nth-child(1){width:170px}
+.result-deal-table th:nth-child(2),
+.result-deal-table td:nth-child(2){width:150px}
+.result-deal-table th:nth-child(3),
+.result-deal-table td:nth-child(3){width:120px}
+.result-deal-table th:nth-child(4),
+.result-deal-table td:nth-child(4){width:230px}
+.result-deal-table th:nth-child(5),
+.result-deal-table td:nth-child(5){width:250px}
+.result-deal-table th:nth-child(6),
+.result-deal-table td:nth-child(6){width:190px}
+.result-deal-table th:nth-child(7),
+.result-deal-table td:nth-child(7){width:170px}
+
+.result-table-deal{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.result-table-methods{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  max-width:100%;
+  min-width:0;
+}
+
+.result-table-methods .badge{
+  margin:0;
+}
+
+.result-table-actions{
+  display:flex;
+  gap:6px;
+}
+
+.result-table-availability{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  max-width:100%;
+  color:#0f172a;
+  font-size:12px;
+  font-weight:800;
+}
+
 .result-method-split{
   display:flex;
   flex-direction:column;
@@ -2256,6 +2450,16 @@ body{
 }
 
 @media (max-width:380px){
+  .result-deal-card{
+    padding:14px;
+  }
+
+  .result-card-title-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+
   .result-method-row{
     flex-direction:column;
     gap:4px;
@@ -2314,6 +2518,27 @@ body{
   flex:0 0 auto;
 }
 
+@media (max-width:760px){
+  .result-card-top{
+    grid-template-columns:1fr;
+  }
+
+  .result-card-rate-action{
+    align-items:stretch;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .result-card-rate{
+    min-width:0;
+  }
+
+  .result-action-group{
+    justify-content:flex-start;
+  }
+
+}
+
 @media (max-width:360px){
   .result-rate-action-row{
     align-items:flex-start;
@@ -2326,8 +2551,6 @@ body{
   }
 
   .result-action-group{
-    flex-direction:column;
-    align-items:stretch;
   }
 }
 
@@ -3230,7 +3453,8 @@ body{
   gap:6px;
 }
 
-#manageDealsPager{
+#manageDealsPager,
+#dealResultsPager{
   margin-top:1rem;
 }
 
@@ -3419,17 +3643,17 @@ body{
     width:100%;
   }
 
-  .history-toolbar,.manage-toolbar{
+  .history-toolbar,.manage-toolbar,.results-toolbar{
     flex-direction:column;
     align-items:stretch;
     gap:10px;
   }
 
-  .history-view-toggle,.manage-view-toggle{
+  .history-view-toggle,.manage-view-toggle,.results-view-toggle{
     width:100%;
   }
 
-  .history-view-btn,.manage-view-btn{
+  .history-view-btn,.manage-view-btn,.results-view-btn{
     flex:1;
     justify-content:center;
   }
