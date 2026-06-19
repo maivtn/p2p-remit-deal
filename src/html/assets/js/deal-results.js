@@ -27,7 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="small-muted">Tỷ giá</div>
           <div class="rate-blue">${formatDealRate(deal)}</div>
         </div>
-        <a href="deal-detail.html" class="btn btn-primary btn-sm">Xem chi tiết</a>
+        <div class="result-action-group">
+          <a href="deal-detail.html?dealId=${deal.id}" class="btn btn-primary btn-sm">Xem chi tiết</a>
+          <a href="select-deal.html?dealId=${deal.id}&from=results" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-check2-circle"></i> Chọn deal
+          </a>
+        </div>
       </div>
 
       <div class="result-method-split mt-3">

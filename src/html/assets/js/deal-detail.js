@@ -35,6 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     deal.exchangeRate?.source === "market" ? "Tỷ giá (theo giá thị trường)" : "Tỷ giá"
   );
 
+  const selectDealLink = document.getElementById("selectDealFromDetail");
+  if(selectDealLink){
+    selectDealLink.href = `select-deal.html?dealId=${encodeURIComponent(deal.id)}&from=detail`;
+  }
+
   const methodEl = document.getElementById("dealMethods");
 
   if (methodEl) {

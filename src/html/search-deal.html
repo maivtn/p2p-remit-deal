@@ -29,7 +29,10 @@
   <main class="app-page">
     <div class="search-form-only">
       <section class="form-card">
-        <label class="form-label">Tôi gửi bằng</label>
+        <label class="form-label">
+          Tôi gửi bằng
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn loại tiền và số tiền bạn muốn gửi. Hệ thống sẽ dùng số tiền này để lọc các deal có hạn mức phù hợp."></i>
+        </label>
         <div class="row g-2">
           <div class="col-6">
             <select class="form-select currency-select">
@@ -42,10 +45,13 @@
         </div>
         <div class="rate-line">
           <span>1 USD ≈ 25.500đ</span>
-          <i class="bi bi-info-circle" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Tỷ giá này chỉ là tạm thời. Tỷ giá thực tế sẽ phụ thuộc vào tỷ giá của deal hoặc thị trường tại thời điểm accept."></i>
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Tỷ giá này chỉ là tạm thời. Tỷ giá thực tế sẽ phụ thuộc vào tỷ giá của deal hoặc thị trường tại thời điểm accept."></i>
         </div>
 
-        <label class="form-label mt-3">Người thụ hưởng sẽ nhận bằng</label>
+        <label class="form-label mt-3">
+          Người thụ hưởng sẽ nhận bằng
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn loại tiền người thụ hưởng cuối cùng sẽ nhận. Số tiền hiển thị là ước tính theo tỷ giá tạm thời."></i>
+        </label>
         <div class="row g-2">
           <div class="col-6">
             <select class="form-select currency-select">
@@ -59,10 +65,16 @@
       </section>
 
       <section class="form-card">
-        <div class="form-label">Tôi gửi USD bằng hình thức</div>
+        <div class="form-label">
+          Tôi gửi USD bằng hình thức
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn một hoặc nhiều phương thức bạn có thể dùng để gửi USD cho đối tác trong deal."></i>
+        </div>
         <div class="chips mb-3" id="senderUsdMethods"></div>
 
-        <div class="form-label">Người thụ hưởng nhận VND bằng hình thức</div>
+        <div class="form-label">
+          Người thụ hưởng nhận VND bằng hình thức
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn một hoặc nhiều phương thức người thụ hưởng của bạn có thể dùng để nhận VND."></i>
+        </div>
         <div class="chips" id="receiveVndMethods"></div>
       </section>
       <a class="btn btn-primary btn-lg w-100 mb-3" href="deal-results.html">

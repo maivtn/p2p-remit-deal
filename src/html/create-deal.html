@@ -30,30 +30,45 @@
     <section class="form-card">
       <div class="row g-3">
         <div class="col-6">
-          <label class="form-label">Tôi gửi bằng</label>
+          <label class="form-label">
+            Tôi gửi bằng
+            <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn loại tiền bạn sẽ gửi trong deal. Hệ thống dùng loại tiền này để hiển thị phương thức thanh toán phù hợp."></i>
+          </label>
           <select class="form-select" id="createSenderCurrency"></select>
         </div>
         <div class="col-6">
-          <label class="form-label">Thụ hưởng nhận qua</label>
+          <label class="form-label">
+            Thụ hưởng nhận qua
+            <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn loại tiền người thụ hưởng của bạn sẽ nhận. Các phương thức và tài khoản nhận sẽ được lọc theo loại tiền này."></i>
+          </label>
           <select class="form-select" id="createBeneficiaryCurrency"></select>
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <label class="form-label mb-0" id="createRateLabel">Tỷ giá (1 USD = ? VND)</label>
+        <label class="form-label mb-0">
+          <span id="createRateLabel">Tỷ giá (1 USD = ? VND)</span>
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Tỷ giá dùng để quy đổi giữa hai loại tiền trong deal. Có thể dùng tỷ giá thị trường hoặc nhập tỷ giá thủ công."></i>
+        </label>
         <div class="form-check d-flex align-items-center gap-2 mb-0">
           <input class="form-check-input mt-0" type="checkbox" id="createMarketRateToggle">
           <label class="form-check-label small" for="createMarketRateToggle">Tỷ giá thị trường</label>
-          <i class="bi bi-info-circle text-muted" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Bật để hệ thống tự lấy tỷ giá thị trường theo cặp tiền đang chọn. Tắt để nhập tỷ giá thủ công."></i>
+          <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Bật để hệ thống tự lấy tỷ giá thị trường theo cặp tiền đang chọn. Tắt để nhập tỷ giá thủ công."></i>
         </div>
       </div>
       <input class="form-control mt-2" id="createExchangeRateInput" inputmode="decimal">
       <div class="row g-3 mt-2">
         <div class="col-6">
-          <label class="form-label">Tối thiểu ($)</label>
+          <label class="form-label">
+            Tối thiểu ($)
+            <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Số tiền USD nhỏ nhất mà bạn muốn nhận cho mỗi giao dịch được tạo từ deal này."></i>
+          </label>
           <input class="form-control" value="99">
         </div>
         <div class="col-6">
-          <label class="form-label">Tối đa ($)</label>
+          <label class="form-label">
+            Tối đa ($)
+            <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Số tiền USD lớn nhất mà bạn sẵn sàng xử lý cho mỗi giao dịch từ deal này."></i>
+          </label>
           <input class="form-control" value="799">
         </div>
       </div>
@@ -61,13 +76,22 @@
 
     </div><div class="desktop-col-7">
     <section class="method-panel green">
-      <div class="panel-title green" id="createSenderMethodsTitle">Tôi gửi tiền VND bằng hình thức</div>
+      <div class="panel-title green">
+        <span id="createSenderMethodsTitle">Tôi gửi tiền VND bằng hình thức</span>
+        <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn các phương thức bạn có thể dùng để gửi tiền cho người thụ hưởng của đối tác. Có thể chọn nhiều phương thức."></i>
+      </div>
       <div class="chips" id="createSenderVndMethods"></div>
     </section>
       <section class="method-panel blue">
-      <div class="panel-title blue" id="createBeneficiaryMethodsTitle">Người thụ hưởng nhận USD bằng hình thức</div>
+      <div class="panel-title blue">
+        <span id="createBeneficiaryMethodsTitle">Người thụ hưởng nhận USD bằng hình thức</span>
+        <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Chọn phương thức người thụ hưởng của bạn sẽ dùng để nhận tiền từ đối tác. Phương thức này quyết định tài khoản cần chọn bên dưới."></i>
+      </div>
       <div class="chips mb-3" id="createBeneficiaryUsdMethods" data-single="true"></div>
-      <div class="panel-title blue">Thông tin tài khoản người thụ hưởng</div>
+      <div class="panel-title blue">
+        Thông tin tài khoản người thụ hưởng
+        <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Tài khoản này là nơi người thụ hưởng của bạn nhận tiền. Chỉ các tài khoản khớp loại tiền và phương thức nhận đã chọn mới được hiển thị."></i>
+      </div>
       <div id="createBeneficiaryAccount"></div>
       <div class="d-flex gap-2 mt-3">
         <button class="btn btn-outline-primary flex-fill" id="openCreateBeneficiaryAccountPicker" type="button">
@@ -79,7 +103,10 @@
       </div>
     </section>
 <section class="form-card">
-      <label class="form-label">Ghi chú</label>
+      <label class="form-label">
+        Ghi chú
+        <i class="bi bi-info-circle label-help-icon" tabindex="0" data-bs-toggle="tooltip" data-bs-title="Thêm điều kiện hoặc lưu ý để người tìm deal biết trước khi gửi yêu cầu giao dịch."></i>
+      </label>
       <textarea class="form-control" rows="4" placeholder="Điều kiện, lưu ý thêm..."></textarea>
     </section>
 

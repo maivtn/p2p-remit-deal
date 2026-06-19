@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const listEl = document.getElementById("manageDealsList");
   const chipsEl = document.getElementById("manageDealFilterChips");
+  const viewToggleEl = document.getElementById("manageViewToggle");
   const pagerEl = document.getElementById("manageDealsPager");
 
   const PAGE_SIZE = 5;
@@ -80,6 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentFilter = "all";
   let currentPage = 1;
+  let currentView = localStorage.getItem("manageDealViewMode") || "table";
+  if(!["cards", "table"].includes(currentView)) currentView = "table";
 
   const filterDeals = (key) =>
     key === "all" ? myDeals : myDeals.filter((deal) => deal.status === key);
@@ -109,8 +112,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  const renderViewToggle = () => {
+    if(!viewToggleEl) return;
+    const views = [
+      { key: "cards", label: "Thẻ", icon: "bi-grid-3x3-gap" },
+      { key: "table", label: "Bảng", icon: "bi-table" },
+    ];
+
+    viewToggleEl.innerHTML = views.map(view => `
+      <button class="manage-view-btn ${view.key === currentView ? "active" : ""}" type="button" data-manage-view="${view.key}" aria-pressed="${view.key === currentView}">
+        <i class="bi ${view.icon}"></i>
+        <span>${view.label}</span>
+      </button>
+    `).join("");
+
+    viewToggleEl.querySelectorAll("[data-manage-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentView = btn.dataset.manageView;
+        localStorage.setItem("manageDealViewMode", currentView);
+        currentPage = 1;
+        renderViewToggle();
+        renderDeals();
+      });
+    });
+  };
+
   const dealCardHtml = (deal) => `
-    <div class="deal-card manage-deal-card">
+    <div class="col" role="listitem">
+    <div class="deal-card manage-deal-card h-100">
       <div class="manage-deal-layout">
         <div class="manage-deal-content">
           <div class="name-line">
@@ -151,6 +180,34 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
     </div>
+    </div>
+  `;
+
+  const methodBadges = (methods, tone = "green") =>
+    methods.map(method => methodTag(method, tone)).join("");
+
+  const dealTableRowHtml = (deal) => `
+    <tr>
+      <td data-label="Deal">
+        <div class="history-code">${deal.dealCode}</div>
+        <div class="small-muted">${deal.ownerNameMasked || "Tran *** B"}</div>
+      </td>
+      <td data-label="Cặp tiền">
+        <strong>${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}</strong>
+      </td>
+      <td data-label="Tỷ giá"><span class="history-table-amount receive">${formatDealRate(deal)}</span></td>
+      <td data-label="Giới hạn"><span class="history-table-amount send">$${deal.amountLimit.minUsd}–$${deal.amountLimit.maxUsd}</span></td>
+      <td data-label="Gửi qua"><div class="manage-table-methods">${methodBadges(deal.senderPaymentMethods)}</div></td>
+      <td data-label="Nhận qua"><div class="manage-table-methods">${methodTag(deal.beneficiaryReceiveMethod)}</div></td>
+      <td data-label="Trạng thái"><span class="badge-soft ${badgeClass(deal.status)}">${deal.statusLabel}</span></td>
+      <td data-label="Thao tác">
+        <div class="manage-table-actions">
+          <a class="btn btn-outline-info btn-sm overview-small-btn" href="deal-detail-owner.html?isOwner=true&dealId=${deal.id}"><i class="bi bi-eye"></i> Xem</a>
+          <a class="btn btn-outline-primary btn-sm overview-small-btn" href="create-deal.html"><i class="bi bi-pencil"></i> Sửa</a>
+          <button class="btn btn-outline-danger btn-sm overview-small-btn" type="button" aria-label="Xoá ${deal.dealCode}"><i class="bi bi-trash"></i></button>
+        </div>
+      </td>
+    </tr>
   `;
 
   const renderDeals = () => {
@@ -174,7 +231,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const start = (currentPage - 1) * PAGE_SIZE;
     const pageDeals = visibleDeals.slice(start, start + PAGE_SIZE);
 
-    listEl.innerHTML = pageDeals.map(dealCardHtml).join("");
+    if(currentView === "table"){
+      listEl.innerHTML = `
+        <div class="table-responsive history-table-wrap manage-table-wrap rounded">
+          <table class="table table-sm table-hover align-middle mb-0 recent-history-table manage-deal-table">
+            <thead>
+              <tr>
+                <th>Deal</th>
+                <th>Cặp tiền</th>
+                <th>Tỷ giá</th>
+                <th>Giới hạn</th>
+                <th>Gửi qua</th>
+                <th>Nhận qua</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>${pageDeals.map(dealTableRowHtml).join("")}</tbody>
+          </table>
+        </div>
+      `;
+    }else{
+      listEl.innerHTML = `
+        <div class="manage-deal-grid row row-cols-1 row-cols-lg-2 g-3" role="list">
+          ${pageDeals.map(dealCardHtml).join("")}
+        </div>
+      `;
+    }
 
     renderPager(pagerEl, {
       page: currentPage,
@@ -189,5 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   renderChips();
+  renderViewToggle();
   renderDeals();
 });

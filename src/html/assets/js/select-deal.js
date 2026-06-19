@@ -1,7 +1,15 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  const deal = mockDealsB[0];
+  const params = new URLSearchParams(window.location.search);
+  const requestedDealId = params.get("dealId");
+  const deal = mockDealsB.find(item => item.id === requestedDealId || item.dealCode === requestedDealId) || mockDealsB[0];
   let selectedBeneficiaryAccount = null;
+
+  const backLink = document.getElementById("selectDealBackLink");
+  if(backLink){
+    const detailHref = `deal-detail.html?dealId=${encodeURIComponent(deal.id)}`;
+    backLink.href = params.get("from") === "results" ? "deal-results.html" : detailHref;
+  }
 
   const renderAllowedOldStyleChips = (containerId, methods, options = {}) => {
     const container = document.getElementById(containerId);
