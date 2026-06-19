@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <td data-label="Bạn gửi qua"><div class="result-table-methods">${methodTag(deal.beneficiaryReceiveMethod)}</div></td>
       <td data-label="Thao tác">
         <div class="result-table-actions">
-          <a href="deal-detail.html?dealId=${deal.id}" class="btn btn-primary btn-sm overview-small-btn">Xem</a>
+          <a href="deal-detail.html?dealId=${deal.id}" class="btn btn-primary btn-sm overview-small-btn"><i class="bi bi-eye"></i> Xem</a>
           <a href="select-deal.html?dealId=${deal.id}&from=results" class="btn btn-outline-primary btn-sm overview-small-btn">
             <i class="bi bi-check2-circle"></i> Chọn
           </a>
