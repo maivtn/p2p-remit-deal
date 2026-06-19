@@ -1497,7 +1497,6 @@ body{
     top:auto;
     bottom:0;
     transform:translateX(-50%);
-    max-width:420px;
     z-index:1000;
     background:rgba(var(--p2p-surface-rgb),.96);
     backdrop-filter:blur(14px);
@@ -1735,11 +1734,19 @@ body{
 }
 
 .deal-summary-slim-creator .avatar{
-  width:22px;
-  height:22px;
-  font-size:10px;
-  background:#dbeafe;
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#e0f2fe,#dbeafe 58%,#e6f8f1);
   color:#1d4ed8;
+  border:2px solid rgba(255,255,255,.9);
+  box-shadow:0 5px 12px rgba(37,99,235,.16);
+  font-size:11px;
+  font-weight:800;
+  line-height:1;
 }
 
 .deal-summary-mini-grid{
