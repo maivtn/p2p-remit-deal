@@ -32,30 +32,42 @@
 
   <main class="app-page">
     <section class="results-header-card">
-      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+      <div class="results-header-main">
         <div>
-          <h1 class="app-title">Kết quả tìm deal</h1>
-          <p class="app-subtitle">Các deal bên dưới phù hợp với currency, method và giới hạn số tiền bạn đã nhập.</p>
+          <h1 class="app-title">3 deal phù hợp</h1>
+          <p class="app-subtitle">Khớp currency, method và hạn mức bạn đã nhập.</p>
         </div>
-        <span class="badge-soft badge-success">3 deal</span>
+        <span class="results-count-badge">Khớp tốt</span>
       </div>
 
       <div class="results-summary-grid">
         <div class="results-summary-item">
-          <div class="label">Tôi gửi</div>
-          <div class="value">$500 USD</div>
+          <i class="bi bi-send"></i>
+          <div>
+            <div class="label">Tôi gửi</div>
+            <div class="value">$500 USD</div>
+          </div>
         </div>
         <div class="results-summary-item">
-          <div class="label">Người thụ hưởng nhận</div>
-          <div class="value">12.750.000đ</div>
+          <i class="bi bi-person-check"></i>
+          <div>
+            <div class="label">Người nhận</div>
+            <div class="value">12.750.000đ</div>
+          </div>
         </div>
         <div class="results-summary-item">
-          <div class="label">Tôi gửi bằng</div>
-          <div class="value">Zelle</div>
+          <i class="bi bi-credit-card-2-front"></i>
+          <div>
+            <div class="label">Gửi qua</div>
+            <div class="value">Zelle</div>
+          </div>
         </div>
         <div class="results-summary-item">
-          <div class="label">Người nhận nhận bằng</div>
-          <div class="value">MoMo</div>
+          <i class="bi bi-wallet2"></i>
+          <div>
+            <div class="label">Nhận qua</div>
+            <div class="value">MoMo</div>
+          </div>
         </div>
       </div>
     </section>
@@ -71,9 +83,6 @@
           <div class="summary-line"><span>Amount</span><strong>$500</strong></div>
           <div class="summary-line"><span>A gửi được</span><strong>Zelle</strong></div>
           <div class="summary-line"><span>A nhận bằng</span><strong>MoMo</strong></div>
-          <a class="btn btn-outline-primary w-100 mt-3" href="search-deal.html">
-            <i class="bi bi-arrow-left"></i> Back
-          </a>
         </div>
       </aside>
     </div>
