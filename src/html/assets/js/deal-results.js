@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="result-card-rate-action">
           <div class="result-action-group">
-            <a href="deal-detail.html?dealId=${deal.id}" class="btn btn-primary btn-sm">Xem chi tiết</a>
+            <a href="deal-detail.html?dealId=${deal.id}" class="btn btn-primary btn-sm"><i class="bi bi-eye"></i> Xem chi tiết</a>
             <a href="select-deal.html?dealId=${deal.id}&from=results" class="btn btn-outline-primary btn-sm">
               <i class="bi bi-check2-circle"></i> Chọn deal
             </a>
