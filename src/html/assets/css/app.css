@@ -1230,8 +1230,54 @@ body{
 }
 
 @media (max-width: 640px){
+  .acceptance-panel{
+    padding:10px 12px;
+    border-radius:14px;
+    font-size:12px;
+  }
+
+  .acceptance-panel > .fw-bold{
+    font-size:13px;
+    line-height:1.2;
+  }
+
+  .acceptance-panel > .small{
+    font-size:11px;
+    line-height:1.25;
+    margin-top:2px !important;
+  }
+
+  .acceptance-users{
+    gap:8px;
+    margin-top:8px;
+  }
+
   .acceptance-user{
-    flex-direction: column;
+    flex-direction:row;
+    gap:7px;
+    padding:8px;
+    border-radius:11px;
+    min-width:0;
+  }
+
+  .acceptance-user .avatar{
+    width:24px;
+    height:24px;
+    font-size:11px;
+    margin-bottom:0;
+    flex:0 0 auto;
+  }
+
+  .acceptance-user .fw-bold{
+    font-size:12px;
+    line-height:1.15;
+  }
+
+  .acceptance-user .badge-soft{
+    min-height:20px;
+    padding:3px 6px;
+    font-size:10px;
+    margin-top:3px;
   }
 }
 
@@ -5264,27 +5310,59 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 
 @media (max-width: 575.98px){
   .detail-summary-card .name-line,
-  .payment-flow-head,
   .countdown-card{
     grid-template-columns:1fr;
   }
 
+  .payment-flow-card{
+    padding:10px 12px;
+    border-radius:16px;
+  }
+
+  .payment-flow-card::before{
+    width:3px;
+  }
+
   .payment-flow-head{
-    display:flex;
-    flex-wrap:wrap;
+    grid-template-columns:32px minmax(0,1fr) auto;
+    gap:8px;
+    margin-bottom:8px;
+  }
+
+  .payment-flow-icon{
+    width:32px;
+    height:32px;
+    border-radius:11px;
+    font-size:15px;
   }
 
   .payment-flow-title{
-    flex:1 1 calc(100% - 56px);
+    min-width:0;
   }
 
   .payment-flow-status{
-    flex:1 1 100%;
-    justify-content:flex-start;
+    justify-content:flex-end;
+  }
+
+  .payment-flow-status .badge-soft{
+    min-height:22px;
+    padding:4px 7px;
+    font-size:10px;
+  }
+
+  .flow-kicker{
+    font-size:9px;
+    margin-bottom:1px;
+  }
+
+  .payment-flow-card .card-name{
+    font-size:13px;
+    line-height:1.16;
   }
 
   .flow-summary-grid{
     grid-template-columns:1fr;
+    gap:6px;
   }
 
   .flow-summary-item{
@@ -5292,22 +5370,106 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
     align-items:center;
     justify-content:space-between;
     gap:12px;
+    border-radius:10px;
+    padding:7px 9px;
   }
 
   .flow-summary-item span{
     margin-bottom:0;
     flex:0 0 auto;
+    font-size:10px;
   }
 
   .flow-summary-item strong{
     text-align:right;
+    font-size:12px;
   }
 
   .released-panel-head{
     flex-direction:column;
   }
 
+  .payment-flow-card .proof-view-card,
+  .payment-flow-card .proof-empty-card,
+  .payment-flow-card .case-summary-note{
+    margin-top:8px !important;
+    padding:8px 9px;
+    border-radius:12px;
+    font-size:12px;
+  }
+
+  .payment-flow-card .proof-view-card .fw-bold{
+    margin-bottom:6px !important;
+    font-size:12px;
+  }
+
+  .payment-flow-card .proof-view-thumb{
+    width:60px;
+    height:60px;
+  }
+
+  .payment-flow-card .flow-action-title{
+    margin-top:8px;
+    padding-top:0;
+    font-size:12px;
+    line-height:1.3;
+  }
+
   .action-row .btn{
     width:100%;
+    min-height:38px;
+    padding-top:7px;
+    padding-bottom:7px;
+    font-size:12px;
+  }
+
+  .acceptance-panel{
+    padding:9px 10px;
+    border-radius:13px;
+    font-size:12px;
+  }
+
+  .acceptance-panel > .fw-bold{
+    font-size:13px;
+    line-height:1.16;
+  }
+
+  .acceptance-panel > .small{
+    font-size:10px;
+    line-height:1.2;
+    margin-top:2px !important;
+  }
+
+  .acceptance-users{
+    gap:6px;
+    margin-top:7px;
+  }
+
+  .acceptance-user{
+    flex-direction:row;
+    gap:6px;
+    padding:7px;
+    border-radius:10px;
+    min-width:0;
+  }
+
+  .acceptance-user .avatar{
+    width:22px;
+    height:22px;
+    font-size:10px;
+    margin-bottom:0;
+    flex:0 0 auto;
+  }
+
+  .acceptance-user .fw-bold{
+    font-size:11px;
+    line-height:1.12;
+  }
+
+  .acceptance-user .badge-soft{
+    min-height:19px;
+    padding:2px 5px;
+    font-size:9px;
+    margin-top:2px;
   }
 }
