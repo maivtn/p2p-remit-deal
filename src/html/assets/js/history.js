@@ -2,9 +2,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const listEl = document.getElementById("historyList");
   const chipsEl = document.getElementById("historyFilterChips");
+  const viewToggleEl = document.getElementById("historyViewToggle");
   const pagerEl = document.getElementById("historyPager");
 
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 6;
 
   // Overview and History share the same source records but were authored with two
   // field shapes. Normalize each record into the shape History renders so both the
@@ -35,8 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
       ? `${String(txn.receiveAmount).replace(/,/g, ".")}đ`
       : `${txn.receiveAmount} ${txn.receiveCurrency}`);
 
+  const makeTxnCode = txn => txn.transactionCode || `TXN-${String(txn.id || "DEMO").replace(/^txn_/, "").toUpperCase()}`;
+
   const normalizeTxn = txn => ({
     ...txn,
+    transactionCode: makeTxnCode(txn),
     send: fmtSend(txn),
     receive: fmtReceive(txn),
     senderMethod: txn.senderMethod || txn.method,
@@ -80,8 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "transaction-detail-case-07-my-dispute.html"
         : "transaction-detail-case-02-accepted-upload-proof.html";
 
+  const historyIcon = status => {
+    const bucket = statusBucket(status);
+    if(bucket === "completed") return "bi-check-lg";
+    if(bucket === "cancelled") return "bi-x-lg";
+    if(bucket === "dispute") return "bi-exclamation-lg";
+    return "bi-clock";
+  };
+
+  const statusTone = status => {
+    const bucket = statusBucket(status);
+    if(bucket === "completed") return "success";
+    if(bucket === "cancelled" || bucket === "dispute") return "danger";
+    if(bucket === "waiting") return "warning";
+    return "processing";
+  };
+
+  const statusBadgeClass = txn => {
+    if(txn.bucket === "dispute") return badgeClass("disputed");
+    if(txn.bucket === "cancelled") return badgeClass("cancelled");
+    return badgeClass(txn.status);
+  };
+
   let currentFilter = "all";
   let currentPage = 1;
+  let currentView = localStorage.getItem("historyViewMode") || "cards";
+  if(!["cards", "table"].includes(currentView)) currentView = "cards";
 
   const filterItems = key =>
     key==="all" ? historyItems : historyItems.filter(x => x.bucket===key);
@@ -107,33 +135,80 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  const renderViewToggle = () => {
+    if(!viewToggleEl) return;
+    const views = [
+      { key: "cards", label: "Thẻ", icon: "bi-grid-3x3-gap" },
+      { key: "table", label: "Bảng", icon: "bi-table" },
+    ];
+
+    viewToggleEl.innerHTML = views.map(view => `
+      <button class="history-view-btn ${view.key === currentView ? "active" : ""}" type="button" data-history-view="${view.key}" aria-pressed="${view.key === currentView}">
+        <i class="bi ${view.icon}"></i>
+        <span>${view.label}</span>
+      </button>
+    `).join("");
+
+    viewToggleEl.querySelectorAll("[data-history-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentView = btn.dataset.historyView;
+        localStorage.setItem("historyViewMode", currentView);
+        currentPage = 1;
+        renderViewToggle();
+        renderHistory();
+      });
+    });
+  };
+
   const txnCardHtml = txn => `
-    <div class="txn-card">
-      <div class="name-line">
-        <h3 class="card-name">${txn.name}</h3>
-        <span class="badge-soft ${badgeClass(txn.status)}">${txn.statusLabel}</span>
-      </div>
-
-      <div class="amount-row">
-        <div>
-          <span class="amount-main">${txn.send}</span>
-          <span class="mx-1">→</span>
-          <span class="amount-main">${txn.receive}</span>
-        </div>
-        <span class="small-muted">${txn.time}</span>
-      </div>
-
-      <div class="txn-method-action-row">
-        <div class="txn-method-tags">
-          ${methodTag(txn.senderMethod, "green")}
-          ${methodTag(txn.beneficiaryMethod)}
+    <div class="col">
+      <article class="recent-history-card history-page-card h-100" role="listitem">
+        <div class="recent-history-card-icon">
+          <span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span>
         </div>
 
-        <a class="btn btn-sm btn-outline-primary" href="${getDetailLink(txn)}">
-          <i class="bi bi-eye"></i> View detail
+        <div class="recent-history-card-main">
+          <div class="history-main">
+            <div class="history-code">${txn.transactionCode}</div>
+            <div class="small-muted">với ${txn.name}</div>
+            <small>${txn.time}</small>
+          </div>
+        </div>
+
+        <div class="recent-history-card-amount history-amount">
+          <span class="text-dark">Gửi: ${txn.send}</span>
+          <span>Nhận: ${txn.receive}</span>
+        </div>
+
+        <div class="recent-history-card-status">
+          <span class="badge-soft ${statusBadgeClass(txn)}">${txn.statusLabel}</span>
+        </div>
+
+        <a href="${getDetailLink(txn)}" class="recent-history-card-action btn btn-sm btn-outline-success" aria-label="Xem ${txn.transactionCode}">
+          <i class="bi bi-eye"></i>
+          <span>Xem</span>
         </a>
-      </div>
+      </article>
     </div>
+  `;
+
+  const txnTableRowHtml = txn => `
+    <tr>
+      <td class="history-icon-cell"><span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span></td>
+      <td data-label="Mã giao dịch">
+        <div class="history-code">${txn.transactionCode}</div>
+        <div class="small-muted">với ${txn.name}</div>
+      </td>
+      <td data-label="Gửi"><span class="history-table-amount send">${txn.send}</span></td>
+      <td data-label="Nhận"><span class="history-table-amount receive">${txn.receive}</span></td>
+      <td data-label="Trạng thái"><span class="badge-soft ${statusBadgeClass(txn)}">${txn.statusLabel}</span></td>
+      <td data-label="Thời gian"><span class="small-muted">${txn.time}</span></td>
+      <td data-label="Thao tác">
+        <a href="${getDetailLink(txn)}" class="btn btn-sm btn-outline-success overview-small-btn" aria-label="Xem ${txn.transactionCode}">
+          <i class="bi bi-eye"></i> Xem
+        </a>
+      </td>
+    </tr>
   `;
 
   const renderHistory = () => {
@@ -157,7 +232,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const start = (currentPage - 1) * PAGE_SIZE;
     const pageItems = items.slice(start, start + PAGE_SIZE);
 
-    listEl.innerHTML = pageItems.map(txnCardHtml).join("");
+    if(currentView === "table"){
+      listEl.innerHTML = `
+        <div class="table-responsive history-table-wrap rounded">
+          <table class="table table-sm table-hover align-middle mb-0 recent-history-table history-page-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Mã giao dịch</th>
+                <th>Gửi</th>
+                <th>Nhận</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>${pageItems.map(txnTableRowHtml).join("")}</tbody>
+          </table>
+        </div>
+      `;
+    }else{
+      listEl.innerHTML = `
+        <div class="history-card-grid row row-cols-1 row-cols-lg-2 row-cols-xxl-3 g-3" role="list">
+          ${pageItems.map(txnCardHtml).join("")}
+        </div>
+      `;
+    }
 
     renderPager(pagerEl, {
       page: currentPage,
@@ -172,5 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   renderChips();
+  renderViewToggle();
   renderHistory();
 });
