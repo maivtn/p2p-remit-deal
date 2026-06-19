@@ -179,6 +179,162 @@ body{
 }
 .panel-title.green{color:#047857}
 .panel-title.blue{color:#1d4ed8}
+.operating-hours-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  background:#fff;
+  border:1px solid rgba(17,24,39,.08);
+  border-radius:16px;
+  box-shadow:0 1px 5px rgba(15,23,42,.08);
+  margin-bottom:18px;
+  padding:14px;
+}
+.operating-hours-main{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.operating-hours-icon{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  background:#eff6ff;
+  color:#2563eb;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:17px;
+}
+.operating-hours-copy{
+  min-width:0;
+}
+.operating-hours-title{
+  color:#0f172a;
+  font-size:14px;
+  font-weight:800;
+}
+.operating-hours-summary{
+  color:#64748b;
+  font-size:13px;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width:100%;
+}
+.operating-hours-edit{
+  color:#2563eb;
+  font-size:13px;
+  font-weight:800;
+  padding:4px 0;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.operating-hours-edit:hover{
+  color:#1d4ed8;
+}
+.operating-hours-modal-dialog{
+  max-width:760px;
+}
+.operating-hours-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.operating-hours-row{
+  display:grid;
+  grid-template-columns:120px minmax(0,1fr);
+  align-items:center;
+  gap:14px;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  background:#fff;
+  padding:12px;
+}
+.operating-hours-row.muted{
+  background:#f8fafc;
+  color:#94a3b8;
+}
+.operating-hours-day{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  color:#0f172a;
+  font-size:14px;
+  font-weight:800;
+}
+.operating-hours-row.muted .operating-hours-day{
+  color:#94a3b8;
+}
+.operating-hours-time-group{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+}
+.operating-hours-time-wrap{
+  position:relative;
+}
+.operating-hours-time{
+  min-height:42px;
+  padding-right:34px;
+}
+.operating-hours-time::-webkit-calendar-picker-indicator{
+  cursor:pointer;
+  margin:0;
+  opacity:0;
+  position:absolute;
+  right:8px;
+  width:30px;
+}
+.operating-hours-time-wrap i{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#64748b;
+  pointer-events:none;
+}
+.operating-hours-time:disabled{
+  background:#eef2f7;
+  color:#94a3b8;
+}
+.operating-hours-to{
+  color:#64748b;
+  font-size:13px;
+  font-weight:800;
+}
+@media (max-width:640px){
+  .operating-hours-card{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .operating-hours-summary{
+    white-space:normal;
+  }
+
+  .operating-hours-edit{
+    align-self:flex-end;
+  }
+
+  .operating-hours-row{
+    grid-template-columns:1fr;
+  }
+
+  .operating-hours-time-group{
+    grid-template-columns:1fr;
+  }
+
+  .operating-hours-to{
+    text-align:center;
+  }
+}
 .chips{
   display:flex;
   flex-wrap:wrap;

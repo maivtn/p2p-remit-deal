@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_BENEFICIARY_CURRENCY = "USD";
 
   let selectedBeneficiaryAccount = null;
+  let operatingHours = [
+    { key: "mon", label: "Mon", enabled: true, start: "09:00", end: "19:00" },
+    { key: "tue", label: "Tue", enabled: true, start: "09:00", end: "19:00" },
+    { key: "wed", label: "Wed", enabled: true, start: "09:00", end: "19:00" },
+    { key: "thu", label: "Thu", enabled: true, start: "09:00", end: "19:00" },
+    { key: "fri", label: "Fri", enabled: true, start: "09:00", end: "19:00" },
+    { key: "sat", label: "Sat", enabled: true, start: "10:00", end: "16:00" },
+    { key: "sun", label: "Sun", enabled: false, start: "10:00", end: "16:00" },
+  ];
 
   const senderCurrencySelect = document.getElementById("createSenderCurrency");
   const beneficiaryCurrencySelect = document.getElementById("createBeneficiaryCurrency");
@@ -17,12 +26,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const pickerListEl = document.getElementById("createBeneficiaryAccountPickerList");
   const pickerSubtitleEl = document.getElementById("createAccountPickerSubtitle");
   const pickerModal = pickerModalEl ? new bootstrap.Modal(pickerModalEl) : null;
+  const operatingHoursSummaryEl = document.getElementById("operatingHoursSummary");
+  const operatingHoursListEl = document.getElementById("operatingHoursList");
+  const operatingHoursModalEl = document.getElementById("operatingHoursModal");
+  const operatingHoursModal = operatingHoursModalEl ? new bootstrap.Modal(operatingHoursModalEl) : null;
+  const operatingHoursButton = document.getElementById("openOperatingHoursModal");
+  const saveOperatingHoursButton = document.getElementById("saveOperatingHours");
 
   const methodCurrencies = paymentMethodMatrix.map(item => item.currency);
   const getCurrencyMeta = currency => CURRENCIES.find(item => item.code === currency);
   const getMethodsByCurrency = currency => paymentMethodMatrix.find(item => item.currency === currency)?.methods || [];
   const getSelectedSenderCurrency = () => senderCurrencySelect?.value || DEFAULT_SENDER_CURRENCY;
   const getSelectedBeneficiaryCurrency = () => beneficiaryCurrencySelect?.value || DEFAULT_BENEFICIARY_CURRENCY;
+  const formatHourLabel = value => {
+    const [hourText, minuteText] = value.split(":");
+    const hour = Number(hourText);
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minuteText} ${suffix}`;
+  };
+  const summarizeOperatingHours = hours => {
+    const enabledDays = hours.filter(item => item.enabled);
+    if(!enabledDays.length) return "No availability hours selected";
+
+    const groups = [];
+    enabledDays.forEach(day => {
+      const lastGroup = groups[groups.length - 1];
+      if(lastGroup && lastGroup.start === day.start && lastGroup.end === day.end){
+        lastGroup.days.push(day.label);
+      }else{
+        groups.push({ start: day.start, end: day.end, days: [day.label] });
+      }
+    });
+
+    return groups.map(group => {
+      const dayLabel = group.days.length > 1
+        ? `${group.days[0]}-${group.days[group.days.length - 1]}`
+        : group.days[0];
+      return `${dayLabel}, ${formatHourLabel(group.start)} - ${formatHourLabel(group.end)}`;
+    }).join("; ");
+  };
   const formatRateInput = value => {
     const rate = Number(value);
     if(!Number.isFinite(rate)) return "";
@@ -62,6 +105,60 @@ document.addEventListener("DOMContentLoaded", () => {
       const label = meta ? `${meta.flag} ${meta.code} - ${meta.name}` : currency;
       return `<option value="${currency}" ${currency === selectedCurrency ? "selected" : ""}>${label}</option>`;
     }).join("");
+  }
+
+  function renderOperatingHoursSummary(){
+    if(operatingHoursSummaryEl){
+      operatingHoursSummaryEl.textContent = summarizeOperatingHours(operatingHours);
+    }
+  }
+
+  function renderOperatingHoursRows(){
+    if(!operatingHoursListEl) return;
+
+    operatingHoursListEl.innerHTML = operatingHours.map(day => `
+      <div class="operating-hours-row ${day.enabled ? "" : "muted"}" data-day="${day.key}">
+        <label class="operating-hours-day">
+          <input class="form-check-input operating-hours-toggle" type="checkbox" ${day.enabled ? "checked" : ""} data-day-enabled="${day.key}">
+          <span>${day.label}</span>
+        </label>
+        <div class="operating-hours-time-group">
+          <div class="operating-hours-time-wrap">
+            <input class="form-control operating-hours-time" type="time" value="${day.start}" ${day.enabled ? "" : "disabled"} data-day-start="${day.key}">
+            <i class="bi bi-clock"></i>
+          </div>
+          <span class="operating-hours-to">to</span>
+          <div class="operating-hours-time-wrap">
+            <input class="form-control operating-hours-time" type="time" value="${day.end}" ${day.enabled ? "" : "disabled"} data-day-end="${day.key}">
+            <i class="bi bi-clock"></i>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    operatingHoursListEl.querySelectorAll("[data-day-enabled]").forEach(input => {
+      input.addEventListener("change", () => {
+        syncOperatingHoursFromInputs();
+        const day = operatingHours.find(item => item.key === input.dataset.dayEnabled);
+        if(!day) return;
+        day.enabled = input.checked;
+        renderOperatingHoursRows();
+      });
+    });
+  }
+
+  function syncOperatingHoursFromInputs(){
+    operatingHours = operatingHours.map(day => {
+      const startInput = operatingHoursListEl?.querySelector(`[data-day-start="${day.key}"]`);
+      const endInput = operatingHoursListEl?.querySelector(`[data-day-end="${day.key}"]`);
+      const enabledInput = operatingHoursListEl?.querySelector(`[data-day-enabled="${day.key}"]`);
+      return {
+        ...day,
+        enabled: !!enabledInput?.checked,
+        start: startInput?.value || day.start,
+        end: endInput?.value || day.end,
+      };
+    });
   }
 
   function getSelectedChipMethod(selector, fallback){
@@ -271,10 +368,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   marketRateToggle?.addEventListener("change", renderExchangeRate);
   pickerButton?.addEventListener("click", openAccountPicker);
+  operatingHoursButton?.addEventListener("click", () => {
+    renderOperatingHoursRows();
+    operatingHoursModal?.show();
+  });
+  saveOperatingHoursButton?.addEventListener("click", () => {
+    syncOperatingHoursFromInputs();
+    renderOperatingHoursSummary();
+    operatingHoursModal?.hide();
+  });
 
   document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
     bootstrap.Tooltip.getOrCreateInstance(el);
   });
 
+  renderOperatingHoursSummary();
   renderMethodPanels();
 });

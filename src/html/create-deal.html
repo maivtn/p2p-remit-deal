@@ -74,6 +74,19 @@
       </div>
     </section>
 
+    <section class="operating-hours-card" id="operatingHoursCard">
+      <div class="operating-hours-main">
+        <div class="operating-hours-icon"><i class="bi bi-clock"></i></div>
+        <div class="operating-hours-copy">
+          <div class="operating-hours-title">Availability Hours</div>
+          <div class="operating-hours-summary" id="operatingHoursSummary">Mon-Fri, 9:00 AM - 7:00 PM; Sat, 10:00 AM - 4:00 PM</div>
+        </div>
+      </div>
+      <button class="btn btn-link operating-hours-edit" id="openOperatingHoursModal" type="button">
+        <i class="bi bi-pencil"></i> Edit
+      </button>
+    </section>
+
     </div><div class="desktop-col-7">
     <section class="method-panel green">
       <div class="panel-title green">
@@ -127,6 +140,27 @@
         </div>
         <div class="modal-body">
           <div id="createBeneficiaryAccountPickerList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="operatingHoursModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-auto operating-hours-modal-dialog">
+      <div class="modal-content accept-modal-card">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title fw-black">Availability Hours</h5>
+            <div class="small-muted">Set working hours for each day. The summary on the card updates after save.</div>
+          </div>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="operating-hours-list" id="operatingHoursList"></div>
+        </div>
+        <div class="modal-footer justify-content-center gap-2">
+          <button class="btn btn-light px-4" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-primary px-4" id="saveOperatingHours" type="button">Save Hours</button>
         </div>
       </div>
     </div>
