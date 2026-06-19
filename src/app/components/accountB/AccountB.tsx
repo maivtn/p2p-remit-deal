@@ -1494,7 +1494,7 @@ function ProviderRequestCard({
             paymentProof={req.requesterProof}
             transferProof={req.providerProof}
             labels={{
-              payment: "Bằng chứng bên kia (view-only)",
+              payment: "Bằng chứng bên Tran *** B (view-only)",
               transfer: "Bằng chứng của bạn (đã gửi)",
             }}
           />
@@ -1875,7 +1875,7 @@ function ProviderRequestCard({
               </button>
             )}
 
-            {/* Case 04: đã upload, chờ bên kia */}
+            {/* Case 04: đã upload, chờ bên Tran *** B */}
             {hasMyProof && !hasCounterpartyProof && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#EDE9FE" }}>
                 <span style={{ fontSize: 16 }}>⏳</span>
@@ -1905,7 +1905,7 @@ function ProviderRequestCard({
               </button>
             )}
 
-            {/* Đã xác nhận, chờ bên kia */}
+            {/* Đã xác nhận, chờ bên Tran *** B */}
             {req.providerConfirmedReceived && !req.requesterConfirmedReceived && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#D1FAE5", border: "1px solid #6EE7B7" }}>
                 <CheckCircle2 size={15} color="#059669" />

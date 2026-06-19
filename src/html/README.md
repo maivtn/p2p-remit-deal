@@ -52,8 +52,8 @@ Tab navigation được render chung trong `common.js`.
 ## v1.5 updates
 - Tách Transaction Detail thành nhiều case HTML riêng.
 - User chỉ upload bằng chứng cho khoản tiền mình gửi.
-- Bằng chứng bên kia gửi là view-only.
-- Nếu bên kia đã upload proof, bên mình sẽ có nút `Xác nhận đã nhận tiền`.
+- Bằng chứng bên Tran *** B gửi là view-only.
+- Nếu bên Tran *** B đã upload proof, bên mình sẽ có nút `Xác nhận đã nhận tiền`.
 - Các case mới:
   - `transaction-detail-case-01-my-upload.html`
   - `transaction-detail-case-02-counterparty-proof.html`
@@ -64,12 +64,12 @@ Tab navigation được render chung trong `common.js`.
 
 ## v1.6 updates
 - Chỉnh lại logic transaction detail theo business case mới:
-  - Case 01: Chờ bên kia chấp nhận sau khi mình tìm deal và chọn deal.
+  - Case 01: Chờ bên Tran *** B chấp nhận sau khi mình tìm deal và chọn deal.
   - Case 02: Hai bên đã chấp nhận, mình upload bằng chứng chuyển tiền.
-  - Case 03: Bên kia đã upload bằng chứng, mình chưa upload proof; có nút xác nhận đã nhận tiền và upload proof.
+  - Case 03: Bên Tran *** B đã upload bằng chứng, mình chưa upload proof; có nút xác nhận đã nhận tiền và upload proof.
   - Case 04: Hoàn tất; có button đánh giá.
   - Case 05: Khiếu nại; có button rút khiếu nại.
-- Giữ rule: mình chỉ upload bằng chứng cho khoản mình gửi; proof bên kia là view-only.
+- Giữ rule: mình chỉ upload bằng chứng cho khoản mình gửi; proof bên Tran *** B là view-only.
 
 
 ## v1.7 updates
@@ -93,10 +93,10 @@ Tab navigation được render chung trong `common.js`.
   - `Đang hoạt động`
 - Cập nhật Transaction Detail thành 8 case:
   - Case 00: Chờ bên mình chấp nhận, có action Từ chối / Chấp nhận, click Chấp nhận mở modal confirm.
-  - Case 01: Chờ bên kia chấp nhận sau khi mình chọn deal.
+  - Case 01: Chờ bên Tran *** B chấp nhận sau khi mình chọn deal.
   - Case 02: Đã chấp nhận, upload bằng chứng chuyển tiền.
-  - Case 03: Bên kia upload proof, mình chưa upload; có xác nhận đã nhận tiền + upload proof.
-  - Case 04: Mình upload proof, bên kia chưa upload; có khiếu nại.
+  - Case 03: Bên Tran *** B upload proof, mình chưa upload; có xác nhận đã nhận tiền + upload proof.
+  - Case 04: Mình upload proof, bên Tran *** B chưa upload; có khiếu nại.
   - Case 05: Hai bên upload proof; có xác nhận đã nhận đủ tiền + khiếu nại.
   - Case 06: Hoàn tất; có đánh giá.
   - Case 07: Khiếu nại; có rút khiếu nại.
@@ -105,8 +105,8 @@ Tab navigation được render chung trong `common.js`.
 ## v2.2 updates
 - Kết quả tìm deal có một button quay lại form tìm ở cấp page/side panel; card kết quả chỉ còn action `Chọn deal`.
 - Case 07: Bên mình khiếu nại, có button `Rút khiếu nại`.
-- Case 08: Bên kia chờ bên mình chấp nhận, có action `Từ chối` và `Chấp nhận`; click `Chấp nhận` mở modal confirm.
-- Case 09: Bên kia khiếu nại, bên mình có button `Giải thích về khiếu nại`.
+- Case 08: Bên Tran *** B chờ bên mình chấp nhận, có action `Từ chối` và `Chấp nhận`; click `Chấp nhận` mở modal confirm.
+- Case 09: Bên Tran *** B khiếu nại, bên mình có button `Giải thích về khiếu nại`.
 - Button `Khiếu nại` mở modal khiếu nại:
   - upload hình ảnh / video / audio
   - nhiều file, tối đa 6 file
@@ -119,7 +119,7 @@ Tab navigation được render chung trong `common.js`.
 
 ## v2.7 updates
 - Rebuild từ v2.2 để phục hồi đầy đủ 9 case chi tiết giao dịch và các modal khiếu nại/giải thích.
-- Case 01 có countdown 15 phút chờ bên kia chấp nhận hoặc huỷ.
+- Case 01 có countdown 15 phút chờ bên Tran *** B chấp nhận hoặc huỷ.
 - Case 02 có countdown 1 giờ cho hai bên upload bằng chứng chuyển tiền.
 - Thêm lại `deal-detail.html`.
 - Deal nổi bật / Kết quả tìm deal đi qua màn chi tiết deal trước khi chọn deal.
@@ -148,7 +148,7 @@ Tab navigation được render chung trong `common.js`.
 
 ## v3.0 updates
 - Khi giao dịch chưa accept, hai bên không thấy tài khoản nhận của nhau.
-- Thông tin đối tác hiển thị bằng tên mask: `Tran *** B` thay vì text chung `bên kia`.
+- Thông tin đối tác hiển thị bằng tên mask: `Tran *** B` thay vì text chung `bên Tran *** B`.
 - `deal-detail.html`: click `Chọn deal này` mở màn mới `select-deal.html`.
 - Tạo màn mới `select-deal.html` tên `Chọn deal`.
 - `select-deal.html` giống form tìm deal nhưng:
@@ -162,7 +162,7 @@ Tab navigation được render chung trong `common.js`.
 
 ## v3.1 updates
 - `deal-detail.html`: ẩn `deal-detail-code`.
-- `deal-detail.html`: không hiển thị section `Tài khoản người thụ hưởng của bên kia`.
+- `deal-detail.html`: không hiển thị section `Tài khoản người thụ hưởng của bên Tran *** B`.
 - `select-deal.html`: ẩn `deal-detail-code` trong summary panel.
 - Giữ rule: khi giao dịch chưa accept, hai bên không thấy tài khoản nhận của nhau.
 

@@ -223,7 +223,7 @@ function RequestCard({
               transferProof={req.providerProof}
               labels={{
                 payment: 'Bằng chứng của bạn (đã gửi)',
-                transfer: 'Bằng chứng bên kia (view-only)',
+                transfer: 'Bằng chứng bên Tran *** B (view-only)',
               }}
             />
           )}
@@ -414,11 +414,11 @@ function RequestCard({
               </button>
             )}
 
-            {/* Case 04: mình đã upload, bên kia chưa — chờ */}
+            {/* Case 04: mình đã upload, bên Tran *** B chưa — chờ */}
             {hasMyProof && !hasCounterpartyProof && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#EDE9FE' }}>
                 <span style={{ fontSize: 16 }}>⏳</span>
-                <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ bên kia upload bằng chứng...</p>
+                <p style={{ fontSize: 13, color: '#5B21B6', fontWeight: 600 }}>Chờ bên Tran *** B upload bằng chứng...</p>
               </div>
             )}
 
@@ -444,11 +444,11 @@ function RequestCard({
               </button>
             )}
 
-            {/* Đã xác nhận, chờ bên kia */}
+            {/* Đã xác nhận, chờ bên Tran *** B */}
             {req.requesterConfirmedReceived && !req.providerConfirmedReceived && (
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: '#D1FAE5', border: '1px solid #6EE7B7' }}>
                 <CheckCircle2 size={15} color="#059669" />
-                <p style={{ fontSize: 13, color: '#065F46', fontWeight: 600 }}>Bạn đã xác nhận — chờ bên kia xác nhận...</p>
+                <p style={{ fontSize: 13, color: '#065F46', fontWeight: 600 }}>Bạn đã xác nhận — chờ bên Tran *** B xác nhận...</p>
               </div>
             )}
           </div>

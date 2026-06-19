@@ -250,7 +250,7 @@ export default function App() {
         className="text-center pb-4"
         style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}
       >
-        Thao tác ở một bên — bên kia cập nhật ngay lập tức
+        Thao tác ở một bên — bên Tran *** B cập nhật ngay lập tức
       </p>
 
       {/* Two-phone layout */}

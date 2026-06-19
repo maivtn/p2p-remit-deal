@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <div>
           <h3 class="card-name">Tran *** B</h3>
           <div class="small-muted">
-            ${currencyFlag(deal.beneficiaryReceiveCurrency.currency)} ${deal.beneficiaryReceiveCurrency.currency}
+            ${deal.beneficiaryReceiveCurrency.currency}
             →
-            ${currencyFlag(deal.senderPayCurrency.currency)} ${deal.senderPayCurrency.currency}
+            ${deal.senderPayCurrency.currency}
             · $${deal.amountLimit.minUsd}–$${deal.amountLimit.maxUsd}
           </div>
         </div>

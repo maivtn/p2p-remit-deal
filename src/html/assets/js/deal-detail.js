@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setText(
     "dealPair",
-    `${currencyFlag(deal.senderPayCurrency.currency)} ${deal.senderPayCurrency.currency} → ${currencyFlag(deal.beneficiaryReceiveCurrency.currency)} ${deal.beneficiaryReceiveCurrency.currency}`
+    `${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}`
   );
 
   setText(
