@@ -2285,6 +2285,34 @@ body{
   flex-wrap:wrap;
   gap:8px;
 }
+.result-availability-line{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  max-width:100%;
+  margin-top:10px;
+  border:1px solid #e0e7ff;
+  background:#f8fbff;
+  border-radius:999px;
+  color:#475569;
+  font-size:12px;
+  font-weight:700;
+  padding:6px 10px;
+}
+.result-availability-line > span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.result-availability-line .bi-clock{
+  color:#2563eb;
+  flex:0 0 auto;
+}
+.result-availability-line .label-help-icon{
+  margin-left:0;
+  flex:0 0 auto;
+}
 
 @media (max-width:360px){
   .result-rate-action-row{
