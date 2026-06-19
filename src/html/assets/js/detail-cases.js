@@ -12,8 +12,6 @@ const transactionDetailCases = {
     title:"Chờ Tran *** B chấp nhận",
     statusLabel: "Chờ chấp nhận",
     statusClass: "badge-waiting",
-    caseNoteType: "warning",
-    caseNote: "Sau khi bạn tìm deal và xác nhận chọn deal, giao dịch ở trạng thái chờ Tran *** B chấp nhận. Chưa upload bằng chứng ở bước này.",
     showAcceptancePanel: true,
     countdown: { type: "acceptance", seconds: 15 * 60, label: "Thời gian còn lại để Tran *** B chấp nhận hoặc huỷ" },
     parties: { me: { name: "Bạn", statusLabel: "Đã chọn deal" }, counterparty: { name: "Tran *** B", statusLabel: "Chờ chấp nhận" } },
@@ -28,8 +26,6 @@ const transactionDetailCases = {
     title: "Đã chấp nhận - upload bằng chứng",
     statusLabel: "Đang xử lý",
     statusClass: "badge-processing",
-    caseNoteType: "blue",
-    caseNote: "Hai bên đã chấp nhận. Trong tiến trình này, bạn sẽ chuyển tiền ngoài hệ thống và upload bằng chứng chuyển tiền.",
     countdown: { type: "processing", seconds: 60 * 60, label: "Thời gian còn lại để hai bên upload bằng chứng chuyển tiền" },
     flows: [
       { id: "flow_a_to_b", title: "Bạn gửi USD cho người thụ hưởng của B", amount: "$500", method: "Zelle", receiverName: "Tran Van B", details: { phoneNumber: "+1 415 555 2288" }, isMyPaymentFlow: true, proofUploaded: false },
@@ -42,8 +38,6 @@ const transactionDetailCases = {
     title: "Tran *** B đã upload, bạn chưa upload",
     statusLabel: "Đang xử lý",
     statusClass: "badge-waiting",
-    caseNoteType: "warning",
-    caseNote: "Tran *** B đã upload bằng chứng. Bạn chưa upload proof, nên có cả 2 action: xác nhận đã nhận tiền và upload bằng chứng chuyển tiền.",
     flows: [
       { id: "flow_a_to_b", title: "Bạn gửi USD cho người thụ hưởng của B", amount: "$500", method: "Zelle", receiverName: "Tran Van B", details: { phoneNumber: "+1 415 555 2288" }, isMyPaymentFlow: true, proofUploaded: false },
       { id: "flow_b_to_a", title: "Tran *** B gửi VND cho người thụ hưởng của bạn", amount: "12.750.000đ", method: "MoMo", receiverName: "Nguyen Van A", details: { phoneNumber: "0901236789" }, isMyPaymentFlow: false, proofUploaded: true, counterpartyProof: true, proof: { ...proofFileMock, name: "momo-payment-proof.png", note: "Tran *** B đã chuyển MoMo cho người thụ hưởng của bạn.", uploadedAt: "13:28" } },
@@ -55,8 +49,6 @@ const transactionDetailCases = {
     title: "Bạn đã upload, Tran *** B chưa upload",
     statusLabel: "Đang xử lý",
     statusClass: "badge-processing",
-    caseNoteType: "blue",
-    caseNote: "Bạn đã upload bằng chứng chuyển tiền, nhưng Tran *** B chưa upload bằng chứng. Có button khiếu nại nếu cần.",
     flows: [
       { id: "flow_a_to_b", title: "Bạn gửi USD cho người thụ hưởng của B", amount: "$500", method: "Zelle", receiverName: "Tran Van B", details: { phoneNumber: "+1 415 555 2288" }, isMyPaymentFlow: true, proofUploaded: true, allowDispute: true, proof: { ...proofFileMock, name: "zelle-payment-proof.png", note: "Bạn đã gửi đủ $500 qua Zelle.", uploadedAt: "13:24" } },
       { id: "flow_b_to_a", title: "Tran *** B gửi VND cho người thụ hưởng của bạn", amount: "12.750.000đ", method: "MoMo", receiverName: "Nguyen Van A", details: { phoneNumber: "0901236789" }, isMyPaymentFlow: false, proofUploaded: false, counterpartyProof: true },
@@ -68,8 +60,6 @@ const transactionDetailCases = {
     title: "Cả hai bên đã upload bằng chứng",
     statusLabel: "Đang xử lý",
     statusClass: "badge-waiting",
-    caseNoteType: "warning",
-    caseNote: "Cả hai bên đều đã upload proof. Có button xác nhận đã nhận đủ tiền và button khiếu nại.",
     flows: [
       { id: "flow_a_to_b", title: "Bạn gửi USD cho người thụ hưởng của B", amount: "$500", method: "Zelle", receiverName: "Tran Van B", details: { phoneNumber: "+1 415 555 2288" }, isMyPaymentFlow: true, proofUploaded: true, allowDispute: true, proof: { ...proofFileMock, name: "zelle-payment-proof.png", note: "Bạn đã gửi đủ $500 qua Zelle.", uploadedAt: "13:24" } },
       { id: "flow_b_to_a", title: "Tran *** B gửi VND cho người thụ hưởng của bạn", amount: "12.750.000đ", method: "MoMo", receiverName: "Nguyen Van A", details: { phoneNumber: "0901236789" }, isMyPaymentFlow: false, proofUploaded: true, counterpartyProof: true, proof: { ...proofFileMock, name: "momo-payment-proof.png", note: "Tran *** B đã chuyển MoMo cho người thụ hưởng của bạn.", uploadedAt: "13:28" } },
@@ -81,22 +71,22 @@ const transactionDetailCases = {
     title: "Case 06: Hoàn tất",
     statusLabel: "Hoàn tất",
     statusClass: "badge-success",
-    caseNoteType: "success",
-    caseNote: "Giao dịch đã hoàn tất. Hiển thị button đánh giá.",
     showRating: true,
     flows: [
       { id: "flow_a_to_b", title: "Bạn gửi USD cho người thụ hưởng của B", amount: "$500", method: "Zelle", receiverName: "Tran Van B", details: { phoneNumber: "+1 415 555 2288" }, isMyPaymentFlow: true, proofUploaded: true, confirmed: true, proof: { ...proofFileMock, name: "zelle-payment-proof.png", note: "Bạn đã gửi đủ $500 qua Zelle.", uploadedAt: "13:24" } },
       { id: "flow_b_to_a", title: "Tran *** B gửi VND cho người thụ hưởng của bạn", amount: "12.750.000đ", method: "MoMo", receiverName: "Nguyen Van A", details: { phoneNumber: "0901236789" }, isMyPaymentFlow: false, proofUploaded: true, counterpartyProof: true, confirmed: true, proof: { ...proofFileMock, name: "momo-payment-proof.png", note: "Tran *** B đã chuyển MoMo cho người thụ hưởng của bạn.", uploadedAt: "13:28" } },
     ],
-    logs: [{ time: "13:42", message: "Hai bên đã xác nhận nhận đủ tiền. Giao dịch hoàn tất." }],
+    logs: [
+      { time: "13:40", message: "Bạn đã xác nhận đã nhận đủ 12.750.000đ từ Tran *** B." },
+      { time: "13:41", message: "Tran *** B đã xác nhận đã nhận đủ $500 từ bạn." },
+      { time: "13:42", message: "Hai bên đã xác nhận nhận đủ tiền. Giao dịch hoàn tất và escrow/hold USDV đã được giải phóng." },
+    ],
   },
 
   "case-07": {
     title: "Bên bạn khiếu nại",
     statusLabel: "Khiếu nại",
     statusClass: "badge-danger-soft",
-    caseNoteType: "danger",
-    caseNote: "Đây là case bên bạn mở khiếu nại. Có button rút khiếu nại.",
     disputed: true,
     disputeOwner: "me",
     dispute: { reason: "Tôi chưa nhận đủ tiền.", description: "Tran *** B đã upload bằng chứng nhưng người thụ hưởng của tôi chưa nhận được hoặc thông tin không khớp.", statusLabel: "Đang chờ admin xử lý" },
@@ -111,8 +101,6 @@ const transactionDetailCases = {
     title: "Tran *** B chờ bên bạn chấp nhận",
     statusLabel: "Chờ chấp nhận",
     statusClass: "badge-waiting",
-    caseNoteType: "warning",
-    caseNote: "Đây là case khi Tran *** B chọn deal của bạn và đang chờ bên bạn chấp nhận. Có action Từ chối / Chấp nhận, click Chấp nhận hiện modal confirm.",
     showMyAcceptanceActions: true,
     flows: [
       { id: "flow_b_to_a", title: "Tran *** B sẽ gửi USD cho người thụ hưởng của bạn", amount: "$500", method: "Zelle", receiverName: "Nguyen Van A", details: { phoneNumber: "+1 408 555 0199" }, isMyPaymentFlow: false, proofUploaded: false, locked: true },
@@ -125,8 +113,6 @@ const transactionDetailCases = {
     title: "Tran *** B khiếu nại",
     statusLabel: "Khiếu nại",
     statusClass: "badge-danger-soft",
-    caseNoteType: "danger",
-    caseNote: "Đây là case Tran *** B mở khiếu nại. Bên bạn có button giải thích về khiếu nại, click sẽ hiện modal giải thích gồm upload hình/video/audio tối đa 6 cái và ghi chú.",
     disputed: true,
     disputeOwner: "counterparty",
     dispute: { reason: "Tran *** B báo chưa nhận tiền.", description: "Tran *** B cho rằng chưa nhận đủ tiền hoặc proof không khớp. Bạn cần giải thích và upload bằng chứng bổ sung nếu có.", statusLabel: "Chờ bạn giải thích" },
@@ -167,6 +153,20 @@ function renderFeeHoldPanel(mode = "accepted"){
         <div class="summary-line"><span>Ví bị trừ phí</span><strong>USDV Wallet trong VLINKPAY</strong></div>
         <div class="summary-line"><span>Hold sau khi accept</span><strong>${holdText} / mỗi bên</strong></div>
         <div class="small-muted mt-2">Phí accept sẽ bị trừ từ ví USDV của cả hai bên và không hoàn lại. Khi accept, ví USDV của cả hai bên sẽ bị hold số tiền bằng số tiền giao dịch, và được release ngay khi hoàn tất giao dịch.</div>
+      </section>
+    `;
+  }
+
+  if(mode === "completed"){
+    return `
+      <section class="form-card fee-hold-panel released">
+        <div class="released-panel-head">
+          <div>
+            <h2 class="section-title mt-0 mb-1"><i class="bi bi-shield-check"></i> Escrow đã giải phóng</h2>
+            <div class="small-muted">Đã giải phóng <strong>${holdText} / mỗi bên</strong> sau khi hai bên xác nhận nhận đủ tiền.</div>
+          </div>
+          <span class="badge-soft badge-success">Released</span>
+        </div>
       </section>
     `;
   }
@@ -223,23 +223,20 @@ function renderDetailSummary(data){
   const title = document.getElementById("detailCaseTitle");
   const desc = document.getElementById("detailCaseDescription");
   const badge = document.getElementById("detailStatusBadge");
-  const note = document.getElementById("caseSummaryNote");
+  const summaryCard = title?.closest(".form-card");
+  const isStaticCase01 = document.body.dataset.detailCase === "case-01" && !!document.getElementById("feeHoldBeforeAcceptPanelStatic");
 
   if(title) title.textContent = data.title;
   if(desc) {
     desc.textContent = data.description || "Theo dõi và xử lý giao dịch";
-    desc.style.display="none"
+    desc.style.display = isStaticCase01 ? "none" : "";
   }
 
   if(badge){
     badge.className = `badge-soft ${data.statusClass}`;
     badge.textContent = data.statusLabel;
   }
-  if(note){
-    note.className = `case-summary-note ${data.caseNoteType || ""}`;
-    note.textContent = data.caseNote || "";
-    note.style.display="none"
-  }
+  if(!isStaticCase01) summaryCard?.classList.add("detail-summary-card");
 }
 
 
@@ -254,12 +251,20 @@ function renderCountdown(data){
   const panelClass = data.countdown.type === "acceptance" ? "warning" : "";
   el.innerHTML = `
     <div class="countdown-card ${panelClass}">
-      <div class="countdown-label">${data.countdown.label}</div>
+      <div class="countdown-main">
+        <div class="countdown-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="countdown-label">${data.countdown.label}</div>
+          <div class="small mt-1">
+            ${data.countdown.type === "acceptance"
+              ? "Hết 15 phút giao dịch sẽ tự chuyển sang trạng thái hết hạn."
+              : "Hết 1 giờ nếu chưa đủ bằng chứng, giao dịch có thể chuyển sang cần xử lý/khiếu nại."}
+          </div>
+        </div>
+      </div>
       <div class="countdown-timer" data-countdown-seconds="${data.countdown.seconds}">--:--</div>
-      <div class="small mt-2">
-        ${data.countdown.type === "acceptance"
-          ? "Hết 15 phút giao dịch sẽ tự chuyển sang trạng thái hết hạn."
-          : "Hết 1 giờ nếu chưa đủ bằng chứng, giao dịch có thể chuyển sang cần xử lý/khiếu nại."}
+      <div class="countdown-progress" aria-hidden="true">
+        <span></span>
       </div>
     </div>
   `;
@@ -298,7 +303,6 @@ function renderMyAcceptancePanel(data){
   if(!data.showMyAcceptanceActions){ el.innerHTML = ""; return; }
 
   el.innerHTML = `
-    <section class="form-card">
       <div class="accept-request-card">
         <div class="incoming-deal-head">
           <div>
@@ -353,7 +357,6 @@ function renderMyAcceptancePanel(data){
           <button class="btn btn-outline-danger" data-decline-incoming-deal><i class="bi bi-x-circle"></i> Từ chối</button>
           <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acceptIncomingDealModal"><i class="bi bi-check-circle"></i> Chấp nhận</button>
         </div>
-      </div>
     </section>
   `;
 }
@@ -368,8 +371,20 @@ function renderAcceptancePanel(data){
         <div class="fw-bold">Trạng thái chấp nhận giao dịch</div>
         <div class="small mt-1">Giao dịch chỉ bắt đầu sau khi Tran *** B chấp nhận.</div>
         <div class="acceptance-users">
-          <div class="acceptance-user"><div class="fw-bold">${data.parties.me.name}</div><div class="badge-soft badge-success">${data.parties.me.statusLabel}</div></div>
-          <div class="acceptance-user waiting"><div class="fw-bold">${data.parties.counterparty.name}</div><div class="badge-soft badge-waiting">${data.parties.counterparty.statusLabel}</div></div>
+          <div class="acceptance-user">
+            <span class="avatar">A</span>
+            <div>
+              <div class="fw-bold">${data.parties.me.name}</div>
+              <div class="badge-soft badge-success">${data.parties.me.statusLabel}</div>
+            </div>
+          </div>
+          <div class="acceptance-user waiting">
+            <span class="avatar">B</span>
+            <div>
+              <div class="fw-bold">${data.parties.counterparty.name}</div>
+              <div class="badge-soft badge-waiting">${data.parties.counterparty.statusLabel}</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -388,8 +403,8 @@ function shouldHideCounterpartyAccount(flow){
 function renderReceiverInfo(flow){
   if(shouldHideCounterpartyAccount(flow)){
     return `
-      <div class="summary-line"><span>Người nhận</span><strong>${flow.isMyPaymentFlow ? maskedCounterpartyName() : "Bạn"}</strong></div>
-      <div class="hidden-until-accept mt-2">
+      <div class="flow-summary-item"><span>Người nhận</span><strong>${flow.isMyPaymentFlow ? maskedCounterpartyName() : "Bạn"}</strong></div>
+      <div class="hidden-until-accept flow-summary-wide">
         <i class="bi bi-lock"></i>
         Thông tin tài khoản nhận sẽ chỉ hiển thị sau khi giao dịch được chấp nhận.
       </div>
@@ -397,17 +412,20 @@ function renderReceiverInfo(flow){
   }
 
   return `
-    <div class="summary-line"><span>Người nhận</span><strong>${flow.receiverName}</strong></div>
-    <div class="summary-line"><span>Thông tin</span><strong>${flow.details.phoneNumber}</strong></div>
+    <div class="flow-summary-item"><span>Người nhận</span><strong>${flow.receiverName}</strong></div>
+    <div class="flow-summary-item"><span>Thông tin</span><strong>${flow.details.phoneNumber}</strong></div>
   `;
 }
 
 
 function applyV45CancelFeeHoldRules(caseKey){
   const actionPanel = document.getElementById("actionPanel");
-  const paymentFlowPanel = document.getElementById("paymentFlowPanel");
+  const paymentFlowPanel = document.getElementById("paymentFlowPanel") || document.getElementById("paymentFlows");
 
   if(caseKey === "case-01"){
+    const hasStaticCase01Panel = !!document.getElementById("feeHoldBeforeAcceptPanelStatic");
+    if(hasStaticCase01Panel) return;
+
     if(paymentFlowPanel && !document.getElementById("feeHoldBeforeAcceptPanel")){
       paymentFlowPanel.insertAdjacentHTML("beforebegin", `<div id="feeHoldBeforeAcceptPanel">${renderFeeHoldPanel("beforeAccept")}</div>`);
     }
@@ -465,19 +483,26 @@ function applyV45CancelFeeHoldRules(caseKey){
     }
   }
 
+  if(caseKey === "case-06"){
+    if(paymentFlowPanel && !document.getElementById("feeHoldCompletedPanel")){
+      paymentFlowPanel.insertAdjacentHTML("beforebegin", `<div id="feeHoldCompletedPanel">${renderFeeHoldPanel("completed")}</div>`);
+    }
+    return;
+  }
+
   const acceptedCases = [
     "case-02",
     "case-03",
     "case-04",
     "case-05",
-    "case-06",
     "case-07",
     "case-09"
   ];
 
   if(acceptedCases.includes(caseKey)){
     if(paymentFlowPanel && !document.getElementById("feeHoldAcceptedPanel")){
-      paymentFlowPanel.insertAdjacentHTML("beforebegin", `<div id="feeHoldAcceptedPanel">${renderFeeHoldPanel("accepted")}</div>`);
+      const endPanel = document.getElementById("disputeSection") || document.getElementById("ratingSection") || paymentFlowPanel;
+      endPanel.insertAdjacentHTML("afterend", `<div id="feeHoldAcceptedPanel">${renderFeeHoldPanel("accepted")}</div>`);
     }
   }
 }
@@ -526,14 +551,28 @@ function renderPaymentFlows(data){
   const flows = document.getElementById("paymentFlows");
   if(!flows) return;
   flows.innerHTML = data.flows.map(flow => `
-    <div class="form-card ${flow.locked ? "flow-disabled" : ""}">
-      <div class="name-line">
-        <h3 class="card-name">${flow.title}</h3>
-        ${renderFlowBadge(flow)}
+    <div class="form-card payment-flow-card ${flow.locked ? "flow-disabled" : ""} ${flow.isMyPaymentFlow ? "mine" : "counterparty"}">
+      <div class="payment-flow-head">
+        <div class="payment-flow-icon">
+          <i class="bi ${flow.isMyPaymentFlow ? "bi-arrow-up-right" : "bi-arrow-down-left"}"></i>
+        </div>
+        <div class="payment-flow-title">
+          <div class="flow-kicker">${flow.isMyPaymentFlow ? "Bạn chuyển" : "Đối tác chuyển"}</div>
+          <h3 class="card-name">${flow.title}</h3>
+        </div>
+        <div class="payment-flow-status">${renderFlowBadge(flow)}</div>
       </div>
-      <div class="summary-line"><span>Số tiền</span><strong>${flow.amount}</strong></div>
-      <div class="summary-line"><span>Phương thức</span><strong>${flow.method}</strong></div>
-      ${renderReceiverInfo(flow)}
+      <div class="flow-summary-grid">
+        <div class="flow-summary-item">
+          <span>Số tiền</span>
+          <strong>${flow.amount}</strong>
+        </div>
+        <div class="flow-summary-item">
+          <span>Phương thức</span>
+          <strong>${flow.method}</strong>
+        </div>
+        ${renderReceiverInfo(flow)}
+      </div>
       ${renderFlowProofAndActions(flow, data)}
     </div>
   `).join("");
@@ -574,7 +613,7 @@ function renderFlowProofAndActions(flow, transaction){
       ${flow.confirmed ? `<div class="case-summary-note success mt-3">Bạn đã xác nhận nhận tiền từ Tran *** B.</div>` : `
         <div class="flow-action-title">Đây là bằng chứng do Tran *** B upload. Bạn hãy xem và xác nhận sau khi kiểm tra tiền đã vào tài khoản. </div>
         <div class="action-row">
-          <button class="btn btn-primary" data-confirm-received data-flow-id="${flow.id}" data-amount="${flow.amount}" data-method="${flow.method}">✅ Xác nhận đã nhận tiền</button>
+          <button class="btn btn-primary" data-confirm-received data-flow-id="${flow.id}" data-amount="${flow.amount}" data-method="${flow.method}"><i class="bi bi-check2-circle"></i> Xác nhận đã nhận tiền</button>
         </div>
       `}
     `;
@@ -670,6 +709,7 @@ function renderDisputeSection(data){
         <div class="dispute-reason mt-3">
           <div class="small-muted">Lý do</div>
           <div class="fw-bold">${data.dispute.reason}</div>
+          <div class="small-muted mt-2">${data.dispute.description}</div>
         </div>
         <div class="action-row">
           ${isMyDispute ? `<button class="btn btn-outline-danger" data-withdraw-complaint><i class="bi bi-x-circle"></i> Rút khiếu nại</button>` : ""}
