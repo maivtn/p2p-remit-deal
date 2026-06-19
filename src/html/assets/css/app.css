@@ -1698,10 +1698,13 @@ body{
    v3.5 Slim select deal summary
 ============================== */
 .deal-summary-panel.slim{
+  background:linear-gradient(135deg,#f8fbff 0%,#eff6ff 58%,#e6f8f1 100%);
+  color:#0f172a;
+  border:1px solid #dbeafe;
   padding:12px;
   border-radius:16px;
   margin-bottom:12px;
-  box-shadow:0 10px 24px rgba(15,23,42,.16);
+  box-shadow:0 8px 20px rgba(15,23,42,.07);
 }
 
 .deal-summary-slim-head{
@@ -1716,7 +1719,7 @@ body{
   margin:0;
   font-size:12px;
   font-weight:700;
-  color:rgba(255,255,255,.72);
+  color:#475569;
   text-transform:uppercase;
   letter-spacing:.04em;
 }
@@ -1727,7 +1730,7 @@ body{
   gap:6px;
   font-size:13px;
   font-weight:700;
-  color:#fff;
+  color:#0f172a;
   white-space:nowrap;
 }
 
@@ -1735,7 +1738,7 @@ body{
   width:22px;
   height:22px;
   font-size:10px;
-  background:#fff;
+  background:#dbeafe;
   color:#1d4ed8;
 }
 
@@ -1747,8 +1750,8 @@ body{
 }
 
 .deal-summary-mini-item{
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.09);
+  border:1px solid #dbeafe;
+  background:rgba(255,255,255,.84);
   border-radius:12px;
   padding:7px 8px;
   min-width:0;
@@ -1757,7 +1760,7 @@ body{
 .deal-summary-mini-item .label{
   display:block;
   font-size:10px;
-  color:rgba(255,255,255,.62);
+  color:#64748b;
   margin-bottom:2px;
 }
 
@@ -1765,7 +1768,7 @@ body{
   display:block;
   font-size:13px;
   font-weight:700;
-  color:#fff;
+  color:#1d4ed8;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -1776,7 +1779,7 @@ body{
   align-items:flex-start;
   gap:6px;
   padding-top:7px;
-  border-top:1px solid rgba(255,255,255,.14);
+  border-top:1px solid #dbeafe;
 }
 
 .deal-summary-method-row + .deal-summary-method-row{
@@ -1789,7 +1792,7 @@ body{
   flex:0 0 88px;
   font-size:10px;
   line-height:1.25;
-  color:rgba(255,255,255,.62);
+  color:#64748b;
 }
 
 .deal-summary-method-value{
@@ -1801,7 +1804,7 @@ body{
 }
 
 .deal-summary-method-value .badge{
-  background:rgba(255,255,255,.94) !important;
+  background:#fff !important;
 }
 
 .deal-summary-method-value .pay-icon{

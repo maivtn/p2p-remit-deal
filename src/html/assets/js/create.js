@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(!account){
       container.innerHTML = `
         <div class="hidden-until-accept">
-          <i class="bi bi-wallet2"></i>
+          <i class="bi bi-person-check"></i>
           Chưa chọn tài khoản người thụ hưởng. Vui lòng chọn tài khoản ${method} hoặc thêm mới.
         </div>
       `;
