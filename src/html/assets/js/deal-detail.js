@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const deal = mockDealsB[0];
-
   const params = new URLSearchParams(window.location.search);
+  const requestedDealId = params.get("dealId");
+  const deal = mockDealsB.find(item => item.id === requestedDealId || item.dealCode === requestedDealId) || mockDealsB[0];
   const isOwner = params.get("isOwner") === "true";
 
   const setText = (id, text) => {
@@ -28,6 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
   setText(
     "dealRate",
     formatDealRate(deal)
+  );
+
+  setText(
+    "dealRateLabel",
+    deal.exchangeRate?.source === "market" ? "Tỷ giá (theo giá thị trường)" : "Tỷ giá"
   );
 
   const methodEl = document.getElementById("dealMethods");
