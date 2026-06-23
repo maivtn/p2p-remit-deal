@@ -83,8 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="result-card-avatar">${deal.ownerInitial || "B"}</span>
           <div class="result-card-title-block">
             <div class="result-card-title-row">
-              <h3 class="card-name">Tran *** B</h3>
+              <h3 class="card-name">${deal.ownerNameMasked || "Tran ***"}</h3>
             </div>
+            ${renderOwnerRating(deal)}
             <div class="small-muted">
               ${deal.beneficiaryReceiveCurrency.currency} → ${deal.senderPayCurrency.currency} · $${deal.amountLimit.minUsd}–$${deal.amountLimit.maxUsd}
             </div>
@@ -141,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="result-card-avatar small">${deal.ownerInitial || "B"}</span>
           <div>
             <div class="history-code">${deal.ownerNameMasked || "Tran *** B"}</div>
+            ${renderOwnerRating(deal, "compact")}
             <div class="small-muted">${deal.beneficiaryReceiveCurrency.currency} → ${deal.senderPayCurrency.currency}</div>
           </div>
         </div>

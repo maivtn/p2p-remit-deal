@@ -146,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div>
               <h3 class="card-name">${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}</h3>
               <div class="small-muted">${deal.dealCode}</div>
+              ${renderOwnerRating(deal, "compact")}
             </div>
             <span class="badge-soft ${badgeClass(deal.status)}">${deal.statusLabel}</span>
           </div>
@@ -191,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <td data-label="Deal">
         <div class="history-code">${deal.dealCode}</div>
         <div class="small-muted">${deal.ownerNameMasked || "Tran *** B"}</div>
+        ${renderOwnerRating(deal, "compact")}
       </td>
       <td data-label="Cặp tiền">
         <strong>${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}</strong>

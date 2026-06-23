@@ -34,6 +34,15 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryReceiveMethods.innerHTML = methodTag(deal.beneficiaryReceiveMethod);
   }
 
+  const summaryCreator = document.getElementById("dealSummaryCreator");
+  if(summaryCreator){
+    summaryCreator.innerHTML = `
+      <span class="avatar">${deal.ownerInitial || "B"}</span>
+      <span>${deal.ownerNameMasked || "Tran ***"}</span>
+      ${renderOwnerRating(deal, "compact")}
+    `;
+  }
+
   const summarySendMethods = document.getElementById("summarySendMethods");
   if(summarySendMethods){
     summarySendMethods.innerHTML = deal.senderPaymentMethods.map(m => methodTag(m, "green")).join("");

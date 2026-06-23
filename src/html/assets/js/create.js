@@ -18,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const rateLabel = document.getElementById("createRateLabel");
   const marketRateToggle = document.getElementById("createMarketRateToggle");
   const exchangeRateInput = document.getElementById("createExchangeRateInput");
+  const minAmountLabel = document.getElementById("createMinAmountLabel");
+  const maxAmountLabel = document.getElementById("createMaxAmountLabel");
+  const minAmountHelp = document.getElementById("createMinAmountHelp");
+  const maxAmountHelp = document.getElementById("createMaxAmountHelp");
   const senderMethodsTitle = document.getElementById("createSenderMethodsTitle");
   const beneficiaryMethodsTitle = document.getElementById("createBeneficiaryMethodsTitle");
   const selectedAccountEl = document.getElementById("createBeneficiaryAccount");
@@ -186,6 +190,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function updateTooltipTitle(element, title){
+    if(!element) return;
+    element.setAttribute("data-bs-title", title);
+    element.setAttribute("title", title);
+    bootstrap.Tooltip.getOrCreateInstance(element).setContent({ ".tooltip-inner": title });
+  }
+
+  function renderAmountLimitLabels(){
+    const senderCurrency = getSelectedSenderCurrency();
+
+    if(minAmountLabel){
+      minAmountLabel.textContent = `Tối thiểu (${senderCurrency})`;
+    }
+    if(maxAmountLabel){
+      maxAmountLabel.textContent = `Tối đa (${senderCurrency})`;
+    }
+
+    updateTooltipTitle(
+      minAmountHelp,
+      `Số tiền ${senderCurrency} nhỏ nhất mà bạn muốn gửi cho mỗi giao dịch được tạo từ deal này.`
+    );
+    updateTooltipTitle(
+      maxAmountHelp,
+      `Số tiền ${senderCurrency} lớn nhất mà bạn sẵn sàng gửi cho mỗi giao dịch từ deal này.`
+    );
+  }
+
   function renderAccountPickerList({ listEl, subtitleEl, accounts, selectedAccount, currency, method, onSelect }){
     if(!listEl) return;
 
@@ -335,6 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bindBeneficiaryMethodChanges();
     renderSelectedAccount();
     renderExchangeRate();
+    renderAmountLimitLabels();
   }
 
   function openAccountPicker(){

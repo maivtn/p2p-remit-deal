@@ -2038,6 +2038,7 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 .deal-summary-slim-creator{
   display:flex;
   align-items:center;
+  flex-wrap:wrap;
   gap:6px;
   font-size:13px;
   font-weight:700;
@@ -2059,6 +2060,61 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
   font-size:11px;
   font-weight:800;
   line-height:1;
+}
+
+.deal-owner-rating{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  color:#0f172a;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.15;
+  white-space:nowrap;
+}
+
+.deal-owner-rating .bi-star-fill{
+  color:#facc15;
+  font-size:12px;
+  line-height:1;
+}
+
+.deal-owner-rating-count{
+  color:#0d6efd;
+  font-weight:700;
+}
+
+.deal-owner-rating.compact{
+  margin-top:3px;
+  font-size:11px;
+}
+
+.deal-owner-rating.compact .bi-star-fill{
+  font-size:11px;
+}
+
+.deal-detail-creator,
+.deal-row-owner{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  min-width:0;
+}
+
+.deal-detail-creator{
+  margin:6px 0 8px;
+}
+
+.deal-detail-creator-name,
+.deal-row-owner{
+  color:#334155;
+  font-size:13px;
+  font-weight:800;
+}
+
+.deal-row-owner{
+  margin-top:4px;
 }
 
 .deal-summary-mini-grid{
@@ -4920,6 +4976,15 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
   margin:0 auto;
 }
 
+body[data-detail-case] .app-page:has(#caseSwitcher){
+  max-width:1080px;
+}
+
+body[data-detail-case] .overview-intro{
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+
 .app-page:has(#caseSwitcher) > .alert{
   border:1px solid rgba(247,144,9,.22);
   border-radius:18px;
@@ -4999,7 +5064,12 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 
 .case-switcher{
   scrollbar-width:none;
-  padding:4px 2px 14px;
+  padding:6px;
+  margin-bottom:12px;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(15,23,42,.05);
 }
 
 .case-switcher::-webkit-scrollbar{
@@ -5160,6 +5230,50 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
   box-shadow:0 10px 24px rgba(15,23,42,.065);
 }
 
+body[data-detail-case] #paymentFlows{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  align-items:stretch;
+  margin:0 0 14px;
+}
+
+body[data-detail-case] #paymentFlows .payment-flow-card{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  margin-bottom:0;
+}
+
+body[data-detail-case] #paymentFlows .flow-summary-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+body[data-detail-case] #paymentFlows .flow-summary-wide{
+  grid-column:1 / -1;
+}
+
+body[data-detail-case] .detail-summary-card{
+  padding:18px;
+  border-radius:18px;
+}
+
+body[data-detail-case] .detail-summary-card .summary-line{
+  display:grid;
+  grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);
+  align-items:center;
+  gap:12px;
+}
+
+body[data-detail-case] .detail-summary-card .summary-line strong{
+  text-align:right;
+}
+
+body[data-detail-case] #countdownPanel,
+body[data-detail-case] #acceptancePanel{
+  margin-bottom:14px;
+}
+
 .payment-flow-card::before{
   content:"";
   position:absolute;
@@ -5309,6 +5423,33 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 }
 
 @media (max-width: 575.98px){
+  body[data-detail-case] .app-page:has(#caseSwitcher){
+    max-width:none;
+  }
+
+  body[data-detail-case] .overview-intro{
+    margin-bottom:8px;
+  }
+
+  body[data-detail-case] #paymentFlows{
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .case-switcher{
+    padding:5px;
+    margin-bottom:10px;
+    border-radius:13px;
+    box-shadow:0 5px 14px rgba(15,23,42,.04);
+  }
+
+  .case-switcher a{
+    min-height:30px;
+    padding:5px 8px;
+    font-size:11px;
+  }
+
   .detail-summary-card .name-line,
   .countdown-card{
     grid-template-columns:1fr;

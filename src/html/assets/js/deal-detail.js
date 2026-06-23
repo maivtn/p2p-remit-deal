@@ -15,6 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setText("dealCode", deal.dealCode);
 
+  const detailCreator = document.getElementById("dealDetailCreator");
+  if(detailCreator){
+    detailCreator.innerHTML = `
+      <span class="result-card-avatar small">${deal.ownerInitial || "B"}</span>
+      <span class="deal-detail-creator-name">${deal.ownerNameMasked || "Tran ***"}</span>
+      ${renderOwnerRating(deal)}
+    `;
+  }
+
   setText(
     "dealPair",
     `${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}`

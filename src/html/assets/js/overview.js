@@ -73,7 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const renderDealRow = deal => `
     <tr>
-      <td class="deal-pair" data-label="Cặp tiền tệ">${formatCurrencyPair(deal)}</td>
+      <td class="deal-pair" data-label="Cặp tiền tệ">
+        <div class="fw-bold">${formatCurrencyPair(deal)}</div>
+        <div class="deal-row-owner">
+          <span>${deal.ownerNameMasked || "Tran ***"}</span>
+          ${renderOwnerRating(deal, "compact")}
+        </div>
+      </td>
       <td class="deal-rate" data-label="Tỷ giá">${formatExchangeRate(deal)}</td>
       <td class="deal-limit" data-label="Giới hạn giao dịch">${formatUsdLimit(deal.amountLimit)}</td>
       <td data-label="Nhận qua">${methodTag(deal.beneficiaryReceiveMethod)}</td>

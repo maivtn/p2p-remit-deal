@@ -88,6 +88,19 @@ function methodTag(method, variant = ""){
     : "badge text-info border border-primary-subtle";
   return `<span class="${cls} d-inline-flex align-items-center gap-1 me-1 mt-1">${paymentIcon(method)}${method}</span>`;
 }
+function renderOwnerRating(deal, className = ""){
+  const rating = Number(deal?.ownerRating);
+  if(!Number.isFinite(rating)) return "";
+  const count = Number(deal?.ownerRatingCount || 0);
+  const countLabel = `${count.toLocaleString("en-US")} ${count === 1 ? "rating" : "ratings"}`;
+  return `
+    <span class="deal-owner-rating ${className}" aria-label="Creator rating ${rating.toFixed(1)} based on ${countLabel}">
+      <span class="deal-owner-rating-score">${rating.toFixed(1)}</span>
+      <i class="bi bi-star-fill"></i>
+      <span class="deal-owner-rating-count">(${countLabel})</span>
+    </span>
+  `;
+}
 function chip(method, active = false, radio = false, blue = false, value = method){
   return `
     <span class="chip ${radio ? "radio" : ""} ${active ? "active" : ""} ${blue && active ? "blue" : ""}" data-chip data-method="${value}" data-blue="${blue ? "true" : "false"}">
