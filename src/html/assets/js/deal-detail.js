@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const requestedDealId = params.get("dealId");
-  const deal = mockDealsB.find(item => item.id === requestedDealId || item.dealCode === requestedDealId) || mockDealsB[0];
   const isOwner = params.get("isOwner") === "true";
+  const sourceDeals = isOwner && typeof mockMyDeals !== "undefined" ? mockMyDeals : mockDealsB;
+  const deal = sourceDeals.find(item => item.id === requestedDealId || item.dealCode === requestedDealId) || sourceDeals[0] || mockDealsB[0];
 
   const setText = (id, text) => {
     const el = document.getElementById(id);
@@ -19,8 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if(detailCreator){
     detailCreator.innerHTML = `
       <span class="result-card-avatar small">${deal.ownerInitial || "B"}</span>
-      <span class="deal-detail-creator-name">${deal.ownerNameMasked || "Tran ***"}</span>
-      ${renderOwnerRating(deal)}
+      <span class="deal-detail-creator-name">${isOwner ? deal.dealCode : (deal.ownerNameMasked || "Tran ***")}</span>
+      ${isOwner ? `<span class="badge-soft ${badgeClass(deal.status)}">${deal.statusLabel}</span>` : renderOwnerRating(deal)}
     `;
   }
 

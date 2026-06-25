@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="col-12 col-md-6 col-xl-3">
           <div class="result-info-box h-100">
-            <div class="result-info-label">Bạn gửi ${deal.beneficiaryReceiveCurrency.currency} qua</div>
+            <div class="result-info-label">Người thụ hưởng của Tran *** B nhận ${deal.beneficiaryReceiveCurrency.currency} qua</div>
             <div class="result-method-tags">${methodTag(deal.beneficiaryReceiveMethod)}</div>
           </div>
         </div>

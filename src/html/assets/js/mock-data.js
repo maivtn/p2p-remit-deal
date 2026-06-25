@@ -360,6 +360,80 @@ const mockDealsB = [
   },
 ];
 
+const myDealOwner = {
+  ownerNameMasked: "Nguyễn Văn B",
+  ownerInitial: "B",
+  ownerRating: 5.0,
+  ownerRatingCount: 18,
+};
+
+const ownedDeal = (deal, overrides = {}) => ({
+  ...deal,
+  ...myDealOwner,
+  ...overrides,
+});
+
+const extraMyActiveDeals = [
+  { rate: 25450, min: 100, max: 1500, recv: "PayPal", send: ["Bank Transfer"] },
+  { rate: 25520, min: 80, max: 900, recv: "Zelle", send: ["MoMo", "ZaloPay"] },
+  { rate: 25380, min: 200, max: 3000, recv: "Bank Transfer", send: ["Bank Transfer"] },
+  { rate: 25610, min: 50, max: 600, recv: "PayPal", send: ["ZaloPay"] },
+  { rate: 25470, min: 150, max: 1800, recv: "Zelle", send: ["MoMo"] },
+  { rate: 25550, min: 120, max: 5000, recv: "Bank Transfer", send: ["MoMo", "Bank Transfer"] },
+].map((deal, index) => ownedDeal(mockDealsB[0], {
+  id: `deal_my_active_${String(index + 4).padStart(3, "0")}`,
+  dealCode: `DL-MY-VND-USD-${String(index + 4).padStart(3, "0")}`,
+  status: "active",
+  statusLabel: "Đang hoạt động",
+  exchangeRate: { ...mockDealsB[0].exchangeRate, rate: deal.rate },
+  amountLimit: { minUsd: deal.min, maxUsd: deal.max },
+  beneficiaryReceiveMethod: deal.recv,
+  senderPaymentMethods: deal.send,
+}));
+
+const mockMyDeals = [
+  ...mockDealsB.slice(0, 3).map((deal, index) => ownedDeal(deal, {
+    id: `deal_my_active_${String(index + 1).padStart(3, "0")}`,
+    dealCode: `DL-MY-${deal.senderPayCurrency.currency}-${deal.beneficiaryReceiveCurrency.currency}-${String(index + 1).padStart(3, "0")}`,
+  })),
+  ...extraMyActiveDeals,
+  ownedDeal(mockDealsB[0], {
+    id: "deal_my_completed_001",
+    dealCode: "DL-MY-COMPLETED-001",
+    status: "completed",
+    statusLabel: "Đã hoàn tất",
+    completedAt: "2026-06-16T14:00:00Z",
+  }),
+  ownedDeal(mockDealsB[1], {
+    id: "deal_my_completed_002",
+    dealCode: "DL-MY-COMPLETED-002",
+    status: "completed",
+    statusLabel: "Đã hoàn tất",
+    completedAt: "2026-06-15T10:30:00Z",
+  }),
+  ownedDeal(mockDealsB[2], {
+    id: "deal_my_completed_003",
+    dealCode: "DL-MY-COMPLETED-003",
+    status: "completed",
+    statusLabel: "Đã hoàn tất",
+    completedAt: "2026-06-14T16:45:00Z",
+  }),
+  ownedDeal(mockDealsB[0], {
+    id: "deal_my_deleted_001",
+    dealCode: "DL-MY-DELETED-001",
+    status: "deleted",
+    statusLabel: "Đã xoá",
+    deletedAt: "2026-06-16T15:00:00Z",
+  }),
+  ownedDeal(mockDealsB[1], {
+    id: "deal_my_deleted_002",
+    dealCode: "DL-MY-DELETED-002",
+    status: "deleted",
+    statusLabel: "Đã xoá",
+    deletedAt: "2026-06-13T11:20:00Z",
+  }),
+];
+
 const overviewData = {
   summary: {
     processingCount: 4,

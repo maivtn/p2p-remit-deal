@@ -6,71 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pagerEl = document.getElementById("manageDealsPager");
 
   const PAGE_SIZE = 5;
-
-  // Extra active deals so the list spans multiple pages (demo only).
-  const extraActiveDeals = [
-    { rate: 25450, min: 100, max: 1500, recv: "PayPal",        send: ["Bank Transfer"] },
-    { rate: 25520, min: 80,  max: 900,  recv: "Zelle",         send: ["MoMo", "ZaloPay"] },
-    { rate: 25380, min: 200, max: 3000, recv: "Bank Transfer", send: ["Bank Transfer"] },
-    { rate: 25610, min: 50,  max: 600,  recv: "PayPal",        send: ["ZaloPay"] },
-    { rate: 25470, min: 150, max: 1800, recv: "Zelle",         send: ["MoMo"] },
-    { rate: 25550, min: 120, max: 5000, recv: "Bank Transfer", send: ["MoMo", "Bank Transfer"] },
-  ].map((x, i) => ({
-    ...mockDealsB[0],
-    id: `deal_b_gen_${i + 1}`,
-    dealCode: `DL-B-VND-USD-${String(i + 4).padStart(3, "0")}`,
-    status: "active",
-    statusLabel: "Đang hoạt động",
-    exchangeRate: { ...mockDealsB[0].exchangeRate, rate: x.rate },
-    amountLimit: { minUsd: x.min, maxUsd: x.max },
-    beneficiaryReceiveMethod: x.recv,
-    senderPaymentMethods: x.send,
-  }));
-
-  const myDeals = [
-    ...mockDealsB,
-    ...extraActiveDeals,
-    {
-      ...mockDealsB[0],
-      id: "deal_my_completed_001",
-      dealCode: "DL-MY-COMPLETED-001",
-      status: "completed",
-      statusLabel: "Đã hoàn tất",
-      completedAt: "2026-06-16T14:00:00Z",
-    },
-    {
-      ...mockDealsB[1],
-      id: "deal_my_completed_002",
-      dealCode: "DL-MY-COMPLETED-002",
-      status: "completed",
-      statusLabel: "Đã hoàn tất",
-      completedAt: "2026-06-15T10:30:00Z",
-    },
-    {
-      ...mockDealsB[2],
-      id: "deal_my_completed_003",
-      dealCode: "DL-MY-COMPLETED-003",
-      status: "completed",
-      statusLabel: "Đã hoàn tất",
-      completedAt: "2026-06-14T16:45:00Z",
-    },
-    {
-      ...mockDealsB[0],
-      id: "deal_my_deleted_001",
-      dealCode: "DL-MY-DELETED-001",
-      status: "deleted",
-      statusLabel: "Đã xoá",
-      deletedAt: "2026-06-16T15:00:00Z",
-    },
-    {
-      ...mockDealsB[1],
-      id: "deal_my_deleted_002",
-      dealCode: "DL-MY-DELETED-002",
-      status: "deleted",
-      statusLabel: "Đã xoá",
-      deletedAt: "2026-06-13T11:20:00Z",
-    },
-  ];
+  const myDeals = typeof mockMyDeals !== "undefined" ? mockMyDeals : mockDealsB;
 
   const filters = [
     { key: "all", label: "Tất cả" },
@@ -92,6 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const formatDealRate = deal => `${Number(deal.exchangeRate.rate).toLocaleString("vi-VN", {
     maximumFractionDigits: Number(deal.exchangeRate.rate) < 100 ? 4 : 0,
   })} ${deal.exchangeRate.to}/${deal.exchangeRate.from}`;
+
+  const formatDealDate = value => {
+    if(!value) return "Chưa cập nhật";
+    return new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(value));
+  };
 
   const renderChips = () => {
     if(!chipsEl) return;
@@ -145,8 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="name-line">
             <div>
               <h3 class="card-name">${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}</h3>
-              <div class="small-muted">${deal.dealCode}</div>
-              ${renderOwnerRating(deal, "compact")}
+              <div class="small-muted">${deal.dealCode} · Tạo ${formatDealDate(deal.createdAt)}</div>
             </div>
             <span class="badge-soft ${badgeClass(deal.status)}">${deal.statusLabel}</span>
           </div>
@@ -164,11 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="d-block d-md-flex justify-content-between">
             <div class="manage-method-split mt-3">
               <div class="manage-method-row">
-                <div class="manage-method-label">Gửi qua:</div>
+                <div class="manage-method-label">Tôi gửi qua:</div>
                 <div class="manage-method-tags">${deal.senderPaymentMethods.map(m => methodTag(m, "green")).join("")}</div>
               </div>
               <div class="manage-method-row">
-                <div class="manage-method-label">Nhận qua:</div>
+                <div class="manage-method-label">Thụ hưởng:</div>
                 <div class="manage-method-tags">${methodTag(deal.beneficiaryReceiveMethod)}</div>
               </div>
             </div>
@@ -191,16 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
     <tr>
       <td data-label="Deal">
         <div class="history-code">${deal.dealCode}</div>
-        <div class="small-muted">${deal.ownerNameMasked || "Tran *** B"}</div>
-        ${renderOwnerRating(deal, "compact")}
+        <div class="small-muted">Tạo ${formatDealDate(deal.createdAt)}</div>
       </td>
       <td data-label="Cặp tiền">
         <strong>${deal.senderPayCurrency.currency} → ${deal.beneficiaryReceiveCurrency.currency}</strong>
       </td>
       <td data-label="Tỷ giá"><span class="history-table-amount receive">${formatDealRate(deal)}</span></td>
       <td data-label="Giới hạn"><span class="history-table-amount send">$${deal.amountLimit.minUsd}–$${deal.amountLimit.maxUsd}</span></td>
-      <td data-label="Gửi qua"><div class="manage-table-methods">${methodBadges(deal.senderPaymentMethods)}</div></td>
-      <td data-label="Nhận qua"><div class="manage-table-methods">${methodTag(deal.beneficiaryReceiveMethod)}</div></td>
+      <td data-label="Tôi gửi qua"><div class="manage-table-methods">${methodBadges(deal.senderPaymentMethods)}</div></td>
+      <td data-label="Người thụ hưởng nhận qua"><div class="manage-table-methods">${methodTag(deal.beneficiaryReceiveMethod)}</div></td>
       <td data-label="Trạng thái"><span class="badge-soft ${badgeClass(deal.status)}">${deal.statusLabel}</span></td>
       <td data-label="Thao tác">
         <div class="manage-table-actions">
@@ -223,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
       listEl.innerHTML = `
         <div class="manage-empty">
           <div class="fw-bold">Không có deal</div>
-          <div class="small-muted mt-1">Không có dữ liệu phù hợp với filter này.</div>
+          <div class="small-muted mt-1">Bạn chưa có deal nào phù hợp với bộ lọc này.</div>
         </div>
       `;
       renderPager(pagerEl, { page: 1, pageSize: PAGE_SIZE, total: 0, onPage: () => {} });
@@ -243,8 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <th>Cặp tiền</th>
                 <th>Tỷ giá</th>
                 <th>Giới hạn</th>
-                <th>Gửi qua</th>
-                <th>Nhận qua</th>
+                <th>Tôi gửi qua</th>
+                <th>Người thụ hưởng nhận qua</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
