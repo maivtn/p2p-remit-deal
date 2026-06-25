@@ -163,31 +163,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const txnCardHtml = txn => `
     <div class="col">
       <article class="recent-history-card history-page-card h-100" role="listitem">
-        <div class="recent-history-card-icon">
-          <span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span>
-        </div>
+        <div class="history-card-row row g-2 align-items-start">
+          <div class="col-auto">
+            <div class="recent-history-card-icon">
+              <span class="history-status-icon ${statusTone(txn.status)}"><i class="bi ${historyIcon(txn.status)}"></i></span>
+            </div>
+          </div>
 
-        <div class="recent-history-card-main">
-          <div class="history-main">
-            <div class="history-code">${txn.transactionCode}</div>
-            <div class="small-muted">với ${txn.name}</div>
-            <small>${txn.time}</small>
+          <div class="col min-w-0">
+            <div class="recent-history-card-main">
+              <div class="history-main">
+                <div class="history-code">${txn.transactionCode}</div>
+                <div class="small-muted">với ${txn.name}</div>
+                <small>${txn.time}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-auto">
+            <div class="recent-history-card-status">
+              <span class="badge-soft ${statusBadgeClass(txn)}">${txn.statusLabel}</span>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="history-card-footer row g-2 align-items-end">
+              <div class="col min-w-0">
+                <div class="recent-history-card-amount history-amount">
+                  <span class="text-dark">Gửi: ${txn.send}</span>
+                  <span>Nhận: ${txn.receive}</span>
+                </div>
+              </div>
+              <div class="col-auto">
+                <a href="${getDetailLink(txn)}" class="recent-history-card-action btn btn-sm btn-outline-success" aria-label="Xem ${txn.transactionCode}">
+                  <i class="bi bi-eye"></i>
+                  <span>Xem</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="recent-history-card-amount history-amount">
-          <span class="text-dark">Gửi: ${txn.send}</span>
-          <span>Nhận: ${txn.receive}</span>
-        </div>
-
-        <div class="recent-history-card-status">
-          <span class="badge-soft ${statusBadgeClass(txn)}">${txn.statusLabel}</span>
-        </div>
-
-        <a href="${getDetailLink(txn)}" class="recent-history-card-action btn btn-sm btn-outline-success" aria-label="Xem ${txn.transactionCode}">
-          <i class="bi bi-eye"></i>
-          <span>Xem</span>
-        </a>
       </article>
     </div>
   `;

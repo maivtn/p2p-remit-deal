@@ -19,13 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
       ${accounts.map(acc => `
         <div class="account-card mb-2">
           <div class="d-flex justify-content-between align-items-start">
-            <div>
+            <div class="account-card-main min-w-0">
               <div class="account-title-row">
-              <img class="pay-icon-lg" src="${methodConfig(acc.currency, acc.method)?.icon || ''}" alt="${acc.method}">
-              <div>
-              <div class="account-title">${acc.method} - ${acc.details.name}</div>
-              <div class="account-meta">${accountDisplay(acc)}</div>
-              </div>
+                <img class="pay-icon-lg" src="${methodConfig(acc.currency, acc.method)?.icon || ''}" alt="${acc.method}">
+                <div class="min-w-0">
+                  <div class="account-method-line">
+                    <span class="account-method-pill">${acc.method}</span>
+                    <span class="account-currency-pill">${acc.currency}</span>
+                  </div>
+                  <div class="account-holder-name">${acc.details.name}</div>
+                  <div class="account-meta">${accountDisplay(acc)}</div>
+                </div>
               </div>
             </div>
             <div class="d-flex gap-1">

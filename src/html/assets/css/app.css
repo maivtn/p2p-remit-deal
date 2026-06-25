@@ -1325,6 +1325,49 @@ body{
   flex:0 0 auto;
 }
 
+.account-card-main{
+  flex:1 1 auto;
+}
+
+.account-method-line{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-bottom:3px;
+}
+
+.account-method-pill,
+.account-currency-pill{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  padding:3px 7px;
+}
+
+.account-method-pill{
+  background:#eef6ff;
+  color:#1d4ed8;
+}
+
+.account-currency-pill{
+  background:#ecfdf5;
+  color:#047857;
+}
+
+.account-holder-name{
+  color:#111827;
+  font-size:15px;
+  font-weight:800;
+  line-height:1.2;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
 
 /* ==============================
    v2.1 Search Result Page + Complete Transaction Cases
@@ -1800,6 +1843,145 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 @media (max-width: 767.98px){
   .app-shell{
     padding-bottom:112px;
+  }
+
+  .overview-intro{
+    gap:8px !important;
+    margin-top:8px !important;
+    margin-bottom:10px !important;
+  }
+
+  .overview-title{
+    margin-bottom:4px;
+  }
+
+  .form-card{
+    padding:12px;
+    margin-bottom:10px;
+  }
+
+  .form-card .form-label{
+    margin-bottom:5px;
+  }
+
+  .form-card .mt-3{
+    margin-top:10px !important;
+  }
+
+  .form-card .mb-3{
+    margin-bottom:10px !important;
+  }
+
+  .form-card .rate-line{
+    margin-top:4px;
+  }
+
+  input.form-control,
+  select.form-select{
+    height:38px;
+    min-height:38px;
+    border-radius:10px;
+    padding-top:3px;
+    padding-bottom:3px;
+    font-size:14px;
+    line-height:1.1;
+  }
+
+  select.form-select{
+    padding-left:10px;
+    padding-right:28px;
+    background-size:12px 10px;
+    background-position:right 10px center;
+  }
+
+  input.form-control{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .search-form-only .convert-box{
+    height:38px;
+    min-height:38px;
+    border-radius:10px;
+    padding:0 10px;
+    font-size:14px;
+    line-height:1.1;
+  }
+
+  .chips{
+    gap:7px;
+  }
+
+  .chip{
+    min-height:30px;
+    border-radius:10px;
+    padding:5px 10px;
+    gap:6px;
+    font-size:11px;
+    line-height:1.1;
+  }
+
+  .chip .check{
+    width:14px;
+    height:14px;
+    border-radius:4px;
+    font-size:9px;
+  }
+
+  .chip .pay-icon{
+    width:14px;
+    height:14px;
+  }
+
+  .history-page-card{
+    padding:12px;
+  }
+
+  .history-card-row{
+    --bs-gutter-x:.5rem;
+    --bs-gutter-y:.5rem;
+  }
+
+  .history-card-footer{
+    padding-left:30px;
+  }
+
+  .history-page-card .recent-history-card-action{
+    min-height:30px;
+    padding:4px 10px;
+    border-radius:9px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .account-card{
+    padding:10px;
+    border-radius:13px;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .account-title-row{
+    gap:8px;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .pay-icon-lg{
+    width:32px;
+    height:32px;
+    border-radius:10px;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .account-holder-name{
+    font-size:14px;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .account-meta{
+    margin-top:3px;
+    font-size:12px;
+  }
+
+  body[data-active-tab="beneficiaryAccounts"] .icon-btn{
+    width:32px;
+    height:32px;
+    font-size:12px;
   }
 
   .tabs-wrap{
@@ -2650,21 +2832,122 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 
 @media (max-width:760px){
   .result-card-top{
-    grid-template-columns:1fr;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    align-items:start;
+  }
+
+  .result-card-identity{
+    gap:8px;
+  }
+
+  .result-card-avatar{
+    width:34px;
+    height:34px;
+    font-size:13px;
+  }
+
+  .result-card-title-row .card-name{
+    font-size:14px;
+    line-height:1.2;
+  }
+
+  .result-card-title-block .small-muted{
+    font-size:11px;
+    line-height:1.25;
   }
 
   .result-card-rate-action{
-    align-items:stretch;
-    flex-direction:column;
-    gap:10px;
+    align-items:flex-start;
+    flex-direction:row;
+    justify-content:flex-end;
+    gap:0;
   }
 
   .result-card-rate{
     min-width:0;
   }
 
+  .result-card-info-grid{
+    --bs-gutter-x:.5rem;
+    --bs-gutter-y:.5rem;
+  }
+
+  .result-card-info-grid > [class*="col-"]{
+    flex:0 0 50%;
+    max-width:50%;
+    width:50%;
+  }
+
+  .result-card-info-grid .result-card-rate,
+  .result-card-info-grid .result-info-box{
+    border-radius:12px;
+    padding:8px;
+  }
+
+  .result-card-info-grid .result-info-label{
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:4px;
+    font-size:10px;
+    line-height:1.2;
+    margin-bottom:4px;
+  }
+
+  .result-card-info-grid .rate-blue,
+  .result-card-info-grid .result-info-value{
+    font-size:11px;
+    line-height:1.2;
+    white-space:normal;
+  }
+
+  .result-card-info-grid .rate-blue{
+    overflow-wrap:anywhere;
+  }
+
+  .result-card-info-grid .result-method-tags{
+    gap:4px;
+  }
+
+  .result-card-info-grid .result-method-tags .badge{
+    max-width:100%;
+    padding:4px 5px;
+    font-size:10px;
+    line-height:1.1;
+    text-align:left;
+    white-space:normal;
+  }
+
+  .result-card-info-grid .result-method-tags .pay-icon{
+    width:12px;
+    height:12px;
+  }
+
   .result-action-group{
+    align-items:stretch;
+    flex-direction:column;
+    flex-wrap:nowrap;
     justify-content:flex-start;
+    gap:4px;
+  }
+
+  .result-card-rate-action .result-action-group .btn{
+    width:64px;
+    min-height:26px;
+    padding:3px 6px;
+    border-radius:8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    font-size:10px;
+    font-weight:800;
+    line-height:1;
+    white-space:nowrap;
+  }
+
+  .result-card-rate-action .result-action-group .btn i{
+    font-size:12px;
   }
 
 }
@@ -2675,7 +2958,7 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
     flex-direction:column;
   }
 
-  .result-action-group,
+  .result-rate-action-row .result-action-group,
   .result-rate-action-row .btn{
     width:100%;
   }
@@ -4922,7 +5205,41 @@ body[data-active-tab="history"] .history-filter-chip:focus-visible .count{backgr
 }
 
 .history-page-card{
-  min-height:166px;
+  display:block;
+  min-height:0;
+}
+
+.history-card-row{
+  min-width:0;
+}
+
+.min-w-0{
+  min-width:0;
+}
+
+.history-card-footer{
+  --bs-gutter-x:0;
+  padding-left:38px;
+}
+
+.history-page-card .recent-history-card-icon,
+.history-page-card .recent-history-card-main,
+.history-page-card .recent-history-card-amount,
+.history-page-card .recent-history-card-status,
+.history-page-card .recent-history-card-action{
+  grid-column:auto;
+  grid-row:auto;
+}
+
+.history-page-card .recent-history-card-status{
+  justify-self:auto;
+  max-width:120px;
+}
+
+.history-page-card .recent-history-card-action{
+  justify-self:auto;
+  align-self:auto;
+  margin-top:0;
 }
 
 .history-page-table{
