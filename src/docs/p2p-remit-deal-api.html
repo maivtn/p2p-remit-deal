@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P2P Remit Deal — API Reference</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --accent: #6366f1;
+    --get: #22c55e;
+    --post: #3b82f6;
+    --put: #f59e0b;
+    --del: #ef4444;
+    --req-bg: rgba(34,197,94,0.1);
+    --opt-bg: rgba(148,163,184,0.1);
+    --sidebar-w: 260px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  #sidebar-header {
+    padding: 20px 16px 14px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+  #sidebar-header h1 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  #sidebar-header p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .sidebar-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .sidebar-group {
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sidebar-group-title:hover { color: var(--text); }
+  .sidebar-group-title .arrow {
+    font-size: 10px;
+    transition: transform .2s;
+  }
+  .sidebar-group.open .arrow { transform: rotate(90deg); }
+  .sidebar-items { display: none; }
+  .sidebar-group.open .sidebar-items { display: block; }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px 6px 20px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active { background: rgba(99,102,241,.15); color: var(--accent); }
+  .m-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .m-get  { background: rgba(34,197,94,.15);  color: var(--get);  border: 1px solid rgba(34,197,94,.3);  }
+  .m-post { background: rgba(59,130,246,.15); color: var(--post); border: 1px solid rgba(59,130,246,.3); }
+  .m-put  { background: rgba(245,158,11,.15); color: var(--put);  border: 1px solid rgba(245,158,11,.3); }
+  .m-del  { background: rgba(239,68,68,.15);  color: var(--del);  border: 1px solid rgba(239,68,68,.3);  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 0 0 80px;
+  }
+  #top-banner {
+    padding: 40px 48px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0f1117 0%, #1a1d27 100%);
+  }
+  #top-banner h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #top-banner p {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 14px;
+    max-width: 680px;
+  }
+  .meta-tags {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .meta-tag strong { color: var(--text); }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 40px 48px 0;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .count {
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface2);
+    color: var(--muted);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── ENDPOINT CARD ── */
+  .endpoint-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    scroll-margin-top: 20px;
+  }
+  .endpoint-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .endpoint-header:hover { background: var(--surface2); }
+  .method-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 5px;
+    min-width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: var(--mono);
+  }
+  .method-get  { background: rgba(34,197,94,.15);  color: var(--get);  border: 1px solid rgba(34,197,94,.3);  }
+  .method-post { background: rgba(59,130,246,.15); color: var(--post); border: 1px solid rgba(59,130,246,.3); }
+  .method-put  { background: rgba(245,158,11,.15); color: var(--put);  border: 1px solid rgba(245,158,11,.3); }
+  .method-del  { background: rgba(239,68,68,.15);  color: var(--del);  border: 1px solid rgba(239,68,68,.3);  }
+  .endpoint-meta { flex: 1; min-width: 0; }
+  .endpoint-path {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-all;
+  }
+  .endpoint-path .path-param { color: var(--accent); }
+  .endpoint-purpose {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .endpoint-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .tag-auth   { color: #a78bfa; border-color: rgba(167,139,250,.3); background: rgba(167,139,250,.08); }
+  .tag-multi  { color: #fb923c; border-color: rgba(251,146,60,.3);  background: rgba(251,146,60,.08);  }
+  .tag-noauth { color: #94a3b8; border-color: rgba(148,163,184,.3); background: rgba(148,163,184,.08); }
+  .chevron {
+    color: var(--muted);
+    font-size: 14px;
+    transition: transform .2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .endpoint-card.open .chevron { transform: rotate(90deg); }
+  .endpoint-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  .endpoint-card.open .endpoint-body { display: block; }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    padding: 0 20px;
+  }
+  .tab-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; padding: 20px; }
+  .tab-panel.active { display: block; }
+
+  /* ── FIELD TABLE ── */
+  .field-table-wrap { overflow-x: auto; }
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .field-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .field-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .field-table tr:last-child td { border-bottom: none; }
+  .field-table tr:hover td { background: rgba(255,255,255,.02); }
+  .fname {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #93c5fd;
+    white-space: nowrap;
+  }
+  .ftype {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #86efac;
+    white-space: nowrap;
+  }
+  .badge-req {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(34,197,94,.15);
+    color: var(--get);
+    border: 1px solid rgba(34,197,94,.3);
+    white-space: nowrap;
+  }
+  .badge-opt {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(148,163,184,.1);
+    color: var(--muted);
+    border: 1px solid rgba(148,163,184,.2);
+    white-space: nowrap;
+  }
+  .fdesc { color: var(--muted); font-size: 12px; }
+  .no-body {
+    padding: 20px;
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+  }
+  .resp-note {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 0 14px;
+  }
+  .resp-note code {
+    font-family: var(--mono);
+    color: #86efac;
+    background: rgba(134,239,172,.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── CODE BLOCK ── */
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: #cbd5e1;
+    margin-top: 8px;
+  }
+  pre .k  { color: #f472b6; }
+  pre .s  { color: #86efac; }
+  pre .n  { color: #93c5fd; }
+  pre .c  { color: #64748b; }
+
+  /* ── REFERENCE SECTION ── */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .ref-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .ref-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    font-family: var(--mono);
+  }
+  .enum-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .enum-row:last-child { border-bottom: none; }
+  .enum-val {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: #f59e0b;
+    min-width: 24px;
+  }
+  .enum-name {
+    font-family: var(--mono);
+    color: #93c5fd;
+    flex: 1;
+  }
+  .enum-desc { color: var(--muted); font-size: 11px; }
+
+  /* ── OBJECT TABLE ── */
+  .obj-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .obj-table th {
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .obj-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .obj-table tr:last-child td { border-bottom: none; }
+  .obj-table .fname { font-size: 11px; }
+  .obj-table .ftype { font-size: 10px; }
+
+  /* ── DIVIDER ── */
+  .section-spacer { height: 40px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4a5568; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); transition: transform .25s; }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #top-banner, .section { padding-left: 20px; padding-right: 20px; }
+    #menu-toggle {
+      display: flex;
+      position: fixed;
+      top: 14px; left: 14px;
+      z-index: 200;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 36px; height: 36px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  }
+  @media (min-width: 769px) {
+    #menu-toggle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</div>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <h1>P2P Remit Deal <span class="sidebar-badge">v1</span></h1>
+    <p>Member / Merchant API · 25 endpoints</p>
+  </div>
+
+  <!-- G1 -->
+  <div class="sidebar-group open" id="sg-1">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-1')">
+      Configuration <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-1"><span class="m-badge m-get">GET</span>/setting</a>
+      <a class="sidebar-item" href="#ep-2"><span class="m-badge m-get">GET</span>/corridors</a>
+    </div>
+  </div>
+
+  <!-- G2 -->
+  <div class="sidebar-group open" id="sg-2">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-2')">
+      Marketplace &amp; Deal Info <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-3"><span class="m-badge m-get">GET</span>/marketplace</a>
+      <a class="sidebar-item" href="#ep-4"><span class="m-badge m-get">GET</span>/{id}</a>
+      <a class="sidebar-item" href="#ep-5"><span class="m-badge m-get">GET</span>/history</a>
+      <a class="sidebar-item" href="#ep-6"><span class="m-badge m-get">GET</span>/statistics</a>
+    </div>
+  </div>
+
+  <!-- G3 -->
+  <div class="sidebar-group open" id="sg-3">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-3')">
+      Deal Lifecycle <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-7"><span class="m-badge m-post">POST</span>/</a>
+      <a class="sidebar-item" href="#ep-8"><span class="m-badge m-put">PUT</span>/{id}</a>
+      <a class="sidebar-item" href="#ep-9"><span class="m-badge m-post">POST</span>/{id}/accept</a>
+      <a class="sidebar-item" href="#ep-10"><span class="m-badge m-post">POST</span>/{id}/decline</a>
+      <a class="sidebar-item" href="#ep-11"><span class="m-badge m-post">POST</span>/{id}/approve</a>
+      <a class="sidebar-item" href="#ep-12"><span class="m-badge m-post">POST</span>/{id}/cancel</a>
+      <a class="sidebar-item" href="#ep-13"><span class="m-badge m-post">POST</span>/{id}/reopen</a>
+    </div>
+  </div>
+
+  <!-- G4 -->
+  <div class="sidebar-group open" id="sg-4">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-4')">
+      Proof &amp; Confirmation <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-14"><span class="m-badge m-post">POST</span>/{id}/proof</a>
+      <a class="sidebar-item" href="#ep-15"><span class="m-badge m-del">DEL</span>/{id}/proof/{fid}</a>
+      <a class="sidebar-item" href="#ep-16"><span class="m-badge m-post">POST</span>/{id}/confirm</a>
+    </div>
+  </div>
+
+  <!-- G5 -->
+  <div class="sidebar-group open" id="sg-5">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-5')">
+      Dispute <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-17"><span class="m-badge m-post">POST</span>/{id}/dispute</a>
+      <a class="sidebar-item" href="#ep-18"><span class="m-badge m-post">POST</span>/dispute/cancel</a>
+    </div>
+  </div>
+
+  <!-- G6 -->
+  <div class="sidebar-group open" id="sg-6">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-6')">
+      Rating <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-19"><span class="m-badge m-post">POST</span>/{id}/rating</a>
+      <a class="sidebar-item" href="#ep-20"><span class="m-badge m-get">GET</span>/ratings/{cid}</a>
+    </div>
+  </div>
+
+  <!-- G7 -->
+  <div class="sidebar-group open" id="sg-7">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-7')">
+      Payment Profiles <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-21"><span class="m-badge m-get">GET</span>/payment-profiles</a>
+      <a class="sidebar-item" href="#ep-22"><span class="m-badge m-post">POST</span>/payment-profiles</a>
+      <a class="sidebar-item" href="#ep-23"><span class="m-badge m-put">PUT</span>/payment-profiles/{id}</a>
+      <a class="sidebar-item" href="#ep-24"><span class="m-badge m-del">DEL</span>/payment-profiles/{id}</a>
+    </div>
+  </div>
+
+  <!-- G8 -->
+  <div class="sidebar-group open" id="sg-8">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-8')">
+      Payment Methods <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ep-25"><span class="m-badge m-get">GET</span>/payment-methods</a>
+    </div>
+  </div>
+
+  <!-- Reference -->
+  <div class="sidebar-group open" id="sg-ref">
+    <div class="sidebar-group-title" onclick="toggleGroup('sg-ref')">
+      Reference <span class="arrow">▶</span>
+    </div>
+    <div class="sidebar-items">
+      <a class="sidebar-item" href="#ref-enums">Enums</a>
+      <a class="sidebar-item" href="#ref-types">Common Types</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main id="main">
+  <p>
+    Enums
+Notification Type:
+RemitDealYouAccepted = 175,
+RemitDealMatcherAccepted = 176,
+RemitDealCreatorApproved = 177,
+RemitDealDeclined = 178,
+RemitDealProofUploaded = 179,
+RemitDealProofConfirmed = 180,
+RemitDealCompleted = 181,
+RemitDealDisputed = 182,
+RemitDealDisputeCancelled = 183,
+RemitDealPaused = 184,
+RemitDealSystemCancelled = 185,
+RemitDealRevertedToNewForCreator = 186,
+RemitDealRevertedToNewForMatcher = 187
+Transaction Type:
+DeductUsdvHoldForRemitDealCreator = 105,
+DeductUsdvHoldForRemitDealMatcher = 106,
+ReleaseUsdvHoldRemitDealCreator   = 107,
+ReleaseUsdvHoldRemitDealMatcher   = 108,
+PenaltyUsdvRemitDeal              = 109,
+CompensationUsdvRemitDeal         = 110,
+```
+  </p>
+
+  <div id="top-banner">
+    <h1>P2P Remit Deal — API Reference</h1>
+    <p>Complete field-level API documentation for all member and merchant endpoints. Use this reference to integrate the P2P Remit Deal feature into the front-end application.</p>
+    <div class="meta-tags">
+      <span class="meta-tag"><strong>Base URL</strong> /api/remit-deal</span>
+      <span class="meta-tag"><strong>Auth</strong> Bearer JWT (all endpoints)</span>
+      <span class="meta-tag"><strong>Endpoints</strong> 25</span>
+      <span class="meta-tag"><strong>Service</strong> WalletService · HTTP 2022</span>
+      <span class="meta-tag"><strong>Updated</strong> 2026-06-25</span>
+    </div>
+  </div>
+
+  <!-- ════════ GROUP 1 — CONFIGURATION ════════ -->
+  <div class="section" id="group-1">
+    <div class="section-title">Configuration <span class="count">2 endpoints</span></div>
+
+    <!-- EP 1 -->
+    <div class="endpoint-card open" id="ep-1">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/setting</div>
+          <div class="endpoint-purpose">Retrieve platform-level settings for Remit Deal (fees, SLA minutes, feature flags).</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-1-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-1-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-1-req">
+          <p class="no-body">No request body. No query parameters.</p>
+        </div>
+        <div class="tab-panel" id="ep-1-res">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">platformFeePercent</td><td class="ftype">decimal</td><td class="fdesc">Platform fee charged on each completed deal (percentage).</td></tr>
+                <tr><td class="fname">creatorConfirmTimeoutMinutes</td><td class="ftype">int</td><td class="fdesc">Minutes the Creator has to confirm a match after accepting. Default: <strong>15</strong>. Exceeding this auto-reverts deal to New.</td></tr>
+                <tr><td class="fname">postAcceptSlaMinutes</td><td class="ftype">int</td><td class="fdesc">Total SLA minutes from match-lock to completion. Default: <strong>60</strong>. Exceeding this auto-pauses the deal.</td></tr>
+                <tr><td class="fname">canCreateDeal</td><td class="ftype">bool</td><td class="fdesc">Feature flag — if <code>false</code>, the "Create Deal" button should be hidden.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 2 -->
+    <div class="endpoint-card open" id="ep-2">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/corridors</div>
+          <div class="endpoint-purpose">List all active currency corridors available for creating or matching deals.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-2-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-2-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-2-req">
+          <p class="no-body">No request body. No query parameters.</p>
+        </div>
+        <div class="tab-panel" id="ep-2-res">
+          <p class="resp-note">Returns <code>CorridorDto[]</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">int</td><td class="fdesc">Corridor identifier — pass as <code>corridorId</code> when creating a deal.</td></tr>
+                <tr><td class="fname">fromAsset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Source currency asset (see Common Types).</td></tr>
+                <tr><td class="fname">toAsset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Destination currency asset.</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td class="fdesc">Reference exchange rate for this corridor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-1 -->
+
+  <!-- ════════ GROUP 2 — MARKETPLACE & DEAL INFO ════════ -->
+  <div class="section" id="group-2">
+    <div class="section-title">Marketplace &amp; Deal Info <span class="count">4 endpoints</span></div>
+
+    <!-- EP 3 -->
+    <div class="endpoint-card open" id="ep-3">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/marketplace</div>
+          <div class="endpoint-purpose">Browse open deals on the marketplace. Supports filtering by corridor, amount, and payment methods.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-3-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-3-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-3-req">
+          <p class="resp-note">Query parameters (GET)</p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">pageIndex</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">0-based page index.</td></tr>
+                <tr><td class="fname">pageSize</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Number of items per page.</td></tr>
+                <tr><td class="fname">corridorId</td><td class="ftype">int?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by corridor ID.</td></tr>
+                <tr><td class="fname">amount</td><td class="ftype">decimal?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Show only deals that cover this amount (between minAmount and maxAmount).</td></tr>
+                <tr><td class="fname">fromPaymentMethods</td><td class="ftype">int[]?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by source payment methods (RemitPaymentMethod enum values).</td></tr>
+                <tr><td class="fname">toPaymentMethods</td><td class="ftype">int[]?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by destination payment methods.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-3-res">
+          <p class="resp-note">Returns <code>PaginatedResult&lt;MarketplaceDealDto&gt;</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td class="fdesc">Deal unique identifier.</td></tr>
+                <tr><td class="fname">fromAssetSymbol</td><td class="ftype">string</td><td class="fdesc">Source asset symbol (e.g. "USDT").</td></tr>
+                <tr><td class="fname">toAssetSymbol</td><td class="ftype">string</td><td class="fdesc">Destination asset symbol (e.g. "VND").</td></tr>
+                <tr><td class="fname">minAmount</td><td class="ftype">decimal</td><td class="fdesc">Minimum acceptable amount for the Matcher.</td></tr>
+                <tr><td class="fname">maxAmount</td><td class="ftype">decimal</td><td class="fdesc">Maximum acceptable amount for the Matcher.</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td class="fdesc">Exchange rate offered by the Creator.</td></tr>
+                <tr><td class="fname">createdAt</td><td class="ftype">DateTime</td><td class="fdesc">UTC timestamp when the deal was created.</td></tr>
+                <tr><td class="fname">creatorDisplayName</td><td class="ftype">string</td><td class="fdesc">Privacy-masked display name: "FirstName ***".</td></tr>
+                <tr><td class="fname">workingHoursStart</td><td class="ftype">string?</td><td class="fdesc">Working hours start in HH:mm (nullable).</td></tr>
+                <tr><td class="fname">workingHoursEnd</td><td class="ftype">string?</td><td class="fdesc">Working hours end in HH:mm (nullable).</td></tr>
+                <tr><td class="fname">workingHoursTimezone</td><td class="ftype">string?</td><td class="fdesc">IANA timezone string for working hours (nullable).</td></tr>
+                <tr><td class="fname">rating</td><td class="ftype">object?</td><td class="fdesc">Creator's rating: <code>{ averageScore: decimal, count: int }</code>. Null if no ratings yet.</td></tr>
+                <tr><td class="fname">fromPaymentMethods</td><td class="ftype">int[]</td><td class="fdesc">Payment methods accepted by the Creator (RemitPaymentMethod enum values).</td></tr>
+                <tr><td class="fname">toPaymentMethod</td><td class="ftype">int?</td><td class="fdesc">Chosen destination payment method (after a match is made).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 4 -->
+    <div class="endpoint-card open" id="ep-4">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span></div>
+          <div class="endpoint-purpose">Get full detail of a specific deal. Returns role-aware data — beneficiary info visible only to the respective party.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-4-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-4-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-4-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-4-res">
+          <p class="resp-note">Returns <code>RemitDealDetailDto</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td class="fdesc">Deal identifier.</td></tr>
+                <tr><td class="fname">code</td><td class="ftype">string</td><td class="fdesc">Human-readable deal code, e.g. <code>PRD-USD-VND-A1B2C3</code>.</td></tr>
+                <tr><td class="fname">status</td><td class="ftype">int</td><td class="fdesc">Current status (RemitDealStatus enum). See Reference section.</td></tr>
+                <tr><td class="fname">currentUserRole</td><td class="ftype">int</td><td class="fdesc">Caller's role: Creator=1, Matcher=2, Viewer=3.</td></tr>
+                <tr><td class="fname">minAmount</td><td class="ftype">decimal</td><td class="fdesc">Minimum matching amount.</td></tr>
+                <tr><td class="fname">maxAmount</td><td class="ftype">decimal</td><td class="fdesc">Maximum matching amount.</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td class="fdesc">Exchange rate.</td></tr>
+                <tr><td class="fname">note</td><td class="ftype">string</td><td class="fdesc">Creator's deal description (max 200 chars).</td></tr>
+                <tr><td class="fname">createdAt</td><td class="ftype">DateTime</td><td class="fdesc">Deal creation timestamp (UTC).</td></tr>
+                <tr><td class="fname">workingHoursStart</td><td class="ftype">string?</td><td class="fdesc">HH:mm start of Creator's working hours.</td></tr>
+                <tr><td class="fname">workingHoursEnd</td><td class="ftype">string?</td><td class="fdesc">HH:mm end of Creator's working hours.</td></tr>
+                <tr><td class="fname">workingHoursTimezone</td><td class="ftype">string?</td><td class="fdesc">IANA timezone for working hours.</td></tr>
+                <tr><td class="fname">amount</td><td class="ftype">decimal?</td><td class="fdesc">Amount requested by Matcher (set after accept).</td></tr>
+                <tr><td class="fname">matcherRequestedAt</td><td class="ftype">DateTime?</td><td class="fdesc">UTC timestamp when Matcher accepted.</td></tr>
+                <tr><td class="fname">creatorConfirmDeadline</td><td class="ftype">DateTime?</td><td class="fdesc">UTC deadline for Creator to confirm or decline the match.</td></tr>
+                <tr><td class="fname">lockedAt</td><td class="ftype">DateTime?</td><td class="fdesc">UTC timestamp when deal was locked (USDV held).</td></tr>
+                <tr><td class="fname">slaExpiresAt</td><td class="ftype">DateTime?</td><td class="fdesc">SLA expiry — deal auto-pauses after this time.</td></tr>
+                <tr><td class="fname">completedAt</td><td class="ftype">DateTime?</td><td class="fdesc">UTC timestamp of deal completion.</td></tr>
+                <tr><td class="fname">creatorProofUploaded</td><td class="ftype">bool</td><td class="fdesc">Whether Creator has uploaded payment proof.</td></tr>
+                <tr><td class="fname">matcherProofUploaded</td><td class="ftype">bool</td><td class="fdesc">Whether Matcher has uploaded payment proof.</td></tr>
+                <tr><td class="fname">creatorConfirmed</td><td class="ftype">bool</td><td class="fdesc">Whether Creator has confirmed completion.</td></tr>
+                <tr><td class="fname">matcherConfirmed</td><td class="ftype">bool</td><td class="fdesc">Whether Matcher has confirmed completion.</td></tr>
+                <tr><td class="fname">creatorDisplayName</td><td class="ftype">string</td><td class="fdesc">Creator's masked display name.</td></tr>
+                <tr><td class="fname">matcherDisplayName</td><td class="ftype">string?</td><td class="fdesc">Matcher's masked display name (null if unmatched).</td></tr>
+                <tr><td class="fname">creatorBeneficiary</td><td class="ftype">object?</td><td class="fdesc">Creator's payment details: <code>{ paymentMethod: int, fieldValues: {} }</code>. Only visible to Matcher.</td></tr>
+                <tr><td class="fname">matcherBeneficiary</td><td class="ftype">object?</td><td class="fdesc">Matcher's payment details: <code>{ paymentMethod: int, fieldValues: {} }</code>. Only visible to Creator.</td></tr>
+                <tr><td class="fname">creatorFiles</td><td class="ftype">FileDto[]</td><td class="fdesc">Creator's uploaded proof files: <code>[{ id, fileName, filePath, createdAt }]</code>.</td></tr>
+                <tr><td class="fname">matcherFiles</td><td class="ftype">FileDto[]</td><td class="fdesc">Matcher's uploaded proof files.</td></tr>
+                <tr><td class="fname">paymentMethods</td><td class="ftype">object[]</td><td class="fdesc">Deal payment methods: <code>[{ id, paymentMethod, isChosen }]</code>.</td></tr>
+                <tr><td class="fname">setting</td><td class="ftype">object</td><td class="fdesc">Deal's captured settings: <code>{ platformFeePercent, creatorConfirmTimeoutMinutes, postAcceptSlaMinutes }</code>.</td></tr>
+                <tr><td class="fname">rating</td><td class="ftype">object?</td><td class="fdesc">Creator's aggregate rating: <code>{ averageScore, count }</code>.</td></tr>
+                <tr><td class="fname">disputedBy</td><td class="ftype">int?</td><td class="fdesc">CustomerId of the party who raised the dispute (null if no dispute).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 5 -->
+    <div class="endpoint-card open" id="ep-5">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/history</div>
+          <div class="endpoint-purpose">Paginated list of the caller's deal history (all roles). Optionally filter by status.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-5-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-5-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-5-req">
+          <p class="resp-note">Query parameters (GET)</p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">pageIndex</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">0-based page index.</td></tr>
+                <tr><td class="fname">pageSize</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Number of items per page.</td></tr>
+                <tr><td class="fname">status</td><td class="ftype">int?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by RemitDealStatus value.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-5-res">
+          <p class="resp-note">Returns <code>PaginatedResult&lt;HistoryItemDto&gt;</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td class="fdesc">Deal identifier.</td></tr>
+                <tr><td class="fname">code</td><td class="ftype">string</td><td class="fdesc">Deal code (e.g. PRD-USD-VND-A1B2C3).</td></tr>
+                <tr><td class="fname">status</td><td class="ftype">int</td><td class="fdesc">RemitDealStatus value.</td></tr>
+                <tr><td class="fname">currentUserRole</td><td class="ftype">int</td><td class="fdesc">Caller's role in this deal.</td></tr>
+                <tr><td class="fname">amount</td><td class="ftype">decimal?</td><td class="fdesc">Matched amount (null if unmatched).</td></tr>
+                <tr><td class="fname">amountConversion</td><td class="ftype">decimal?</td><td class="fdesc">Converted amount in destination currency.</td></tr>
+                <tr><td class="fname">minAmount</td><td class="ftype">decimal</td><td class="fdesc">Deal's minimum amount.</td></tr>
+                <tr><td class="fname">maxAmount</td><td class="ftype">decimal</td><td class="fdesc">Deal's maximum amount.</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td class="fdesc">Exchange rate.</td></tr>
+                <tr><td class="fname">createdAt</td><td class="ftype">DateTime</td><td class="fdesc">Deal creation timestamp.</td></tr>
+                <tr><td class="fname">completedAt</td><td class="ftype">DateTime?</td><td class="fdesc">Completion timestamp.</td></tr>
+                <tr><td class="fname">partyCustomerDisplayName</td><td class="ftype">string</td><td class="fdesc">The other party's masked display name.</td></tr>
+                <tr><td class="fname">fromAsset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Source asset details.</td></tr>
+                <tr><td class="fname">toAsset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Destination asset details.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 6 -->
+    <div class="endpoint-card open" id="ep-6">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/statistics</div>
+          <div class="endpoint-purpose">Aggregate deal counts per status for the authenticated user.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-6-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-6-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-6-req">
+          <p class="no-body">No request body. No query parameters.</p>
+        </div>
+        <div class="tab-panel" id="ep-6-res">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">new</td><td class="ftype">int</td><td class="fdesc">Deals in New status.</td></tr>
+                <tr><td class="fname">paused</td><td class="ftype">int</td><td class="fdesc">Deals in Paused status.</td></tr>
+                <tr><td class="fname">pendingApproval</td><td class="ftype">int</td><td class="fdesc">Deals awaiting Creator approval.</td></tr>
+                <tr><td class="fname">waitingUploadProof</td><td class="ftype">int</td><td class="fdesc">Deals in WaitingUploadProof status.</td></tr>
+                <tr><td class="fname">completed</td><td class="ftype">int</td><td class="fdesc">Completed deals.</td></tr>
+                <tr><td class="fname">cancelled</td><td class="ftype">int</td><td class="fdesc">Cancelled deals.</td></tr>
+                <tr><td class="fname">disputed</td><td class="ftype">int</td><td class="fdesc">Deals under active dispute.</td></tr>
+                <tr><td class="fname">resolved</td><td class="ftype">int</td><td class="fdesc">Resolved deals.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-2 -->
+
+  <!-- ════════ GROUP 3 — DEAL LIFECYCLE ════════ -->
+  <div class="section" id="group-3">
+    <div class="section-title">Deal Lifecycle <span class="count">7 endpoints</span></div>
+
+    <!-- EP 7 -->
+    <div class="endpoint-card open" id="ep-7">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal</div>
+          <div class="endpoint-purpose">Create a new P2P Remit Deal. Caller becomes the Creator. USDV security deposit is held on creation.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-7-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-7-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-7-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">corridorId</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Currency corridor ID (from /corridors).</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Exchange rate the Creator offers.</td></tr>
+                <tr><td class="fname">note</td><td class="ftype">string</td><td><span class="badge-req">Required</span></td><td class="fdesc">Public deal description. Max 200 characters.</td></tr>
+                <tr><td class="fname">minAmount</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Minimum matching amount. Must be &gt; 0.</td></tr>
+                <tr><td class="fname">maxAmount</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Maximum matching amount. Must be ≥ minAmount.</td></tr>
+                <tr><td class="fname">workingHoursStart</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Working hours start in HH:mm (e.g. "09:00"). Required if setting working hours.</td></tr>
+                <tr><td class="fname">workingHoursEnd</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Working hours end in HH:mm. Required if start is provided.</td></tr>
+                <tr><td class="fname">workingHoursTimezone</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">IANA timezone (e.g. "Asia/Ho_Chi_Minh"). Required if start is provided.</td></tr>
+                <tr><td class="fname">paymentMethodIds</td><td class="ftype">int[]</td><td><span class="badge-req">Required</span></td><td class="fdesc">IDs of active RemitAssetPaymentMethod records the Creator accepts (from /payment-methods).</td></tr>
+                <tr><td class="fname">beneficiaryPaymentMethodId</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Creator's saved payment profile ID for receiving destination currency (from /payment-profiles).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-7-res">
+          <p class="resp-note">Returns <code>Guid</code> — the new deal's ID.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 8 -->
+    <div class="endpoint-card open" id="ep-8">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-put">PUT</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span></div>
+          <div class="endpoint-purpose">Update an existing deal's terms. Only allowed when deal is in New or Paused status and caller is Creator.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-8-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-8-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-8-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+                <tr><td class="fname">rate</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated exchange rate.</td></tr>
+                <tr><td class="fname">note</td><td class="ftype">string</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated deal description. Max 200 characters.</td></tr>
+                <tr><td class="fname">minAmount</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated minimum amount.</td></tr>
+                <tr><td class="fname">maxAmount</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated maximum amount.</td></tr>
+                <tr><td class="fname">workingHoursStart</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Updated working hours start.</td></tr>
+                <tr><td class="fname">workingHoursEnd</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Updated working hours end.</td></tr>
+                <tr><td class="fname">workingHoursTimezone</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Updated timezone.</td></tr>
+                <tr><td class="fname">paymentMethodIds</td><td class="ftype">int[]</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated list of accepted payment method IDs.</td></tr>
+                <tr><td class="fname">beneficiaryPaymentMethodId</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated Creator beneficiary profile ID.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-8-res">
+          <p class="resp-note">Returns <code>Guid</code> — the updated deal's ID.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 9 -->
+    <div class="endpoint-card open" id="ep-9">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/accept</div>
+          <div class="endpoint-purpose">Matcher accepts a deal from the marketplace, specifying amount and beneficiary info. Moves deal to PendingApproval.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-9-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-9-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-9-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID to accept.</td></tr>
+                <tr><td class="fname">amount</td><td class="ftype">decimal</td><td><span class="badge-req">Required</span></td><td class="fdesc">Amount Matcher wants to exchange. Must be between deal's minAmount and maxAmount.</td></tr>
+                <tr><td class="fname">beneficiaryPaymentMethodId</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Matcher's saved payment profile ID for receiving destination currency.</td></tr>
+                <tr><td class="fname">chosenCreatorPaymentMethod</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">RemitPaymentMethod enum value — one of the deal's listed payment methods that Matcher will use to pay Creator.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-9-res">
+          <p class="resp-note">Returns <code>Guid</code> — the deal ID.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 10 -->
+    <div class="endpoint-card open" id="ep-10">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/decline</div>
+          <div class="endpoint-purpose">Creator declines a match request. Deal reverts to New status (Declined is logged as a transient audit state only).</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-10-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-10-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-10-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+                <tr><td class="fname">reason</td><td class="ftype">string</td><td><span class="badge-req">Required</span></td><td class="fdesc">Reason for declining. Shown to the Matcher.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-10-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success. Deal status becomes New again.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 11 -->
+    <div class="endpoint-card open" id="ep-11">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/approve</div>
+          <div class="endpoint-purpose">Creator approves the match request. USDV security deposit is locked. Deal moves to WaitingUploadProof.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-11-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-11-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-11-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID to approve.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="no-body">No request body.</p>
+        </div>
+        <div class="tab-panel" id="ep-11-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 12 -->
+    <div class="endpoint-card open" id="ep-12">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/cancel</div>
+          <div class="endpoint-purpose">Cancel a deal. Creator can cancel from New/Paused; either party can cancel from WaitingUploadProof before proof is uploaded.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-12-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-12-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-12-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="no-body">No request body.</p>
+        </div>
+        <div class="tab-panel" id="ep-12-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success. USDV deposits released if held.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 13 -->
+    <div class="endpoint-card open" id="ep-13">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/reopen</div>
+          <div class="endpoint-purpose">Creator reopens a Paused deal, making it visible in the marketplace again.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-13-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-13-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-13-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID (must be in Paused status).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="no-body">No request body.</p>
+        </div>
+        <div class="tab-panel" id="ep-13-res">
+          <p class="resp-note">Returns <code>void</code> (HTTP 200 on success).</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-3 -->
+
+  <!-- ════════ GROUP 4 — PROOF & CONFIRMATION ════════ -->
+  <div class="section" id="group-4">
+    <div class="section-title">Proof &amp; Confirmation <span class="count">3 endpoints</span></div>
+
+    <!-- EP 14 -->
+    <div class="endpoint-card open" id="ep-14">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/proof</div>
+          <div class="endpoint-purpose">Upload payment proof files for a deal. Max 3 files per party. Triggers WaitingUploadProof → ready-to-confirm flow.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span><span class="tag tag-multi">📎 multipart/form-data</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-14-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-14-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-14-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+                <tr><td class="fname">formFiles</td><td class="ftype">File[]</td><td><span class="badge-req">Required</span></td><td class="fdesc">Proof files (image or PDF). Max <strong>3 files</strong> total per party. Max 10 MB each.</td></tr>
+                <tr><td class="fname">note</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Short note accompanying the proof. Max 500 characters.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-14-res">
+          <p class="resp-note">Returns <code>List&lt;Guid&gt;</code> — IDs of the newly uploaded files.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 15 -->
+    <div class="endpoint-card open" id="ep-15">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-del">DELETE</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/proof/<span class="path-param">{fileId}</span></div>
+          <div class="endpoint-purpose">Delete one of the caller's own uploaded proof files. Only allowed before the deal is confirmed.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-15-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-15-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-15-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID.</td></tr>
+                <tr><td class="fname">fileId</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">File UUID to delete.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-15-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 16 -->
+    <div class="endpoint-card open" id="ep-16">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/confirm</div>
+          <div class="endpoint-purpose">Confirm deal completion. When both parties confirm, USDV deposits are released and the deal moves to Completed.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-16-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-16-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-16-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID (must be in WaitingUploadProof with both parties having uploaded proof).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="no-body">No request body.</p>
+        </div>
+        <div class="tab-panel" id="ep-16-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success. Deal completes when both parties confirm.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-4 -->
+
+  <!-- ════════ GROUP 5 — DISPUTE ════════ -->
+  <div class="section" id="group-5">
+    <div class="section-title">Dispute <span class="count">2 endpoints</span></div>
+
+    <!-- EP 17 -->
+    <div class="endpoint-card open" id="ep-17">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/dispute</div>
+          <div class="endpoint-purpose">Raise a dispute against the counterparty. Moves deal to Disputed status and notifies Admin for resolution.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span><span class="tag tag-multi">📎 multipart/form-data</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-17-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-17-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-17-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID (must be in WaitingUploadProof).</td></tr>
+                <tr><td class="fname">reason</td><td class="ftype">string</td><td><span class="badge-req">Required</span></td><td class="fdesc">Detailed dispute reason. Max 1000 characters.</td></tr>
+                <tr><td class="fname">files</td><td class="ftype">File[]?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Supporting evidence files. Max <strong>6 files</strong>. Max 10 MB each.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-17-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success. Deal status becomes Disputed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 18 -->
+    <div class="endpoint-card open" id="ep-18">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/dispute/cancel</div>
+          <div class="endpoint-purpose">Cancel an active dispute (by the party who raised it). Deal reverts to WaitingUploadProof.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-18-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-18-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-18-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID (must be in Disputed status; caller must be the one who raised the dispute).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="no-body">No request body.</p>
+        </div>
+        <div class="tab-panel" id="ep-18-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success. Deal reverts to WaitingUploadProof.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-5 -->
+
+  <!-- ════════ GROUP 6 — RATING ════════ -->
+  <div class="section" id="group-6">
+    <div class="section-title">Rating <span class="count">2 endpoints</span></div>
+
+    <!-- EP 19 -->
+    <div class="endpoint-card open" id="ep-19">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/<span class="path-param">{id}</span>/rating</div>
+          <div class="endpoint-purpose">Submit a star rating (1–5) for the counterparty after the deal is Completed or Resolved.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-19-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-19-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-19-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">Guid</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Deal UUID (must be in Completed or Resolved status).</td></tr>
+                <tr><td class="fname">stars</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Rating score from 1 to 5.</td></tr>
+                <tr><td class="fname">comment</td><td class="ftype">string?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Optional review comment. Max 500 characters.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-19-res">
+          <p class="resp-note">Returns <code>void</code> (HTTP 200 on success).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 20 -->
+    <div class="endpoint-card open" id="ep-20">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/ratings/<span class="path-param">{customerId}</span></div>
+          <div class="endpoint-purpose">Retrieve paginated ratings for a specific customer (Creator profile ratings).</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-20-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-20-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-20-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">customerId</td><td class="ftype">int</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Customer ID whose ratings to retrieve.</td></tr>
+                <tr><td class="fname">pageIndex</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">0-based page index.</td></tr>
+                <tr><td class="fname">pageSize</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Number of items per page.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-20-res">
+          <p class="resp-note">Returns <code>PaginatedResult&lt;RatingItemDto&gt;</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">stars</td><td class="ftype">int</td><td class="fdesc">Rating score (1–5).</td></tr>
+                <tr><td class="fname">comment</td><td class="ftype">string?</td><td class="fdesc">Optional review comment.</td></tr>
+                <tr><td class="fname">raterCustomerId</td><td class="ftype">int</td><td class="fdesc">Customer ID of the person who submitted the rating.</td></tr>
+                <tr><td class="fname">createdAt</td><td class="ftype">DateTime</td><td class="fdesc">UTC timestamp when the rating was submitted.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-6 -->
+
+  <!-- ════════ GROUP 7 — PAYMENT PROFILES ════════ -->
+  <div class="section" id="group-7">
+    <div class="section-title">Payment Profiles <span class="count">4 endpoints</span></div>
+
+    <!-- EP 21 -->
+    <div class="endpoint-card open" id="ep-21">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/payment-profiles</div>
+          <div class="endpoint-purpose">List the caller's saved payment profiles (beneficiary accounts for receiving destination currency).</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-21-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-21-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-21-req">
+          <p class="resp-note">Query parameters (GET)</p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">assetId</td><td class="ftype">int?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by asset ID.</td></tr>
+                <tr><td class="fname">paymentMethod</td><td class="ftype">int?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by RemitPaymentMethod enum value.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-21-res">
+          <p class="resp-note">Returns <code>List&lt;ProfileDto&gt;</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">int</td><td class="fdesc">Profile ID (auto-increment integer, not Guid).</td></tr>
+                <tr><td class="fname">asset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Asset this profile receives.</td></tr>
+                <tr><td class="fname">paymentMethod</td><td class="ftype">int</td><td class="fdesc">RemitPaymentMethod enum value.</td></tr>
+                <tr><td class="fname">paymentMethodName</td><td class="ftype">string</td><td class="fdesc">Human-readable payment method name (e.g. "Bank Transfer").</td></tr>
+                <tr><td class="fname">isActive</td><td class="ftype">bool</td><td class="fdesc">Whether this profile is currently active.</td></tr>
+                <tr><td class="fname">fields</td><td class="ftype">FieldDef[]</td><td class="fdesc">Field definitions for this payment method: <code>[{ key, label }]</code>.</td></tr>
+                <tr><td class="fname">fieldValues</td><td class="ftype">object</td><td class="fdesc">Saved key-value pairs for this profile (e.g. <code>{ "accountNumber": "12345", "bankName": "Vietcombank" }</code>).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 22 -->
+    <div class="endpoint-card open" id="ep-22">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-post">POST</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/payment-profiles</div>
+          <div class="endpoint-purpose">Create a new payment profile (beneficiary account). Use field definitions from /payment-methods to build the fieldValues object.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-22-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-22-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-22-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">assetId</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">Asset ID this profile will receive (must be an active asset in the corridor's destination).</td></tr>
+                <tr><td class="fname">paymentMethod</td><td class="ftype">int</td><td><span class="badge-req">Required</span></td><td class="fdesc">RemitPaymentMethod enum value (1–8).</td></tr>
+                <tr><td class="fname">fieldValues</td><td class="ftype">object</td><td><span class="badge-req">Required</span></td><td class="fdesc">Key-value map of payment details. Keys must match the method's field definitions from /payment-methods.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-22-res">
+          <p class="resp-note">Returns <code>int</code> — the new profile's ID.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 23 -->
+    <div class="endpoint-card open" id="ep-23">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-put">PUT</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/payment-profiles/<span class="path-param">{id}</span></div>
+          <div class="endpoint-purpose">Update fieldValues of an existing payment profile.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-23-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-23-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-23-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">int</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Profile ID (integer).</td></tr>
+                <tr><td class="fname">fieldValues</td><td class="ftype">object</td><td><span class="badge-req">Required</span></td><td class="fdesc">Updated key-value payment details.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-23-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EP 24 -->
+    <div class="endpoint-card open" id="ep-24">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-del">DELETE</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/payment-profiles/<span class="path-param">{id}</span></div>
+          <div class="endpoint-purpose">Delete a payment profile. Not allowed if the profile is in use by an active deal.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-24-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-24-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-24-req">
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">int</td><td><span class="badge-req">Path param</span></td><td class="fdesc">Profile ID (integer).</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-24-res">
+          <p class="resp-note">Returns <code>bool</code> — <code>true</code> on success.</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-7 -->
+
+  <!-- ════════ GROUP 8 — PAYMENT METHODS ════════ -->
+  <div class="section" id="group-8">
+    <div class="section-title">Payment Methods <span class="count">1 endpoint</span></div>
+
+    <!-- EP 25 -->
+    <div class="endpoint-card open" id="ep-25">
+      <div class="endpoint-header" onclick="toggleCard(this)">
+        <span class="method-badge method-get">GET</span>
+        <div class="endpoint-meta">
+          <div class="endpoint-path">/api/remit-deal/payment-methods</div>
+          <div class="endpoint-purpose">List all platform payment methods with their field definitions. Use to build the payment profile creation form.</div>
+          <div class="endpoint-tags"><span class="tag tag-auth">🔑 Auth required</span></div>
+        </div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="tab-bar">
+          <div class="tab-btn active" onclick="switchTab(this, 'ep-25-req')">Request</div>
+          <div class="tab-btn" onclick="switchTab(this, 'ep-25-res')">Response</div>
+        </div>
+        <div class="tab-panel active" id="ep-25-req">
+          <p class="resp-note">Query parameters (GET)</p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">assetIds</td><td class="ftype">int[]?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter by asset IDs.</td></tr>
+                <tr><td class="fname">isActive</td><td class="ftype">bool?</td><td><span class="badge-opt">Optional</span></td><td class="fdesc">Filter active/inactive methods. Omit to return all.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="ep-25-res">
+          <p class="resp-note">Returns <code>List&lt;PaymentMethodDto&gt;</code></p>
+          <div class="field-table-wrap">
+            <table class="field-table">
+              <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td class="fname">id</td><td class="ftype">int</td><td class="fdesc">Payment method record ID — pass as element of <code>paymentMethodIds[]</code> when creating/updating a deal.</td></tr>
+                <tr><td class="fname">asset</td><td class="ftype">AssetBasicModel</td><td class="fdesc">Asset this method is associated with.</td></tr>
+                <tr><td class="fname">paymentMethod</td><td class="ftype">int</td><td class="fdesc">RemitPaymentMethod enum value.</td></tr>
+                <tr><td class="fname">paymentMethodName</td><td class="ftype">string</td><td class="fdesc">Display name (e.g. "Bank Transfer", "Momo").</td></tr>
+                <tr><td class="fname">isActive</td><td class="ftype">bool</td><td class="fdesc">Whether this method is currently enabled by Admin.</td></tr>
+                <tr><td class="fname">fields</td><td class="ftype">FieldDef[]</td><td class="fdesc">Required field definitions for profile creation: <code>[{ key: string, label: string }]</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /group-8 -->
+
+  <!-- ════════ REFERENCE ════════ -->
+  <div class="section" id="ref-enums">
+    <div class="section-title">Reference — Enums &amp; Types</div>
+
+    <div class="ref-grid">
+      <!-- RemitDealStatus -->
+      <div class="ref-card">
+        <h4>RemitDealStatus</h4>
+        <div class="enum-row"><span class="enum-val">1</span><span class="enum-name">New</span><span class="enum-desc">Listed on marketplace</span></div>
+        <div class="enum-row"><span class="enum-val">2</span><span class="enum-name">Paused</span><span class="enum-desc">Hidden from marketplace; can be reopened</span></div>
+        <div class="enum-row"><span class="enum-val">3</span><span class="enum-name">WaitingUploadProof</span><span class="enum-desc">Match locked; parties upload proof &amp; confirm</span></div>
+        <div class="enum-row"><span class="enum-val">4</span><span class="enum-name">Completed</span><span class="enum-desc">Both parties confirmed; USDV released</span></div>
+        <div class="enum-row"><span class="enum-val">5</span><span class="enum-name">Cancelled</span><span class="enum-desc">Cancelled by either party or system</span></div>
+        <div class="enum-row"><span class="enum-val">6</span><span class="enum-name">PendingApproval</span><span class="enum-desc">Matcher accepted; awaiting Creator approval</span></div>
+        <div class="enum-row"><span class="enum-val">7</span><span class="enum-name">Disputed</span><span class="enum-desc">Dispute raised; awaiting Admin resolution</span></div>
+        <div class="enum-row"><span class="enum-val">8</span><span class="enum-name">Resolved</span><span class="enum-desc">Dispute resolved by Admin</span></div>
+        <div class="enum-row"><span class="enum-val">9</span><span class="enum-name">Declined</span><span class="enum-desc">Audit-log only — never persisted as deal status</span></div>
+      </div>
+
+      <!-- RemitPaymentMethod -->
+      <div class="ref-card">
+        <h4>RemitPaymentMethod</h4>
+        <div class="enum-row"><span class="enum-val">1</span><span class="enum-name">Momo</span><span class="enum-desc">Vietnamese e-wallet</span></div>
+        <div class="enum-row"><span class="enum-val">2</span><span class="enum-name">ZaloPay</span><span class="enum-desc">Vietnamese e-wallet</span></div>
+        <div class="enum-row"><span class="enum-val">3</span><span class="enum-name">BankTransfer</span><span class="enum-desc">Bank wire transfer</span></div>
+        <div class="enum-row"><span class="enum-val">4</span><span class="enum-name">Zelle</span><span class="enum-desc">US bank network</span></div>
+        <div class="enum-row"><span class="enum-val">5</span><span class="enum-name">Venmo</span><span class="enum-desc">US mobile payment</span></div>
+        <div class="enum-row"><span class="enum-val">6</span><span class="enum-name">AppleCash</span><span class="enum-desc">Apple Wallet P2P</span></div>
+        <div class="enum-row"><span class="enum-val">7</span><span class="enum-name">Paypal</span><span class="enum-desc">PayPal transfer</span></div>
+        <div class="enum-row"><span class="enum-val">8</span><span class="enum-name">CashApp</span><span class="enum-desc">Square Cash App</span></div>
+      </div>
+
+      <!-- RemitDealCurrentRole -->
+      <div class="ref-card">
+        <h4>RemitDealCurrentRole</h4>
+        <div class="enum-row"><span class="enum-val">1</span><span class="enum-name">Creator</span><span class="enum-desc">Deal owner / poster</span></div>
+        <div class="enum-row"><span class="enum-val">2</span><span class="enum-name">Matcher</span><span class="enum-desc">Party who accepted the deal</span></div>
+        <div class="enum-row"><span class="enum-val">3</span><span class="enum-name">Viewer</span><span class="enum-desc">Authenticated user with no role in this deal</span></div>
+      </div>
+    </div>
+
+    <!-- Common Types -->
+    <div id="ref-types" style="margin-top:24px;">
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;">Common Types</div>
+      <div class="ref-grid">
+
+        <div class="ref-card">
+          <h4>AssetBasicModel</h4>
+          <table class="obj-table">
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">id</td><td class="ftype">int</td><td class="fdesc">Asset ID.</td></tr>
+              <tr><td class="fname">symbol</td><td class="ftype">string</td><td class="fdesc">e.g. "USDT"</td></tr>
+              <tr><td class="fname">symbolNormalizeName</td><td class="ftype">string</td><td class="fdesc">Lowercase slug.</td></tr>
+              <tr><td class="fname">name</td><td class="ftype">string</td><td class="fdesc">Full asset name.</td></tr>
+              <tr><td class="fname">logo</td><td class="ftype">string</td><td class="fdesc">Logo URL.</td></tr>
+              <tr><td class="fname">decimals</td><td class="ftype">int</td><td class="fdesc">Precision for calculations.</td></tr>
+              <tr><td class="fname">viewDecimals</td><td class="ftype">int</td><td class="fdesc">Precision for display.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ref-card">
+          <h4>PaginatedResult&lt;T&gt;</h4>
+          <table class="obj-table">
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">items</td><td class="ftype">T[]</td><td class="fdesc">Page items.</td></tr>
+              <tr><td class="fname">totalCount</td><td class="ftype">int</td><td class="fdesc">Total record count.</td></tr>
+              <tr><td class="fname">pageIndex</td><td class="ftype">int</td><td class="fdesc">Current page (0-based).</td></tr>
+              <tr><td class="fname">pageSize</td><td class="ftype">int</td><td class="fdesc">Items per page.</td></tr>
+              <tr><td class="fname">totalPages</td><td class="ftype">int</td><td class="fdesc">Calculated total pages.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ref-card">
+          <h4>Standard API Error</h4>
+          <table class="obj-table">
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">statusCode</td><td class="ftype">int</td><td class="fdesc">HTTP status code.</td></tr>
+              <tr><td class="fname">message</td><td class="ftype">string</td><td class="fdesc">Human-readable error message.</td></tr>
+              <tr><td class="fname">errors</td><td class="ftype">string[]?</td><td class="fdesc">Validation error details (present on 400).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ref-card">
+          <h4>Deal Code Format</h4>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Auto-generated unique identifier shown to users.</p>
+          <pre style="margin-top:0;">PRD-{FromToken}-{ToToken}-{Id[0..6].ToUpper()}
+
+Examples:
+  PRD-USD-VND-A1B2C3
+  PRD-USDT-PHP-F9E8D7</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-spacer"></div>
+    <div style="padding:0 0 20px;font-size:11px;color:var(--muted);">
+      Generated 2026-06-25 · WalletService v1 · Backend: .NET 7 · 25 member/merchant endpoints
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function toggleGroup(id) {
+    const g = document.getElementById(id);
+    g.classList.toggle('open');
+  }
+
+  function toggleCard(header) {
+    const card = header.closest('.endpoint-card');
+    card.classList.toggle('open');
+  }
+
+  function switchTab(btn, panelId) {
+    const body = btn.closest('.endpoint-body');
+    body.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    body.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  // Highlight active sidebar item on scroll
+  const cards = document.querySelectorAll('.endpoint-card');
+  const sidebarLinks = document.querySelectorAll('.sidebar-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        sidebarLinks.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  cards.forEach(c => observer.observe(c));
+</script>
+</body>
+</html>
