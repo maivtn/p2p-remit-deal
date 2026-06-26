@@ -88,6 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(Boolean);
   }
 
+  function updateTooltipTitle(element, title){
+    if(!element) return;
+    element.setAttribute("data-bs-title", title);
+    element.setAttribute("title", title);
+    bootstrap.Tooltip.getInstance(element)?.setContent({ ".tooltip-inner": title });
+  }
+
   function renderConversionPreview(){
     const senderCurrency = getSelectedSenderCurrency();
     const receiveCurrency = getSelectedReceiveCurrency();
@@ -117,6 +124,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if(receiveMethodsLabel?.firstChild){
       receiveMethodsLabel.firstChild.textContent = `Người thụ hưởng nhận ${receiveCurrency} bằng hình thức `;
     }
+    updateTooltipTitle(
+      senderMethodsLabel?.querySelector(".label-help-icon"),
+      `Chọn một hoặc nhiều phương thức bạn có thể dùng để gửi ${senderCurrency} cho đối tác trong deal.`
+    );
+    updateTooltipTitle(
+      receiveMethodsLabel?.querySelector(".label-help-icon"),
+      `Chọn một hoặc nhiều phương thức người thụ hưởng của bạn có thể dùng để nhận ${receiveCurrency}.`
+    );
 
     renderMethodChips("senderUsdMethods", senderCurrency, getDefaultMethods(senderCurrency, ["Zelle"]), { single: false });
     renderMethodChips("receiveVndMethods", receiveCurrency, getDefaultMethods(receiveCurrency, ["MoMo", "Bank Transfer"]), { single: false, blue: false });
